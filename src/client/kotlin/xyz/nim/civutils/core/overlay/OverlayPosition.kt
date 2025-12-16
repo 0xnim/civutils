@@ -176,6 +176,28 @@ data class OverlayPosition(
             verticalAlignment = VerticalAlignment.MIDDLE,
             anchorSection = AnchorSection.MIDDLE
         )
+
+        /**
+         * Create a position anchored to the middle-left.
+         */
+        fun middleLeft(offsetX: Int = 5, offsetY: Int = 0) = OverlayPosition(
+            offsetX = offsetX,
+            offsetY = offsetY,
+            horizontalAlignment = HorizontalAlignment.LEFT,
+            verticalAlignment = VerticalAlignment.MIDDLE,
+            anchorSection = AnchorSection.MIDDLE_LEFT
+        )
+
+        /**
+         * Create a position anchored to the top-center.
+         */
+        fun topCenter(offsetX: Int = 0, offsetY: Int = 5) = OverlayPosition(
+            offsetX = offsetX,
+            offsetY = offsetY,
+            horizontalAlignment = HorizontalAlignment.CENTER,
+            verticalAlignment = VerticalAlignment.TOP,
+            anchorSection = AnchorSection.TOP_MIDDLE
+        )
     }
 }
 

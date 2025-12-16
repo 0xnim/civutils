@@ -11,9 +11,13 @@ import xyz.nim.civutils.core.event.WorldJoinEvent
 import xyz.nim.civutils.core.event.WorldLeaveEvent
 import xyz.nim.civutils.core.keybind.KeybindManager
 import xyz.nim.civutils.features.combat.HealthWarningFeature
+import xyz.nim.civutils.features.utilities.AutoSitFeature
 import xyz.nim.civutils.gui.screens.ConfigScreen
 import xyz.nim.civutils.gui.screens.OverlayEditorScreen
+import xyz.nim.civutils.models.CivLabsModel
 import xyz.nim.civutils.models.PlayerModel
+import xyz.nim.civutils.overlays.BlockCountOverlay
+import xyz.nim.civutils.overlays.CivLabsOverlay
 import xyz.nim.civutils.overlays.CoordinatesOverlay
 
 /**
@@ -57,10 +61,8 @@ class CivutilsClient : ClientModInitializer {
      */
     private fun registerModels() {
         CivutilsMod.modelManager.registerModels(
-            PlayerModel
-            // Add more models here as you create them:
-            // WorldModel,
-            // CombatModel,
+            PlayerModel,
+            CivLabsModel
         )
     }
 
@@ -69,10 +71,8 @@ class CivutilsClient : ClientModInitializer {
      */
     private fun registerFeatures() {
         CivutilsMod.featureManager.registerFeatures(
-            HealthWarningFeature()
-            // Add more features here as you create them:
-            // AutoTotemFeature(),
-            // ChatFilterFeature(),
+            HealthWarningFeature(),
+            AutoSitFeature()
         )
     }
 
@@ -81,10 +81,9 @@ class CivutilsClient : ClientModInitializer {
      */
     private fun registerOverlays() {
         CivutilsMod.overlayManager.registerOverlays(
-            CoordinatesOverlay()
-            // Add more overlays here as you create them:
-            // HealthOverlay(),
-            // ArmorOverlay(),
+            CoordinatesOverlay(),
+            BlockCountOverlay(),
+            CivLabsOverlay()
         )
     }
 

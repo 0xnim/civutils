@@ -132,3 +132,16 @@ class KeyPressEvent(
 class RenderTickEvent(
     val tickDelta: Float
 ) : Event()
+
+// ============================================
+// ActionBar Events
+// ============================================
+
+/**
+ * Fired when an actionbar message is received.
+ * Can be cancelled to prevent display.
+ */
+class ActionBarMessageEvent(
+    val message: Text,
+    val rawMessage: String
+) : CancellableEvent()
