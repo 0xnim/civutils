@@ -4,10 +4,10 @@ import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.Drawable
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.text.Text
-import xyz.nim.civutils.gui.dialogs.ConfirmDialog
-import xyz.nim.civutils.gui.theme.CivutilsTheme
-import xyz.nim.civutils.gui.theme.ResponsiveLayout
-import xyz.nim.civutils.gui.widgets.ToastManager
+import xyz.nim.lib.ui.ConfirmDialog
+import xyz.nim.lib.ui.NlibTheme
+import xyz.nim.lib.ui.ResponsiveLayout
+import xyz.nim.lib.ui.ToastManager
 
 /**
  * Base screen class for CivUtils screens.
@@ -97,8 +97,8 @@ abstract class CivutilsScreen(title: Text) : Screen(title) {
      * Draw a themed panel background.
      */
     protected fun drawPanel(context: DrawContext, x: Int, y: Int, w: Int, h: Int) {
-        context.fill(x, y, x + w, y + h, CivutilsTheme.PANEL_BG)
-        drawBorder(context, x, y, w, h, CivutilsTheme.PANEL_BORDER)
+        context.fill(x, y, x + w, y + h, NlibTheme.PANEL_BG)
+        drawBorder(context, x, y, w, h, NlibTheme.PANEL_BORDER)
     }
 
     /**
@@ -107,8 +107,8 @@ abstract class CivutilsScreen(title: Text) : Screen(title) {
     protected fun drawPanelWithHeader(context: DrawContext, x: Int, y: Int, w: Int, h: Int, title: String) {
         drawPanel(context, x, y, w, h)
         val headerH = layout.headerHeight
-        context.fill(x + 1, y + 1, x + w - 1, y + headerH, CivutilsTheme.HEADER_BG)
-        context.drawText(textRenderer, title, x + layout.padding, y + (headerH - 8) / 2, CivutilsTheme.TEXT_PRIMARY, false)
+        context.fill(x + 1, y + 1, x + w - 1, y + headerH, NlibTheme.HEADER_BG)
+        context.drawText(textRenderer, title, x + layout.padding, y + (headerH - 8) / 2, NlibTheme.TEXT_PRIMARY, false)
     }
 
     /**
@@ -125,7 +125,7 @@ abstract class CivutilsScreen(title: Text) : Screen(title) {
      * Show a confirmation dialog.
      */
     protected fun confirm(title: String, message: String, onConfirm: () -> Unit) {
-        confirmDialog = ConfirmDialog(title, message, onConfirm)
+        confirmDialog = ConfirmDialog(title, message, onConfirm, {})
         confirmDialog?.show(width, height) { addDrawableChild(it) }
     }
 

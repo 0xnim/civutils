@@ -6,26 +6,26 @@ import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.widget.SliderWidget
 import net.minecraft.text.Text
 import xyz.nim.civutils.core.config.Config
-import xyz.nim.civutils.gui.theme.CivutilsTheme
+import xyz.nim.lib.ui.NlibTheme
 import kotlin.math.roundToInt
 
 /**
  * Color constants for the UI.
- * These are now aliases to CivutilsTheme for backward compatibility.
+ * These are now aliases to NlibTheme for backward compatibility.
  */
 object Colors {
-    val BACKGROUND = CivutilsTheme.BACKGROUND
-    val BACKGROUND_LIGHT = CivutilsTheme.BACKGROUND_LIGHT
-    val BACKGROUND_HOVER = CivutilsTheme.BACKGROUND_HOVER
-    val ACCENT = CivutilsTheme.ACCENT
-    val ACCENT_HOVER = CivutilsTheme.ACCENT_HOVER
-    val TEXT = CivutilsTheme.TEXT_PRIMARY
-    val TEXT_SECONDARY = CivutilsTheme.TEXT_SECONDARY
-    val SUCCESS = CivutilsTheme.SUCCESS
-    val ERROR = CivutilsTheme.ERROR
-    val WARNING = CivutilsTheme.WARNING
-    val ENABLED = CivutilsTheme.ENABLED
-    val DISABLED = CivutilsTheme.DISABLED
+    val BACKGROUND = NlibTheme.BACKGROUND
+    val BACKGROUND_LIGHT = NlibTheme.BACKGROUND_LIGHT
+    val BACKGROUND_HOVER = NlibTheme.BACKGROUND_HOVER
+    val ACCENT = NlibTheme.ACCENT
+    val ACCENT_HOVER = NlibTheme.ACCENT_HOVER
+    val TEXT = NlibTheme.TEXT_PRIMARY
+    val TEXT_SECONDARY = NlibTheme.TEXT_SECONDARY
+    val SUCCESS = NlibTheme.SUCCESS
+    val ERROR = NlibTheme.ERROR
+    val WARNING = NlibTheme.WARNING
+    val ENABLED = NlibTheme.ENABLED
+    val DISABLED = NlibTheme.DISABLED
 }
 
 /**

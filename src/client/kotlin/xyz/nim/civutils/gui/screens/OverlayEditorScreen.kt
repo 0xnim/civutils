@@ -5,7 +5,7 @@ import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.text.Text
 import xyz.nim.civutils.core.CivutilsMod
 import xyz.nim.civutils.core.overlay.*
-import xyz.nim.civutils.gui.theme.CivutilsTheme
+import xyz.nim.lib.ui.NlibTheme
 import xyz.nim.civutils.gui.widgets.Colors
 
 /**
@@ -96,14 +96,14 @@ class OverlayEditorScreen : CivutilsScreen(Text.literal("Overlay Editor")) {
 
             if (isSelected) {
                 // Selection outline
-                context.drawBorder(x - 2, y - 2, w + 4, h + 4, CivutilsTheme.ACCENT)
+                context.drawBorder(x - 2, y - 2, w + 4, h + 4, NlibTheme.ACCENT)
                 // Corner handles
                 drawHandle(context, x - 4, y - 4)
                 drawHandle(context, x + w, y - 4)
                 drawHandle(context, x - 4, y + h)
                 drawHandle(context, x + w, y + h)
             } else if (isHovered) {
-                context.drawBorder(x - 1, y - 1, w + 2, h + 2, CivutilsTheme.TEXT_SECONDARY)
+                context.drawBorder(x - 1, y - 1, w + 2, h + 2, NlibTheme.TEXT_SECONDARY)
             }
 
             // Background for overlay area
@@ -116,10 +116,10 @@ class OverlayEditorScreen : CivutilsScreen(Text.literal("Overlay Editor")) {
         // Draw info for selected overlay
         selectedOverlay?.let { overlay ->
             val infoY = 40
-            context.drawText(textRenderer, "§e${overlay.displayName}", width / 2 - 100, infoY, CivutilsTheme.TEXT_PRIMARY, true)
-            context.drawText(textRenderer, "§7Position: ${overlay.position.anchorSection}", width / 2 - 100, infoY + 12, CivutilsTheme.TEXT_PRIMARY, false)
-            context.drawText(textRenderer, "§7Offset: ${overlay.position.offsetX}, ${overlay.position.offsetY}", width / 2 - 100, infoY + 24, CivutilsTheme.TEXT_PRIMARY, false)
-            context.drawText(textRenderer, "§7Size: ${overlay.size.width}x${overlay.size.height}", width / 2 - 100, infoY + 36, CivutilsTheme.TEXT_PRIMARY, false)
+            context.drawText(textRenderer, "§e${overlay.displayName}", width / 2 - 100, infoY, NlibTheme.TEXT_PRIMARY, true)
+            context.drawText(textRenderer, "§7Position: ${overlay.position.anchorSection}", width / 2 - 100, infoY + 12, NlibTheme.TEXT_PRIMARY, false)
+            context.drawText(textRenderer, "§7Offset: ${overlay.position.offsetX}, ${overlay.position.offsetY}", width / 2 - 100, infoY + 24, NlibTheme.TEXT_PRIMARY, false)
+            context.drawText(textRenderer, "§7Size: ${overlay.size.width}x${overlay.size.height}", width / 2 - 100, infoY + 36, NlibTheme.TEXT_PRIMARY, false)
         }
 
         // Instructions
@@ -130,7 +130,7 @@ class OverlayEditorScreen : CivutilsScreen(Text.literal("Overlay Editor")) {
         )
         var iy = layout.margin
         for (line in instructions) {
-            context.drawText(textRenderer, line, width - textRenderer.getWidth(line.replace("§.", "")) - layout.margin, iy, CivutilsTheme.TEXT_PRIMARY, false)
+            context.drawText(textRenderer, line, width - textRenderer.getWidth(line.replace("§.", "")) - layout.margin, iy, NlibTheme.TEXT_PRIMARY, false)
             iy += 12
         }
 
@@ -189,14 +189,14 @@ class OverlayEditorScreen : CivutilsScreen(Text.literal("Overlay Editor")) {
             val anchorY = section.getAnchorY(height)
 
             // Small cross at anchor point
-            context.fill(anchorX - 5, anchorY, anchorX + 6, anchorY + 1, CivutilsTheme.ACCENT)
-            context.fill(anchorX, anchorY - 5, anchorX + 1, anchorY + 6, CivutilsTheme.ACCENT)
+            context.fill(anchorX - 5, anchorY, anchorX + 6, anchorY + 1, NlibTheme.ACCENT)
+            context.fill(anchorX, anchorY - 5, anchorX + 1, anchorY + 6, NlibTheme.ACCENT)
         }
     }
 
     private fun drawHandle(context: DrawContext, x: Int, y: Int) {
-        context.fill(x, y, x + 6, y + 6, CivutilsTheme.ACCENT)
-        context.drawBorder(x, y, 6, 6, CivutilsTheme.TEXT_PRIMARY)
+        context.fill(x, y, x + 6, y + 6, NlibTheme.ACCENT)
+        context.drawBorder(x, y, 6, 6, NlibTheme.TEXT_PRIMARY)
     }
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {

@@ -4,7 +4,11 @@
   "package": "xyz.nim.civutils.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "InGameHudMixin"
+    "InGameHudMixin",
+    "MinecraftClientMixin",
+    "ClientPlayNetworkHandlerMixin",
+    "PlayerEntityRendererMixin",
+    "PlayerListHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

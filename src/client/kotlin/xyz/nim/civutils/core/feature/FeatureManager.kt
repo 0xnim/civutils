@@ -6,7 +6,8 @@ import xyz.nim.civutils.core.CivutilsMod
  * Manages registration and lifecycle of all features.
  */
 class FeatureManager {
-    private val features = mutableMapOf<String, Feature>()
+    @PublishedApi
+    internal val features = mutableMapOf<String, Feature>()
 
     /**
      * Get all registered features.
@@ -17,6 +18,13 @@ class FeatureManager {
      * Get a feature by its ID.
      */
     fun getFeature(id: String): Feature? = features[id]
+
+    /**
+     * Get a feature by its type.
+     */
+    inline fun <reified T : Feature> getFeature(): T? {
+        return features.values.filterIsInstance<T>().firstOrNull()
+    }
 
     /**
      * Get all features in a specific category.

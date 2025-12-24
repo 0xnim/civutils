@@ -11,14 +11,16 @@ import xyz.nim.civutils.core.event.WorldJoinEvent
 import xyz.nim.civutils.core.event.WorldLeaveEvent
 import xyz.nim.civutils.core.keybind.KeybindManager
 import xyz.nim.civutils.features.combat.HealthWarningFeature
+import xyz.nim.civutils.features.players.PlayerTagCommands
+import xyz.nim.civutils.features.players.PlayerTagFeature
 import xyz.nim.civutils.features.utilities.AutoSitFeature
 import xyz.nim.civutils.gui.screens.ConfigScreen
 import xyz.nim.civutils.gui.screens.OverlayEditorScreen
-import xyz.nim.civutils.models.CivLabsModel
+import xyz.nim.civutils.models.ClassModel
 import xyz.nim.civutils.models.PlayerModel
+import xyz.nim.civutils.models.PlayerTagModel
 import xyz.nim.civutils.overlays.BlockCountOverlay
-import xyz.nim.civutils.overlays.CivLabsOverlay
-import xyz.nim.civutils.overlays.CoordinatesOverlay
+import xyz.nim.civutils.overlays.ClassXpOverlay
 
 /**
  * Client-side mod initializer.
@@ -36,6 +38,9 @@ class CivutilsClient : ClientModInitializer {
 
         // Register keybinds
         KeybindManager.register()
+
+        // Register commands
+        registerCommands()
 
         // Register models (must be before features that use them)
         registerModels()
@@ -62,7 +67,8 @@ class CivutilsClient : ClientModInitializer {
     private fun registerModels() {
         CivutilsMod.modelManager.registerModels(
             PlayerModel,
-            CivLabsModel
+            ClassModel,
+            PlayerTagModel
         )
     }
 
@@ -72,8 +78,16 @@ class CivutilsClient : ClientModInitializer {
     private fun registerFeatures() {
         CivutilsMod.featureManager.registerFeatures(
             HealthWarningFeature(),
-            AutoSitFeature()
+            AutoSitFeature(),
+            PlayerTagFeature()
         )
+    }
+
+    /**
+     * Register all commands.
+     */
+    private fun registerCommands() {
+        PlayerTagCommands.register()
     }
 
     /**
@@ -81,9 +95,8 @@ class CivutilsClient : ClientModInitializer {
      */
     private fun registerOverlays() {
         CivutilsMod.overlayManager.registerOverlays(
-            CoordinatesOverlay(),
             BlockCountOverlay(),
-            CivLabsOverlay()
+            ClassXpOverlay()
         )
     }
 

@@ -145,3 +145,23 @@ class ActionBarMessageEvent(
     val message: Text,
     val rawMessage: String
 ) : CancellableEvent()
+
+// ============================================
+// Screen/Container Events
+// ============================================
+
+/**
+ * Fired when a screen is opened.
+ */
+class ScreenOpenEvent(
+    val screen: net.minecraft.client.gui.screen.Screen
+) : CancellableEvent()
+
+/**
+ * Fired when a container screen's contents are updated.
+ */
+class ContainerUpdateEvent(
+    val screenHandler: net.minecraft.screen.ScreenHandler,
+    val slot: Int,
+    val stack: net.minecraft.item.ItemStack
+) : Event()

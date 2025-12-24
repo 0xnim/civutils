@@ -41,6 +41,7 @@ repositories {
     // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
+    mavenLocal()
 }
 
 dependencies {
@@ -51,6 +52,10 @@ dependencies {
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("kotlin_loader_version")}")
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
+
+    // NLib UI library
+    modImplementation("xyz.nim:nlib:0.1.0")
+    include("xyz.nim:nlib:0.1.0")
 
     // Kotlin reflection for config and event systems
     implementation(kotlin("reflect"))
