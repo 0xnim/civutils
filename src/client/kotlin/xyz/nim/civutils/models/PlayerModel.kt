@@ -1,6 +1,6 @@
 package xyz.nim.civutils.models
 
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 import xyz.nim.civutils.core.event.ClientTickEvent
 import xyz.nim.civutils.core.event.Subscribe
 import xyz.nim.civutils.core.model.Model
@@ -22,7 +22,7 @@ import xyz.nim.civutils.core.model.Model
  */
 object PlayerModel : Model() {
 
-    private val mc: MinecraftClient get() = MinecraftClient.getInstance()
+    private val mc: Minecraft get() = Minecraft.getInstance()
 
     // ============================================
     // Health Data
@@ -140,11 +140,11 @@ object PlayerModel : Model() {
         z = player.z
 
         // Update rotation
-        yaw = player.yaw
-        pitch = player.pitch
+        yaw = player.yRot
+        pitch = player.xRot
 
         // Update misc
-        foodLevel = player.hungerManager.foodLevel
+        foodLevel = player.foodData.foodLevel
         experienceLevel = player.experienceLevel
         experienceProgress = player.experienceProgress
     }
