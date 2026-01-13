@@ -1,7 +1,7 @@
 package xyz.nim.civutils.mixin.client;
 
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,14 +12,14 @@ import xyz.nim.civutils.core.event.ActionBarMessageEvent;
 /**
  * Mixin to capture actionbar messages and fire ActionBarMessageEvent.
  */
-@Mixin(InGameHud.class)
+@Mixin(Gui.class)
 public class InGameHudMixin {
 
     /**
      * Inject at the start of setOverlayMessage to capture actionbar text.
      */
-    @Inject(method = "setOverlayMessage(Lnet/minecraft/text/Text;Z)V", at = @At("HEAD"), cancellable = true)
-    private void onSetOverlayMessage(Text message, boolean tinted, CallbackInfo ci) {
+    @Inject(method = "setOverlayMessage(Lnet/minecraft/network/chat/Component;Z)V", at = @At("HEAD"), cancellable = true)
+    private void onSetOverlayMessage(Component message, boolean tinted, CallbackInfo ci) {
         if (message == null) return;
 
         String rawMessage = message.getString();

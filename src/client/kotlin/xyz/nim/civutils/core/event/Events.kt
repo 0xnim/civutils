@@ -1,8 +1,8 @@
 package xyz.nim.civutils.core.event
 
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.text.Text
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.network.chat.Component
+import net.minecraft.world.entity.player.Player
 
 /**
  * Common events used throughout the mod.
@@ -32,7 +32,7 @@ class WorldTickEvent : Event()
  * Use this to render overlays.
  */
 class HudRenderEvent(
-    val drawContext: DrawContext,
+    val guiGraphics: GuiGraphics,
     val tickDelta: Float
 ) : Event()
 
@@ -51,7 +51,7 @@ class WorldRenderEvent(
  * Fired when the player takes damage.
  */
 class PlayerDamageEvent(
-    val player: PlayerEntity,
+    val player: Player,
     val amount: Float,
     val newHealth: Float
 ) : Event()
@@ -60,7 +60,7 @@ class PlayerDamageEvent(
  * Fired when the player's health changes.
  */
 class PlayerHealthChangeEvent(
-    val player: PlayerEntity,
+    val player: Player,
     val oldHealth: Float,
     val newHealth: Float
 ) : CancellableEvent()
@@ -69,7 +69,7 @@ class PlayerHealthChangeEvent(
  * Fired when the player dies.
  */
 class PlayerDeathEvent(
-    val player: PlayerEntity
+    val player: Player
 ) : Event()
 
 // ============================================
@@ -81,7 +81,7 @@ class PlayerDeathEvent(
  * Can be cancelled to prevent display.
  */
 class ChatMessageReceivedEvent(
-    val message: Text,
+    val message: Component,
     val rawMessage: String
 ) : CancellableEvent()
 
@@ -142,7 +142,7 @@ class RenderTickEvent(
  * Can be cancelled to prevent display.
  */
 class ActionBarMessageEvent(
-    val message: Text,
+    val message: Component,
     val rawMessage: String
 ) : CancellableEvent()
 
@@ -154,14 +154,14 @@ class ActionBarMessageEvent(
  * Fired when a screen is opened.
  */
 class ScreenOpenEvent(
-    val screen: net.minecraft.client.gui.screen.Screen
+    val screen: net.minecraft.client.gui.screens.Screen
 ) : CancellableEvent()
 
 /**
  * Fired when a container screen's contents are updated.
  */
 class ContainerUpdateEvent(
-    val screenHandler: net.minecraft.screen.ScreenHandler,
+    val menu: net.minecraft.world.inventory.AbstractContainerMenu,
     val slot: Int,
-    val stack: net.minecraft.item.ItemStack
+    val stack: net.minecraft.world.item.ItemStack
 ) : Event()
