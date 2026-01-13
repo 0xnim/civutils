@@ -44,7 +44,7 @@ class FeatureManager {
         }
 
         features[feature.id] = feature
-        CivutilsMod.configManager.registerOwner("feature.${feature.id}", feature)
+        feature.registerConfigs()
         CivutilsMod.logger.debug("Registered feature: ${feature.id}")
     }
 
@@ -136,7 +136,7 @@ class FeatureManager {
             feature.disable()
         }
         features.remove(feature.id)
-        CivutilsMod.configManager.unregisterOwner("feature.${feature.id}")
+        CivutilsMod.configManager.unregisterOwner(feature.id)
     }
 
     /**

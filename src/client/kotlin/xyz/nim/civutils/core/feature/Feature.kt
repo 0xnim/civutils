@@ -1,8 +1,10 @@
 package xyz.nim.civutils.core.feature
 
 import xyz.nim.civutils.core.CivutilsMod
-import xyz.nim.civutils.core.config.Config
-import xyz.nim.civutils.core.config.Persisted
+import xyz.nim.civutils.core.config.booleanConfig
+import xyz.nim.civutils.core.config.value
+import xyz.nim.lib.config.ConfigOption
+import xyz.nim.lib.config.options.BooleanConfig
 
 /**
  * Categories for organizing features in the config GUI.
@@ -35,8 +37,9 @@ annotation class ConfigCategory(val category: Category)
  * ```
  * @ConfigCategory(Category.COMBAT)
  * class MyFeature : Feature() {
- *     @Persisted
- *     val myConfig = Config(defaultValue = 100)
+ *     val myConfig = intConfig("myConfig", 100, min = 0, max = 200)
+ *
+ *     override fun getConfigs() = listOf(super.getConfigs(), myConfig).flatten()
  *
  *     @Subscribe
  *     fun onTick(event: ClientTickEvent) {
@@ -79,8 +82,17 @@ abstract class Feature {
      * User preference for whether this feature should be enabled.
      * This is persisted to config.
      */
-    @Persisted
-    val userEnabled = Config(defaultValue = true)
+    val userEnabled: BooleanConfig = booleanConfig(
+        name = "userEnabled",
+        default = true,
+        displayName = "Enabled",
+        comment = "Whether this feature is enabled"
+    ).also { config ->
+        config.onValueChanged { newValue ->
+            onConfigUpdate(config)
+            CivutilsMod.configManager.markDirty()
+        }
+    }
 
     /**
      * Whether this feature can be disabled by the user.
@@ -172,13 +184,23 @@ abstract class Feature {
      * Called when any config for this feature changes.
      * Override to respond to config changes.
      */
-    open fun onConfigUpdate(config: Config<*>) {}
+    open fun onConfigUpdate(config: ConfigOption<*>) {}
 
     /**
      * Get all configs for this feature.
+     * Override to include feature-specific configs.
      */
-    fun getConfigs(): List<Config<*>> {
-        return CivutilsMod.configManager.getConfigsForOwner(this)
+    open fun getConfigs(): List<ConfigOption<*>> = listOf(userEnabled)
+
+    /**
+     * Register this feature's configs with the config manager.
+     * Called by FeatureManager after the feature is constructed.
+     */
+    internal fun registerConfigs() {
+        val configs = getConfigs()
+        if (configs.isNotEmpty()) {
+            CivutilsMod.configManager.registerOwner(id, configs)
+        }
     }
 
     override fun toString(): String = "Feature($id, enabled=$enabled)"

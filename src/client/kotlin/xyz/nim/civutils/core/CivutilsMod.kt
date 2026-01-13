@@ -1,9 +1,9 @@
 package xyz.nim.civutils.core
 
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import xyz.nim.civutils.core.config.ConfigManager
+import xyz.nim.civutils.core.config.CivutilsConfigManager
 import xyz.nim.civutils.core.event.EventBus
 import xyz.nim.civutils.core.feature.FeatureManager
 import xyz.nim.civutils.core.model.ModelManager
@@ -18,12 +18,12 @@ object CivutilsMod {
 
     val logger: Logger = LoggerFactory.getLogger(MOD_ID)
 
-    val mc: MinecraftClient get() = MinecraftClient.getInstance()
+    val mc: Minecraft get() = Minecraft.getInstance()
 
     // Core managers
     lateinit var eventBus: EventBus
         private set
-    lateinit var configManager: ConfigManager
+    lateinit var configManager: CivutilsConfigManager
         private set
     lateinit var featureManager: FeatureManager
         private set
@@ -47,7 +47,7 @@ object CivutilsMod {
 
         // Phase 1: Core systems (order matters!)
         eventBus = EventBus()
-        configManager = ConfigManager()
+        configManager = CivutilsConfigManager()
         modelManager = ModelManager()
 
         // Phase 2: Feature and overlay systems (depend on core)
@@ -76,5 +76,5 @@ object CivutilsMod {
     /**
      * Check if we're currently in a world/server.
      */
-    fun isInGame(): Boolean = mc.world != null && mc.player != null
+    fun isInGame(): Boolean = mc.level != null && mc.player != null
 }
