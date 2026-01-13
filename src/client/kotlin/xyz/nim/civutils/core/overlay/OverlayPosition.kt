@@ -1,7 +1,5 @@
 package xyz.nim.civutils.core.overlay
 
-import net.minecraft.client.MinecraftClient
-
 /**
  * Horizontal alignment options.
  */

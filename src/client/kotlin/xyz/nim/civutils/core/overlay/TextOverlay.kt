@@ -1,9 +1,15 @@
 package xyz.nim.civutils.core.overlay
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.DrawContext
-import xyz.nim.civutils.core.config.Config
-import xyz.nim.civutils.core.config.Persisted
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
+import xyz.nim.civutils.core.CivutilsMod
+import xyz.nim.civutils.core.config.colorConfig
+import xyz.nim.civutils.core.config.enumConfig
+import xyz.nim.civutils.core.config.onChange
+import xyz.nim.civutils.core.config.value
+import xyz.nim.lib.config.ConfigOption
+import xyz.nim.lib.config.options.ColorConfig
+import xyz.nim.lib.config.options.OptionListConfig
 
 /**
  * Text shadow/outline style options.
@@ -41,19 +47,35 @@ abstract class TextOverlay(
     size: OverlaySize
 ) : Overlay(position, size) {
 
-    protected val mc: MinecraftClient get() = MinecraftClient.getInstance()
+    protected val mc: Minecraft get() = Minecraft.getInstance()
 
     /**
      * Text shadow style.
      */
-    @Persisted
-    val textShadow = Config(defaultValue = TextShadow.SHADOW)
+    val textShadow: OptionListConfig<TextShadow> = enumConfig(
+        name = "textShadow",
+        default = TextShadow.SHADOW,
+        displayName = "Text Shadow",
+        comment = "Text shadow style"
+    ).onChange { onConfigUpdate(textShadow) }
 
     /**
      * Text color (ARGB format). Use -1 for white.
      */
-    @Persisted
-    val textColor = Config(defaultValue = 0xFFFFFFFF.toInt())
+    val textColor: ColorConfig = colorConfig(
+        name = "textColor",
+        default = 0xFFFFFFFF.toInt(),
+        includeAlpha = true,
+        displayName = "Text Color",
+        comment = "Text color"
+    ).onChange { onConfigUpdate(textColor) }
+
+    /**
+     * Get configs including base overlay configs.
+     */
+    override fun getConfigs(): List<ConfigOption<*>> = listOf(
+        enabled, textShadow, textColor
+    )
 
     /**
      * Cached rendered lines from the template.
@@ -73,6 +95,10 @@ abstract class TextOverlay(
      * Override to provide sample data.
      */
     protected open fun getPreviewTemplate(): String = getTemplate()
+
+    override fun onConfigUpdate(config: ConfigOption<*>) {
+        CivutilsMod.configManager.markDirty()
+    }
 
     /**
      * Update the cached text. Called every tick.
@@ -96,33 +122,33 @@ abstract class TextOverlay(
         return cachedLines.isNotEmpty()
     }
 
-    override fun render(context: DrawContext, tickDelta: Float) {
+    override fun render(guiGraphics: GuiGraphics, tickDelta: Float) {
         if (cachedLines.isEmpty()) return
 
-        val textRenderer = mc.textRenderer
+        val font = mc.font
         val x = getRenderX()
         var y = getRenderY()
 
-        val lineHeight = textRenderer.fontHeight + 1
+        val lineHeight = font.lineHeight + 1
 
         for (line in cachedLines) {
-            drawText(context, line, x, y)
+            drawText(guiGraphics, line, x, y)
             y += lineHeight
         }
     }
 
-    override fun renderPreview(context: DrawContext, tickDelta: Float) {
+    override fun renderPreview(guiGraphics: GuiGraphics, tickDelta: Float) {
         val previewLines = getPreviewTemplate().split("\n")
         if (previewLines.isEmpty()) return
 
-        val textRenderer = mc.textRenderer
+        val font = mc.font
         val x = getRenderX()
         var y = getRenderY()
 
-        val lineHeight = textRenderer.fontHeight + 1
+        val lineHeight = font.lineHeight + 1
 
         for (line in previewLines) {
-            drawText(context, line, x, y)
+            drawText(guiGraphics, line, x, y)
             y += lineHeight
         }
     }
@@ -130,26 +156,26 @@ abstract class TextOverlay(
     /**
      * Draw a single line of text with the configured shadow style.
      */
-    private fun drawText(context: DrawContext, text: String, x: Int, y: Int) {
-        val textRenderer = mc.textRenderer
+    private fun drawText(guiGraphics: GuiGraphics, text: String, x: Int, y: Int) {
+        val font = mc.font
         val color = textColor.value
 
         when (textShadow.value) {
             TextShadow.NONE -> {
-                context.drawText(textRenderer, text, x, y, color, false)
+                guiGraphics.drawString(font, text, x, y, color, false)
             }
             TextShadow.SHADOW -> {
-                context.drawText(textRenderer, text, x, y, color, true)
+                guiGraphics.drawString(font, text, x, y, color, true)
             }
             TextShadow.OUTLINE -> {
                 // Draw outline by rendering text in 4 directions
                 val shadowColor = 0xFF000000.toInt()
-                context.drawText(textRenderer, text, x - 1, y, shadowColor, false)
-                context.drawText(textRenderer, text, x + 1, y, shadowColor, false)
-                context.drawText(textRenderer, text, x, y - 1, shadowColor, false)
-                context.drawText(textRenderer, text, x, y + 1, shadowColor, false)
+                guiGraphics.drawString(font, text, x - 1, y, shadowColor, false)
+                guiGraphics.drawString(font, text, x + 1, y, shadowColor, false)
+                guiGraphics.drawString(font, text, x, y - 1, shadowColor, false)
+                guiGraphics.drawString(font, text, x, y + 1, shadowColor, false)
                 // Draw main text on top
-                context.drawText(textRenderer, text, x, y, color, false)
+                guiGraphics.drawString(font, text, x, y, color, false)
             }
         }
     }
@@ -158,7 +184,7 @@ abstract class TextOverlay(
      * Calculate the width of the template text.
      */
     protected fun getTextWidth(text: String): Int {
-        return mc.textRenderer.getWidth(text)
+        return mc.font.width(text)
     }
 
     /**
@@ -166,6 +192,6 @@ abstract class TextOverlay(
      */
     protected fun getTextHeight(): Int {
         val lineCount = cachedLines.size.coerceAtLeast(1)
-        return (mc.textRenderer.fontHeight + 1) * lineCount
+        return (mc.font.lineHeight + 1) * lineCount
     }
 }

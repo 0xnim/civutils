@@ -1,10 +1,12 @@
 package xyz.nim.civutils.core.overlay
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
 import xyz.nim.civutils.core.CivutilsMod
-import xyz.nim.civutils.core.config.Config
-import xyz.nim.civutils.core.config.Persisted
+import xyz.nim.civutils.core.config.booleanConfig
+import xyz.nim.civutils.core.config.value
+import xyz.nim.lib.config.ConfigOption
+import xyz.nim.lib.config.options.BooleanConfig
 
 /**
  * Base class for all HUD overlays.
@@ -18,6 +20,10 @@ import xyz.nim.civutils.core.config.Persisted
  *     position = OverlayPosition.topLeft(),
  *     size = OverlaySize(100, 20)
  * ) {
+ *     val myConfig = intConfig("myConfig", 100, min = 0, max = 200)
+ *
+ *     override fun getConfigs() = listOf(super.getConfigs(), myConfig).flatten()
+ *
  *     override fun render(context: DrawContext, tickDelta: Float) {
  *         // render your overlay
  *     }
@@ -48,8 +54,17 @@ abstract class Overlay(
     /**
      * Whether this overlay is currently enabled.
      */
-    @Persisted
-    val enabled = Config(defaultValue = true)
+    val enabled: BooleanConfig = booleanConfig(
+        name = "enabled",
+        default = true,
+        displayName = "Enabled",
+        comment = "Whether this overlay is shown"
+    ).also { config ->
+        config.onValueChanged { newValue ->
+            onConfigUpdate(config)
+            CivutilsMod.configManager.markDirty()
+        }
+    }
 
     /**
      * Whether this overlay should render.
@@ -70,40 +85,40 @@ abstract class Overlay(
     /**
      * Render this overlay.
      *
-     * @param context The draw context for rendering
+     * @param guiGraphics The graphics context for rendering
      * @param tickDelta Partial tick for smooth animations
      */
-    abstract fun render(context: DrawContext, tickDelta: Float)
+    abstract fun render(guiGraphics: GuiGraphics, tickDelta: Float)
 
     /**
      * Render a preview of this overlay (for config GUI).
      * By default, calls render().
      */
-    open fun renderPreview(context: DrawContext, tickDelta: Float) {
-        render(context, tickDelta)
+    open fun renderPreview(guiGraphics: GuiGraphics, tickDelta: Float) {
+        render(guiGraphics, tickDelta)
     }
 
     /**
      * Called when a config for this overlay changes.
      */
-    open fun onConfigUpdate(config: Config<*>) {}
+    open fun onConfigUpdate(config: ConfigOption<*>) {}
 
     /**
      * Get the actual X position to render at.
      */
     fun getRenderX(): Int {
-        val mc = MinecraftClient.getInstance()
+        val mc = Minecraft.getInstance()
         val window = mc.window
-        return position.getRenderX(window.scaledWidth, size.width)
+        return position.getRenderX(window.guiScaledWidth, size.width)
     }
 
     /**
      * Get the actual Y position to render at.
      */
     fun getRenderY(): Int {
-        val mc = MinecraftClient.getInstance()
+        val mc = Minecraft.getInstance()
         val window = mc.window
-        return position.getRenderY(window.scaledHeight, size.height)
+        return position.getRenderY(window.guiScaledHeight, size.height)
     }
 
     /**
@@ -119,9 +134,19 @@ abstract class Overlay(
 
     /**
      * Get all configs for this overlay.
+     * Override to include overlay-specific configs.
      */
-    fun getConfigs(): List<Config<*>> {
-        return CivutilsMod.configManager.getConfigsForOwner(this)
+    open fun getConfigs(): List<ConfigOption<*>> = listOf(enabled)
+
+    /**
+     * Register this overlay's configs with the config manager.
+     * Called by OverlayManager after the overlay is constructed.
+     */
+    internal fun registerConfigs() {
+        val configs = getConfigs()
+        if (configs.isNotEmpty()) {
+            CivutilsMod.configManager.registerOwner(id, configs)
+        }
     }
 
     override fun toString(): String = "Overlay($id, enabled=${enabled.value})"

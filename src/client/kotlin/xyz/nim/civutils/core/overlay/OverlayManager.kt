@@ -1,6 +1,6 @@
 package xyz.nim.civutils.core.overlay
 
-import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.GuiGraphics
 import xyz.nim.civutils.core.CivutilsMod
 import xyz.nim.civutils.core.event.ClientTickEvent
 import xyz.nim.civutils.core.event.HudRenderEvent
@@ -37,7 +37,7 @@ class OverlayManager {
         }
 
         overlays[overlay.id] = overlay
-        CivutilsMod.configManager.registerOwner("overlay.${overlay.id}", overlay)
+        overlay.registerConfigs()
         CivutilsMod.logger.debug("Registered overlay: ${overlay.id}")
     }
 
@@ -55,7 +55,7 @@ class OverlayManager {
      */
     fun unregisterOverlay(overlay: Overlay) {
         overlays.remove(overlay.id)
-        CivutilsMod.configManager.unregisterOwner("overlay.${overlay.id}")
+        CivutilsMod.configManager.unregisterOwner(overlay.id)
     }
 
     /**
@@ -84,7 +84,7 @@ class OverlayManager {
         for (overlay in overlays.values) {
             if (overlay.shouldRender()) {
                 try {
-                    overlay.render(event.drawContext, event.tickDelta)
+                    overlay.render(event.guiGraphics, event.tickDelta)
                 } catch (e: Exception) {
                     CivutilsMod.logger.error("Error rendering overlay ${overlay.id}", e)
                 }
@@ -95,10 +95,10 @@ class OverlayManager {
     /**
      * Render overlay previews (for config GUI).
      */
-    fun renderPreviews(context: DrawContext, tickDelta: Float) {
+    fun renderPreviews(guiGraphics: GuiGraphics, tickDelta: Float) {
         for (overlay in overlays.values) {
             try {
-                overlay.renderPreview(context, tickDelta)
+                overlay.renderPreview(guiGraphics, tickDelta)
             } catch (e: Exception) {
                 CivutilsMod.logger.error("Error rendering overlay preview ${overlay.id}", e)
             }
