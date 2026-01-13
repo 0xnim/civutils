@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiGraphics
 import xyz.nim.civutils.core.CivutilsMod
 import xyz.nim.civutils.core.config.booleanConfig
 import xyz.nim.civutils.core.config.value
+import xyz.nim.civutils.models.ServerFeaturesModel
 import xyz.nim.lib.config.ConfigOption
 import xyz.nim.lib.config.options.BooleanConfig
 
@@ -50,6 +51,27 @@ abstract class Overlay(
      * Display name for the config GUI.
      */
     open val displayName: String get() = id.replace(Regex("([A-Z])"), " $1").trim()
+
+    /**
+     * Server feature required for this overlay to function.
+     * If set, the overlay will check ServerFeaturesModel to determine availability.
+     * Examples: "combat", "bedHealing", "classes"
+     */
+    open val requiredFeature: String? = null
+
+    /**
+     * Check if this overlay is available on the current server.
+     * Returns true if:
+     * - No required feature is set (always available)
+     * - Handshake hasn't been received yet (assume available)
+     * - Required feature is enabled on the server
+     */
+    fun isAvailableOnServer(): Boolean {
+        val feature = requiredFeature ?: return true
+        // If no handshake yet, assume available (will update when handshake received)
+        if (!ServerFeaturesModel.handshakeReceived) return true
+        return ServerFeaturesModel.isFeatureEnabled(feature)
+    }
 
     /**
      * Whether this overlay is currently enabled.

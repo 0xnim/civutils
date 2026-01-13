@@ -50,6 +50,7 @@ class ClassXpOverlay : Overlay(
     size = OverlaySize(width = 160, height = 60)
 ) {
     override val displayName = "Class XP"
+    override val requiredFeature = "classes"
 
     private val mc: Minecraft get() = Minecraft.getInstance()
 

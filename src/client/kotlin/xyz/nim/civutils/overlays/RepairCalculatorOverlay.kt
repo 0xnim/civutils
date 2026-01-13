@@ -105,6 +105,7 @@ class RepairCalculatorOverlay : Overlay(
     /**
      * Get the effective blacksmith level.
      * Uses override if set, otherwise tries to get from ClassModel.
+     * Returns 0 if no blacksmith data is available.
      */
     private fun getBlacksmithLevel(): Int {
         if (blacksmithLevelOverride.value > 0) {
@@ -113,7 +114,7 @@ class RepairCalculatorOverlay : Overlay(
 
         // Try to get from ClassModel
         val blacksmithInfo = ClassModel.getClass("Blacksmith")
-        return blacksmithInfo?.calculatedLevel?.coerceAtLeast(1) ?: 1
+        return blacksmithInfo?.calculatedLevel ?: 0
     }
 
     /**
@@ -127,6 +128,7 @@ class RepairCalculatorOverlay : Overlay(
 
     /**
      * Calculate full repair info for an item.
+     * Returns null if blacksmith level is 0 (repairs require level 1+).
      */
     private fun calculateRepairInfo(stack: ItemStack): RepairInfo? {
         if (stack.isEmpty) return null
@@ -136,8 +138,11 @@ class RepairCalculatorOverlay : Overlay(
         val currentDamage = stack.damageValue
         if (currentDamage <= 0) return null
 
-        val currentDurability = maxDurability - currentDamage
         val blacksmithLevel = getBlacksmithLevel()
+        // Repairs require Blacksmith level 1+
+        if (blacksmithLevel < 1) return null
+
+        val currentDurability = maxDurability - currentDamage
         val repairPerAction = getRepairPerAction(blacksmithLevel)
 
         // Calculate number of repairs needed

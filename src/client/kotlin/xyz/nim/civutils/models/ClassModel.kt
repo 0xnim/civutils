@@ -4,10 +4,12 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.core.component.DataComponents
 import xyz.nim.civutils.core.CivutilsMod
 import xyz.nim.civutils.core.event.ActionBarMessageEvent
+import xyz.nim.civutils.core.event.ClassXpChannelEvent
 import xyz.nim.civutils.core.event.ContainerUpdateEvent
 import xyz.nim.civutils.core.event.ScreenOpenEvent
 import xyz.nim.civutils.core.event.Subscribe
 import xyz.nim.civutils.core.model.Model
+import xyz.nim.civutils.core.network.ClassChannelData
 import java.util.concurrent.ConcurrentLinkedDeque
 import kotlin.math.floor
 import kotlin.math.pow
@@ -337,13 +339,33 @@ object ClassModel : Model() {
     // Regex pattern for actionbar: "42201.0 (+13.0) Guardsman"
     private val actionBarPattern = Regex("""^([\d.]+)\s+\(([+-][\d.]+)\)\s+(.+)$""")
 
-    // Known class names to look for
-    private val knownClasses = setOf(
+    // Default class names (used when server doesn't provide via handshake)
+    private val defaultClasses = setOf(
         "Farmer", "Builder", "Miner", "Healer",
         "Librarian", "Guardsman", "Blacksmith"
     )
 
+    /**
+     * Get known class names.
+     * Prefers server-defined classes from handshake, falls back to defaults.
+     */
+    fun getKnownClasses(): Set<String> {
+        val serverClasses = ServerFeaturesModel.getAvailableClasses()
+        return if (serverClasses.isNotEmpty()) serverClasses.toSet() else defaultClasses
+    }
+
     private var isInClassMenu = false
+
+    /** Data source for class information */
+    enum class DataSource {
+        NONE,       // No data yet
+        PARSED,     // Parsed from actionbar/container
+        CHANNEL     // Received via plugin channel
+    }
+
+    /** Current data source */
+    var dataSource: DataSource = DataSource.NONE
+        private set
 
     override fun reset() {
         // Reset session data for all existing classes before clearing
@@ -355,6 +377,7 @@ object ClassModel : Model() {
         lastUpdateTime = 0
         isInClassMenu = false
         sessionStartTime = 0
+        dataSource = DataSource.NONE
     }
 
     /**
@@ -406,6 +429,10 @@ object ClassModel : Model() {
 
             hasData = true
             lastUpdateTime = System.currentTimeMillis()
+            // Only set to PARSED if we don't have channel data
+            if (dataSource != DataSource.CHANNEL) {
+                dataSource = DataSource.PARSED
+            }
 
             CivutilsMod.logger.debug("ClassModel: $className total=$totalXp change=$change currentXp=${classInfo.currentXp}")
         } catch (e: NumberFormatException) {
@@ -451,7 +478,7 @@ object ClassModel : Model() {
         }
 
         // Only process known classes
-        if (!knownClasses.contains(displayName)) return
+        if (!getKnownClasses().contains(displayName)) return
 
         val lore = stack.get(DataComponents.LORE) ?: return
         val itemType = stack.item.toString()
@@ -498,6 +525,88 @@ object ClassModel : Model() {
             "ClassModel: ${classInfo.name} - ${classInfo.levelName}(${classInfo.level}) " +
             "${classInfo.currentXp}/${classInfo.xpForLevel}xp (${classInfo.xpPercent}%)"
         )
+    }
+
+    /**
+     * Handle class XP data received via plugin channel.
+     * This is the preferred data source when available.
+     */
+    @Subscribe
+    fun onClassXpChannel(event: ClassXpChannelEvent) {
+        CivutilsMod.logger.debug("ClassModel: Received channel event type=${event.type}")
+
+        when (event.type) {
+            "full" -> handleFullChannelData(event)
+            "partial" -> handlePartialChannelData(event)
+            "levelup", "leveldown" -> handleLevelChangeChannel(event)
+        }
+
+        // Update current class if provided
+        event.currentClass?.let { currentClassName = it }
+
+        hasData = true
+        lastUpdateTime = System.currentTimeMillis()
+        dataSource = DataSource.CHANNEL
+    }
+
+    /**
+     * Handle full class data from channel.
+     */
+    private fun handleFullChannelData(event: ClassXpChannelEvent) {
+        val channelClasses = event.classes ?: return
+
+        // Clear existing and populate from channel data
+        classes.clear()
+
+        channelClasses.forEach { (name, data) ->
+            val classInfo = ClassInfo(name = name).apply {
+                data.level?.let { level = it }
+                data.levelName?.let { levelName = it }
+                totalXp = data.totalXp
+                data.currentXp?.let { currentXp = it }
+                data.xpForLevel?.let { xpForLevel = it }
+            }
+            classes[name] = classInfo
+        }
+
+        CivutilsMod.logger.info("ClassModel: Full channel data - ${classes.size} classes")
+    }
+
+    /**
+     * Handle partial class update from channel.
+     */
+    private fun handlePartialChannelData(event: ClassXpChannelEvent) {
+        val className = event.singleClass ?: return
+        val data = event.classes?.get(className) ?: return
+
+        val classInfo = classes.getOrPut(className) { ClassInfo(name = className) }
+        classInfo.totalXp = data.totalXp
+        data.change?.let {
+            classInfo.lastChange = it
+            classInfo.recordXpEvent(it, data.totalXp)
+        }
+
+        // Record session start time on first XP event
+        if (sessionStartTime == 0L) {
+            sessionStartTime = System.currentTimeMillis()
+        }
+
+        CivutilsMod.logger.debug("ClassModel: Partial channel data - $className totalXp=${data.totalXp} change=${data.change}")
+    }
+
+    /**
+     * Handle level change from channel.
+     */
+    private fun handleLevelChangeChannel(event: ClassXpChannelEvent) {
+        val className = event.singleClass ?: return
+        val data = event.classes?.get(className) ?: return
+
+        val classInfo = classes.getOrPut(className) { ClassInfo(name = className) }
+        data.level?.let { classInfo.level = it }
+        data.levelName?.let { classInfo.levelName = it }
+        classInfo.totalXp = data.totalXp
+
+        CivutilsMod.logger.info("ClassModel: Level change - $className is now level ${classInfo.level} (${classInfo.levelName})")
     }
 
     fun getClass(name: String): ClassInfo? = classes[name]

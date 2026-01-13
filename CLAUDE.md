@@ -43,6 +43,7 @@ The mod follows a manager-based architecture inspired by Wynntils:
 - Override `render(GuiGraphics, Float)` for HUD rendering
 - Uses anchor-based positioning (screen divided into 3x3 grid)
 - Override `getConfigs()` to include overlay-specific settings
+- For text overlays, extend `TextOverlay` and override `getTemplate()` / `getPreviewTemplate()` instead
 
 **Model** (`core/model/Model.kt`):
 - Singleton objects extending `Model` for tracking game state
@@ -54,6 +55,12 @@ The mod follows a manager-based architecture inspired by Wynntils:
 - Helper functions: `booleanConfig()`, `intConfig()`, `floatConfig()`, `stringConfig()`, `colorConfig()`, `enumConfig()`
 - Access values with `.value` property extension
 - Configs auto-persist via `CivutilsConfigManager`
+- Use `.onChange { }` extension for config change callbacks
+
+**Events** (`core/event/Events.kt`):
+- All events defined in `Events.kt`, extend `Event()` or `CancellableEvent()`
+- Subscribe with `@Subscribe` annotation on methods
+- Common events: `ClientTickEvent`, `HudRenderEvent`, `WorldJoinEvent`, `WorldLeaveEvent`, `ChatMessageReceivedEvent`, `ActionBarMessageEvent`
 
 ### Registration Flow
 
@@ -81,7 +88,7 @@ In `CivutilsClient.onInitializeClient()`:
 
 ### Mixins
 
-Client mixins are in `xyz.nim.civutils.mixin.client` and configured in `civutils.client.mixins.json`. Mixins fire events through the EventBus for features to consume.
+Client mixins are in `xyz.nim.civutils.mixin.client` (Java) and configured in `civutils.client.mixins.json`. Mixins fire events through `CivutilsMod.INSTANCE.getEventBus().post(event)` for features to consume. Cancellable events use `ci.cancel()` when `event.getCancelled()` is true.
 
 ## Key Conventions
 

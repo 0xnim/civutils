@@ -8,7 +8,8 @@
     "MinecraftClientMixin",
     "ClientPlayNetworkHandlerMixin",
     "PlayerEntityRendererMixin",
-    "PlayerListHudMixin"
+    "PlayerListHudMixin",
+    "BossBarMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -12,16 +12,21 @@ import xyz.nim.civutils.core.event.HudRenderEvent
 import xyz.nim.civutils.core.event.WorldJoinEvent
 import xyz.nim.civutils.core.event.WorldLeaveEvent
 import xyz.nim.civutils.core.keybind.KeybindManager
+import xyz.nim.civutils.core.network.CivChannelManager
 import xyz.nim.civutils.features.players.PlayerTagCommands
 import xyz.nim.civutils.features.utilities.AutoSitFeature
 import xyz.nim.civutils.gui.screens.ConfigScreen
 import xyz.nim.civutils.gui.screens.OverlayEditorScreen
 import xyz.nim.civutils.gui.screens.QuickTagScreen
+import xyz.nim.civutils.models.BossBarModel
 import xyz.nim.civutils.models.ClassModel
 import xyz.nim.civutils.models.PlayerModel
 import xyz.nim.civutils.models.PlayerTagModel
+import xyz.nim.civutils.models.ServerFeaturesModel
+import xyz.nim.civutils.overlays.BedHealingOverlay
 import xyz.nim.civutils.overlays.BlockCountOverlay
 import xyz.nim.civutils.overlays.ClassXpOverlay
+import xyz.nim.civutils.overlays.CombatTimerOverlay
 import xyz.nim.civutils.overlays.RepairCalculatorOverlay
 
 /**
@@ -37,6 +42,9 @@ class CivutilsClient : ClientModInitializer {
 
         // Initialize core systems
         CivutilsMod.initialize()
+
+        // Initialize plugin channels (must be early, before world join)
+        CivChannelManager.initialize()
 
         // Register keybinds
         KeybindManager.register()
@@ -70,7 +78,9 @@ class CivutilsClient : ClientModInitializer {
         CivutilsMod.modelManager.registerModels(
             PlayerModel,
             ClassModel,
-            PlayerTagModel
+            PlayerTagModel,
+            BossBarModel,
+            ServerFeaturesModel
         )
     }
 
@@ -98,7 +108,9 @@ class CivutilsClient : ClientModInitializer {
         CivutilsMod.overlayManager.registerOverlays(
             BlockCountOverlay(),
             ClassXpOverlay(),
-            RepairCalculatorOverlay()
+            RepairCalculatorOverlay(),
+            CombatTimerOverlay(),
+            BedHealingOverlay()
         )
     }
 

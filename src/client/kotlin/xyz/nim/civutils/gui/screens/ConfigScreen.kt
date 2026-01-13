@@ -159,6 +159,22 @@ class ConfigScreen : CivutilsScreen(Component.literal("CivUtils Configuration"))
             }
             Tab.OVERLAYS -> {
                 selectedOverlay?.let { overlay ->
+                    val isAvailable = overlay.isAvailableOnServer()
+
+                    // Show unavailability notice if feature not available on server
+                    if (!isAvailable) {
+                        // We'll draw the notice text in renderOverlays instead
+                        // Just add a disabled toggle for visual consistency
+                        val toggle = ToggleButton(
+                            rightPanelX + 10, y, widgetWidth, 20,
+                            overlay.enabled, "Enabled"
+                        )
+                        toggle.active = false  // Disable the toggle
+                        addRenderableWidget(toggle)
+                        configWidgets.add(toggle)
+                        return
+                    }
+
                     // Enable/Disable toggle
                     val toggle = ToggleButton(
                         rightPanelX + 10, y, widgetWidth, 20,
@@ -258,6 +274,40 @@ class ConfigScreen : CivutilsScreen(Component.literal("CivUtils Configuration"))
         }
         guiGraphics.drawString(font, rightTitle, rightPanelX + 8, contentY + 6, NlibTheme.TEXT_PRIMARY, true)
 
+        // Show unavailability notice for overlays
+        if (currentTab == Tab.OVERLAYS) {
+            selectedOverlay?.let { overlay ->
+                if (!overlay.isAvailableOnServer()) {
+                    val noticeY = contentY + 24 + 30  // Below the disabled toggle
+                    guiGraphics.drawString(
+                        font,
+                        "§cThis overlay requires a server feature",
+                        rightPanelX + 10,
+                        noticeY,
+                        0xFFAAAAAA.toInt(),
+                        false
+                    )
+                    guiGraphics.drawString(
+                        font,
+                        "§cthat is not available on this server.",
+                        rightPanelX + 10,
+                        noticeY + font.lineHeight + 2,
+                        0xFFAAAAAA.toInt(),
+                        false
+                    )
+                    val featureName = overlay.requiredFeature ?: "unknown"
+                    guiGraphics.drawString(
+                        font,
+                        "§7Required feature: §f$featureName",
+                        rightPanelX + 10,
+                        noticeY + (font.lineHeight + 2) * 2 + 4,
+                        0xFFAAAAAA.toInt(),
+                        false
+                    )
+                }
+            }
+        }
+
         // Render color picker popups on top of everything
         for (widget in configWidgets) {
             if (widget is ColorInput) {
@@ -335,13 +385,29 @@ class ConfigScreen : CivutilsScreen(Component.literal("CivUtils Configuration"))
             val selected = (overlayList?.selected === this)
             renderBackground(guiGraphics, x, y, entryWidth, entryHeight, hovered, selected)
 
-            val statusColor = if (overlay.enabled.value) Colors.ENABLED else Colors.DISABLED
+            val isAvailable = overlay.isAvailableOnServer()
+
+            // Status indicator: green=enabled, red=disabled, grey=unavailable
+            val statusColor = when {
+                !isAvailable -> 0xFF666666.toInt()  // Grey for unavailable
+                overlay.enabled.value -> Colors.ENABLED
+                else -> Colors.DISABLED
+            }
             guiGraphics.fill(x + 4, y + 4, x + 8, y + entryHeight - 4, statusColor)
 
             val font = minecraft?.font ?: return
-            guiGraphics.drawString(font, overlay.displayName, x + 14, y + 6, Colors.TEXT, true)
-            val posText = "§7${overlay.position.anchorSection.name.lowercase().replace("_", " ")}"
-            guiGraphics.drawString(font, posText, x + 14, y + 18, Colors.TEXT_SECONDARY, false)
+
+            // Text color: dimmed when unavailable
+            val nameColor = if (isAvailable) Colors.TEXT else 0xFF888888.toInt()
+            guiGraphics.drawString(font, overlay.displayName, x + 14, y + 6, nameColor, true)
+
+            // Secondary text: show unavailability or position
+            val secondaryText = if (!isAvailable) {
+                "§8Not available on this server"
+            } else {
+                "§7${overlay.position.anchorSection.name.lowercase().replace("_", " ")}"
+            }
+            guiGraphics.drawString(font, secondaryText, x + 14, y + 18, Colors.TEXT_SECONDARY, false)
         }
     }
 }

@@ -147,6 +147,28 @@ class ActionBarMessageEvent(
 ) : CancellableEvent()
 
 // ============================================
+// BossBar Events
+// ============================================
+
+/**
+ * Fired when a BossBar is added, updated, or removed.
+ */
+class BossBarEvent(
+    val uuid: java.util.UUID,
+    val name: String,
+    val progress: Float,
+    val color: net.minecraft.world.BossEvent.BossBarColor,
+    val overlay: net.minecraft.world.BossEvent.BossBarOverlay,
+    val action: BossBarAction
+) : Event()
+
+enum class BossBarAction {
+    ADD,
+    UPDATE,
+    REMOVE
+}
+
+// ============================================
 // Screen/Container Events
 // ============================================
 
@@ -164,4 +186,33 @@ class ContainerUpdateEvent(
     val menu: net.minecraft.world.inventory.AbstractContainerMenu,
     val slot: Int,
     val stack: net.minecraft.world.item.ItemStack
+) : Event()
+
+// ============================================
+// Plugin Channel Events
+// ============================================
+
+/**
+ * Fired when a handshake response is received from the server.
+ * Contains server capabilities and feature configuration.
+ */
+class CivHandshakeEvent(
+    val serverName: String,
+    val serverVersion: String,
+    val supportedChannels: List<String>,
+    val features: Map<String, xyz.nim.civutils.models.ServerFeature>
+) : Event()
+
+/**
+ * Fired when class XP data is received via plugin channel.
+ */
+class ClassXpChannelEvent(
+    /** Message type: "full", "partial", "levelup", "leveldown" */
+    val type: String,
+    /** Class data (all classes for "full", single class for others) */
+    val classes: Map<String, xyz.nim.civutils.core.network.ClassChannelData>?,
+    /** The single class being updated (for partial/levelup/leveldown) */
+    val singleClass: String?,
+    /** Currently active class (may be null) */
+    val currentClass: String?
 ) : Event()
