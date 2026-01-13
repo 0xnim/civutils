@@ -1,9 +1,9 @@
 package xyz.nim.civutils.utils
 
-import net.minecraft.text.MutableText
-import net.minecraft.text.Style
-import net.minecraft.text.Text
-import net.minecraft.util.Formatting
+import net.minecraft.ChatFormatting
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.Style
 import xyz.nim.civutils.data.playertag.AttributeStyle
 import xyz.nim.civutils.data.playertag.TaggedPlayer
 import xyz.nim.civutils.features.players.PlayerTagFeature
@@ -18,8 +18,9 @@ object PlayerTagStyler {
      * Apply styling to a player's name text based on their tagged attributes.
      * Returns the original text if the player isn't tagged or styling is disabled.
      */
-    fun applyStyle(original: Text, playerName: String): Text {
+    fun applyStyle(original: Component, playerName: String): Component {
         val feature = PlayerTagFeature.getInstance() ?: return original
+        if (!feature.enabled) return original
         if (!feature.enableNameTags.value) return original
 
         val player = PlayerTagModel.getPlayerByName(playerName) ?: return original
@@ -29,7 +30,7 @@ object PlayerTagStyler {
     /**
      * Apply styling to text based on a tagged player's attributes.
      */
-    fun applyStyleToText(original: Text, player: TaggedPlayer): Text {
+    fun applyStyleToText(original: Component, player: TaggedPlayer): Component {
         val styles = getPlayerStyles(player)
         if (styles.isEmpty()) return original
 
@@ -40,15 +41,15 @@ object PlayerTagStyler {
         val primaryStyle = styles.maxByOrNull { it.first }?.second ?: return original
 
         // Create styled text
-        val result = Text.empty()
+        val result = Component.empty()
 
         // Add prefix if present
         if (prefix.isNotEmpty()) {
-            result.append(Text.literal(prefix).styled { applyAttributeStyle(it, primaryStyle) })
+            (result as MutableComponent).append(Component.literal(prefix).withStyle { applyAttributeStyle(it, primaryStyle) })
         }
 
         // Add the original name with styling
-        result.append(Text.literal(original.string).styled { applyAttributeStyle(it, primaryStyle) })
+        (result as MutableComponent).append(Component.literal(original.string).withStyle { applyAttributeStyle(it, primaryStyle) })
 
         return result
     }
@@ -103,7 +104,7 @@ object PlayerTagStyler {
 
         if (attrStyle.bold) result = result.withBold(true)
         if (attrStyle.italic) result = result.withItalic(true)
-        if (attrStyle.underline) result = result.withUnderline(true)
+        if (attrStyle.underline) result = result.withUnderlined(true)
         if (attrStyle.strikethrough) result = result.withStrikethrough(true)
 
         return result
@@ -121,6 +122,7 @@ object PlayerTagStyler {
      */
     fun getPrefix(playerName: String): String {
         val feature = PlayerTagFeature.getInstance() ?: return ""
+        if (!feature.enabled) return ""
         if (!feature.enableIconsAboveHead.value) return ""
 
         val player = PlayerTagModel.getPlayerByName(playerName) ?: return ""
@@ -134,5 +136,31 @@ object PlayerTagStyler {
         val player = PlayerTagModel.getPlayerByName(playerName) ?: return null
         val styles = getPlayerStyles(player)
         return styles.maxByOrNull { it.first }?.second?.color
+    }
+
+    /**
+     * Get a styled component for a player name (for preview rendering).
+     * Does not check if styling is enabled - always applies styling if player is tagged.
+     */
+    fun getStyledComponent(playerName: String): Component {
+        val player = PlayerTagModel.getPlayerByName(playerName)
+            ?: return Component.literal(playerName)
+
+        val styles = getPlayerStyles(player)
+        if (styles.isEmpty()) return Component.literal(playerName)
+
+        val prefix = buildPrefix(player)
+        val primaryStyle = styles.maxByOrNull { it.first }?.second
+            ?: return Component.literal(playerName)
+
+        val result = Component.empty() as MutableComponent
+
+        if (prefix.isNotEmpty()) {
+            result.append(Component.literal(prefix).withStyle { applyAttributeStyle(it, primaryStyle) })
+        }
+
+        result.append(Component.literal(playerName).withStyle { applyAttributeStyle(it, primaryStyle) })
+
+        return result
     }
 }

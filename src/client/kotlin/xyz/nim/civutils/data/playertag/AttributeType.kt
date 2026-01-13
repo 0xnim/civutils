@@ -34,4 +34,15 @@ data class AttributeType(
     fun removeValue(valueId: String): Boolean {
         return values.removeIf { it.id == valueId }
     }
+
+    /**
+     * Update an existing value.
+     * Replaces the value with the same ID with the new value.
+     */
+    fun updateValue(valueId: String, newValue: AttributeValue): Boolean {
+        val index = values.indexOfFirst { it.id == valueId }
+        if (index < 0) return false
+        values[index] = newValue
+        return true
+    }
 }

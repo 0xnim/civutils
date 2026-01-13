@@ -48,7 +48,7 @@ object DefaultAttributes {
     }
 
     /**
-     * CivMC class attribute - for marking player classes.
+     * CivMC class attribute - for marking player classes/professions.
      */
     fun createCivClass(): AttributeType {
         return AttributeType(
@@ -62,22 +62,37 @@ object DefaultAttributes {
                 AttributeValue(
                     id = "guardsman",
                     displayName = "Guardsman",
-                    style = AttributeStyle(color = 0x5555FF, prefix = "\u2694")
+                    style = AttributeStyle(color = 0x5555FF, prefix = "\u2694") // Sword
                 ),
                 AttributeValue(
-                    id = "archer",
-                    displayName = "Archer",
-                    style = AttributeStyle(color = 0x55FF55, prefix = "\u27B9")
+                    id = "farmer",
+                    displayName = "Farmer",
+                    style = AttributeStyle(color = 0x55FF55, prefix = "\uD83C\uDF3E") // Wheat
                 ),
                 AttributeValue(
-                    id = "mage",
-                    displayName = "Mage",
-                    style = AttributeStyle(color = 0xAA55FF, prefix = "\u2728")
+                    id = "builder",
+                    displayName = "Builder",
+                    style = AttributeStyle(color = 0xFFAA00, prefix = "\uD83D\uDD28") // Hammer
                 ),
                 AttributeValue(
-                    id = "alchemist",
-                    displayName = "Alchemist",
-                    style = AttributeStyle(color = 0xFF55FF, prefix = "\u2697")
+                    id = "miner",
+                    displayName = "Miner",
+                    style = AttributeStyle(color = 0x888888, prefix = "\u26CF") // Pick
+                ),
+                AttributeValue(
+                    id = "librarian",
+                    displayName = "Librarian",
+                    style = AttributeStyle(color = 0xAA55FF, prefix = "\uD83D\uDCD6") // Book
+                ),
+                AttributeValue(
+                    id = "healer",
+                    displayName = "Healer",
+                    style = AttributeStyle(color = 0xFF5555, prefix = "\u2764") // Heart
+                ),
+                AttributeValue(
+                    id = "blacksmith",
+                    displayName = "Blacksmith",
+                    style = AttributeStyle(color = 0xFF5500, prefix = "\uD83D\uDD25") // Fire
                 )
             )
         )

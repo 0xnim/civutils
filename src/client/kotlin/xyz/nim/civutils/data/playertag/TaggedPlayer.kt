@@ -1,12 +1,19 @@
 package xyz.nim.civutils.data.playertag
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * A tagged player with multiple attributes assigned.
- * Stores the player's UUID, name, assigned attributes, notes, and tracking data.
+ * Uses name as the primary identifier. UUID is stored when known but is optional.
+ * Stores the player's name, assigned attributes, notes, and tracking data.
  */
 data class TaggedPlayer(
-    val uuid: String,
-    var lastKnownName: String,
+    /** Primary identifier - the player's name (case-preserved but lookups are case-insensitive) */
+    // Accepts both "name" (old format) and "lastKnownName" (new format) for backwards compatibility
+    @SerializedName(value = "name", alternate = ["lastKnownName"])
+    var name: String,
+    /** Optional UUID - stored when known, used for skin lookups */
+    var uuid: String? = null,
     val attributes: MutableMap<String, String> = mutableMapOf(),
     var notes: String = "",
     var lastSeen: LocationSnapshot? = null,

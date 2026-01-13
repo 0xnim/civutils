@@ -3,7 +3,7 @@ package xyz.nim.civutils.models
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import net.fabricmc.loader.api.FabricLoader
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 import xyz.nim.civutils.core.CivutilsMod
 import xyz.nim.civutils.core.event.Subscribe
 import xyz.nim.civutils.core.event.WorldJoinEvent
@@ -52,8 +52,8 @@ object PlayerTagModel : Model() {
      */
     @Subscribe
     fun onTick(event: xyz.nim.civutils.core.event.ClientTickEvent) {
-        val mc = MinecraftClient.getInstance()
-        if (mc.world == null || mc.player == null) return
+        val mc = Minecraft.getInstance()
+        if (mc.level == null || mc.player == null) return
 
         val address = getServerAddress()
         if (currentServerAddress != address) {
@@ -70,9 +70,9 @@ object PlayerTagModel : Model() {
      * Get the current server address.
      */
     private fun getServerAddress(): String {
-        val mc = MinecraftClient.getInstance()
-        val serverInfo = mc.networkHandler?.serverInfo
-        return serverInfo?.address ?: "singleplayer"
+        val mc = Minecraft.getInstance()
+        val serverData = mc.currentServer
+        return serverData?.ip ?: "singleplayer"
     }
 
     /**
@@ -105,10 +105,108 @@ object PlayerTagModel : Model() {
 
         return try {
             val content = Files.readString(file)
-            gson.fromJson(content, ServerData::class.java) ?: ServerData(serverAddress)
+            val data = gson.fromJson(content, ServerData::class.java) ?: ServerData(serverAddress)
+            migrateData(data)
         } catch (e: Exception) {
             CivutilsMod.logger.error("Failed to load player tag data for '$serverAddress'", e)
             ServerData(serverAddress)
+        }
+    }
+
+    /**
+     * Migrate old data format to new format and validate/repair data.
+     * Old format: players keyed by UUID
+     * New format: players keyed by lowercase name
+     */
+    private fun migrateData(data: ServerData): ServerData {
+        // Check if we need to migrate (old data has UUIDs as keys)
+        val needsMigration = data.players.keys.any { key ->
+            // UUID pattern: 8-4-4-4-12 hex chars with dashes
+            key.matches(Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"))
+        }
+
+        if (needsMigration) {
+            CivutilsMod.logger.info("Migrating player tag data from UUID-keyed to name-keyed format...")
+
+            // Create new map with name-based keys
+            val migratedPlayers = mutableMapOf<String, TaggedPlayer>()
+
+            for ((oldKey, player) in data.players) {
+                // If the key looks like a UUID, store it as the player's uuid and use name as key
+                if (oldKey.matches(Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"))) {
+                    if (player.uuid == null) {
+                        player.uuid = oldKey
+                    }
+                }
+
+                // Use name as the new key
+                val newKey = player.name.lowercase()
+                migratedPlayers[newKey] = player
+            }
+
+            // Replace players map
+            data.players.clear()
+            data.players.putAll(migratedPlayers)
+
+            CivutilsMod.logger.info("Migration complete. Migrated ${migratedPlayers.size} players.")
+        }
+
+        // Validate and repair data
+        validateAndRepairData(data)
+
+        return data
+    }
+
+    /**
+     * Validate player data and attempt to repair corrupted entries.
+     * - Fix players with null/empty names by using the map key
+     * - Remove entries that cannot be repaired
+     *
+     * Note: Gson can set non-nullable Kotlin fields to null by bypassing the constructor,
+     * so we need to handle null defensively here.
+     */
+    @Suppress("SENSELESS_COMPARISON") // name CAN be null due to Gson reflection
+    private fun validateAndRepairData(data: ServerData) {
+        val toRemove = mutableListOf<String>()
+        val toRename = mutableMapOf<String, String>() // oldKey -> newKey
+
+        for ((key, player) in data.players) {
+            // Check for null or empty player name (Gson can set non-nullable fields to null!)
+            val nameIsInvalid = player.name == null || player.name.isBlank()
+
+            if (nameIsInvalid) {
+                // Try to use the map key as the name (if it looks like a valid player name)
+                if (key.isNotEmpty() && !key.matches(Regex("[0-9a-fA-F-]{32,}"))) {
+                    CivutilsMod.logger.warn("Repairing player with missing/empty name, using key: $key")
+                    player.name = key
+                } else {
+                    CivutilsMod.logger.warn("Removing invalid player entry with no name and unusable key: $key")
+                    toRemove.add(key)
+                    continue
+                }
+            }
+
+            // Check if the key matches the lowercase name (it should)
+            val expectedKey = player.name.lowercase()
+            if (key != expectedKey) {
+                CivutilsMod.logger.warn("Fixing player key mismatch: '$key' -> '$expectedKey' for player '${player.name}'")
+                toRename[key] = expectedKey
+            }
+        }
+
+        // Remove invalid entries
+        toRemove.forEach { data.players.remove(it) }
+
+        // Fix key mismatches
+        for ((oldKey, newKey) in toRename) {
+            val player = data.players.remove(oldKey)
+            if (player != null && !data.players.containsKey(newKey)) {
+                data.players[newKey] = player
+            }
+        }
+
+        if (toRemove.isNotEmpty() || toRename.isNotEmpty()) {
+            CivutilsMod.logger.info("Data validation: removed ${toRemove.size} invalid entries, fixed ${toRename.size} key mismatches")
         }
     }
 
@@ -148,42 +246,64 @@ object PlayerTagModel : Model() {
     // ============== Player APIs ==============
 
     /**
-     * Get a tagged player by UUID.
-     */
-    fun getPlayer(uuid: String): TaggedPlayer? = currentData?.getPlayer(uuid)
-
-    /**
      * Get a tagged player by name (case-insensitive).
+     * This is the primary lookup method.
      */
-    fun getPlayerByName(name: String): TaggedPlayer? = currentData?.getPlayerByName(name)
+    fun getPlayer(name: String): TaggedPlayer? = currentData?.getPlayer(name)
 
     /**
-     * Set an attribute for a player.
+     * Get a tagged player by UUID.
+     * Searches all players to find one with matching UUID.
      */
-    fun setPlayerAttribute(uuid: String, name: String, typeId: String, valueId: String): Boolean {
+    fun getPlayerByUuid(uuid: String): TaggedPlayer? = currentData?.getPlayerByUuid(uuid)
+
+    /**
+     * Alias for getPlayer for backwards compatibility.
+     */
+    fun getPlayerByName(name: String): TaggedPlayer? = getPlayer(name)
+
+    /**
+     * Set an attribute for a player by name.
+     * UUID is optional and will be stored if provided.
+     *
+     * @param name The player's name (primary identifier)
+     * @param typeId The attribute type ID
+     * @param valueId The attribute value ID
+     * @param uuid Optional UUID to associate with the player
+     */
+    fun setPlayerAttribute(name: String, typeId: String, valueId: String, uuid: String? = null): Boolean {
         val data = currentData ?: return false
 
         // Verify the attribute type and value exist
         val type = data.getAttributeType(typeId) ?: return false
         if (type.getValue(valueId) == null) return false
 
-        val player = data.getOrCreatePlayer(uuid, name)
+        val player = data.getOrCreatePlayer(name, uuid)
         player.setAttribute(typeId, valueId)
-        player.lastKnownName = name
         markDirty()
         return true
     }
 
     /**
-     * Remove an attribute from a player.
+     * Legacy API - Set attribute with UUID as first param.
+     * @deprecated Use setPlayerAttribute(name, typeId, valueId, uuid) instead
      */
-    fun removePlayerAttribute(uuid: String, typeId: String): Boolean {
-        val player = currentData?.getPlayer(uuid) ?: return false
+    @Deprecated("Use name-based API", ReplaceWith("setPlayerAttribute(name, typeId, valueId, uuid)"))
+    @JvmName("setPlayerAttributeLegacy")
+    fun setPlayerAttributeWithUuid(uuid: String, name: String, typeId: String, valueId: String): Boolean {
+        return setPlayerAttribute(name, typeId, valueId, uuid)
+    }
+
+    /**
+     * Remove an attribute from a player by name.
+     */
+    fun removePlayerAttribute(name: String, typeId: String): Boolean {
+        val player = currentData?.getPlayer(name) ?: return false
         val result = player.removeAttribute(typeId)
 
         // Remove player entirely if they have no attributes and no notes
         if (!player.hasAttributes() && player.notes.isEmpty()) {
-            currentData?.removePlayer(uuid)
+            currentData?.removePlayer(name)
         }
 
         if (result) markDirty()
@@ -191,20 +311,24 @@ object PlayerTagModel : Model() {
     }
 
     /**
-     * Remove all attributes from a player.
+     * Remove all attributes from a player by name.
      */
-    fun untagPlayer(uuid: String): Boolean {
-        val result = currentData?.removePlayer(uuid) ?: false
+    fun untagPlayer(name: String): Boolean {
+        val result = currentData?.removePlayer(name) ?: false
         if (result) markDirty()
         return result
     }
 
     /**
      * Set a note for a player.
+     *
+     * @param name The player's name
+     * @param note The note text
+     * @param uuid Optional UUID to associate
      */
-    fun setPlayerNote(uuid: String, name: String, note: String): Boolean {
+    fun setPlayerNote(name: String, note: String, uuid: String? = null): Boolean {
         val data = currentData ?: return false
-        val player = data.getOrCreatePlayer(uuid, name)
+        val player = data.getOrCreatePlayer(name, uuid)
         player.notes = note
         markDirty()
         return true
@@ -213,11 +337,13 @@ object PlayerTagModel : Model() {
     /**
      * Update a player's last seen location.
      */
-    fun updatePlayerLastSeen(uuid: String, name: String, location: LocationSnapshot) {
+    fun updatePlayerLastSeen(name: String, location: LocationSnapshot, uuid: String? = null) {
         val data = currentData ?: return
-        val player = data.getPlayer(uuid) ?: return
+        val player = data.getPlayer(name) ?: return
         player.updateLastSeen(location)
-        player.lastKnownName = name
+        if (uuid != null && player.uuid == null) {
+            player.uuid = uuid
+        }
         markDirty()
     }
 
@@ -231,6 +357,31 @@ object PlayerTagModel : Model() {
      */
     fun getPlayersWithAttribute(typeId: String, valueId: String? = null): List<TaggedPlayer> {
         return currentData?.getPlayersWithAttribute(typeId, valueId) ?: emptyList()
+    }
+
+    /**
+     * Get nearby players from the world.
+     * Returns online players within render distance.
+     */
+    fun getNearbyPlayers(): List<Pair<String, String?>> {
+        val mc = Minecraft.getInstance()
+        val player = mc.player ?: return emptyList()
+        val world = mc.level ?: return emptyList()
+
+        return world.players()
+            .filter { it != player && it.distanceTo(player) < 64 }
+            .sortedBy { it.distanceTo(player) }
+            .map { it.gameProfile.name to it.stringUUID }
+    }
+
+    /**
+     * Get online players from the player list.
+     */
+    fun getOnlinePlayers(): List<Pair<String, String>> {
+        val mc = Minecraft.getInstance()
+        return mc.connection?.listedOnlinePlayers?.map {
+            it.profile.name to it.profile.id.toString()
+        } ?: emptyList()
     }
 
     // ============== Attribute Type APIs ==============
@@ -308,6 +459,32 @@ object PlayerTagModel : Model() {
         val result = type.removeValue(valueId)
         if (result) markDirty()
         return result
+    }
+
+    /**
+     * Update an existing attribute value.
+     */
+    fun updateAttributeValue(typeId: String, valueId: String, newValue: AttributeValue): Boolean {
+        val type = currentData?.getAttributeType(typeId) ?: return false
+        val result = type.updateValue(valueId, newValue)
+        if (result) markDirty()
+        return result
+    }
+
+    /**
+     * Update an attribute type's properties.
+     */
+    fun updateAttributeType(typeId: String, displayName: String? = null, renderPriority: Int? = null): Boolean {
+        val data = currentData ?: return false
+        val type = data.getAttributeType(typeId) ?: return false
+
+        val updated = type.copy(
+            displayName = displayName ?: type.displayName,
+            renderPriority = renderPriority ?: type.renderPriority
+        )
+        data.attributeTypes[typeId] = updated
+        markDirty()
+        return true
     }
 
     /**
