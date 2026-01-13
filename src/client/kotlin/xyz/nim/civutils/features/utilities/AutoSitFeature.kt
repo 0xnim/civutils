@@ -1,16 +1,20 @@
 package xyz.nim.civutils.features.utilities
 
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
+import net.minecraft.network.chat.Component
 import xyz.nim.civutils.core.CivutilsMod
-import xyz.nim.civutils.core.config.Config
-import xyz.nim.civutils.core.config.Persisted
+import xyz.nim.civutils.core.config.booleanConfig
 import xyz.nim.civutils.core.config.intConfig
+import xyz.nim.civutils.core.config.value
 import xyz.nim.civutils.core.event.ClientTickEvent
 import xyz.nim.civutils.core.event.Subscribe
 import xyz.nim.civutils.core.feature.Category
 import xyz.nim.civutils.core.feature.ConfigCategory
 import xyz.nim.civutils.core.feature.Feature
 import xyz.nim.civutils.models.PlayerModel
+import xyz.nim.lib.config.ConfigOption
+import xyz.nim.lib.config.options.BooleanConfig
+import xyz.nim.lib.config.options.IntegerConfig
 
 /**
  * Automatically sends /sit command after being AFK to prevent hunger loss.
@@ -20,19 +24,32 @@ class AutoSitFeature : Feature() {
 
     override val description = "Automatically /sit after being AFK to prevent hunger loss"
 
-    /**
-     * Time in seconds before auto-sitting (default 2 minutes = 120 seconds).
-     */
-    @Persisted
-    val afkTimeSeconds = intConfig(default = 120, min = 30, max = 600)
+    val afkTimeSeconds: IntegerConfig = intConfig(
+        name = "afkTimeSeconds",
+        default = 120,
+        min = 30,
+        max = 600,
+        displayName = "AFK Time (seconds)",
+        comment = "Time in seconds before auto-sitting"
+    )
 
-    /**
-     * Whether to show a chat message when auto-sitting.
-     */
-    @Persisted
-    val showChatMessage = Config(defaultValue = true)
+    val showChatMessage: BooleanConfig = booleanConfig(
+        name = "showChatMessage",
+        default = true,
+        displayName = "Show Chat Message",
+        comment = "Show a message when auto-sitting"
+    )
 
-    private val mc: MinecraftClient get() = MinecraftClient.getInstance()
+    init {
+        afkTimeSeconds.onValueChanged { onConfigUpdate(afkTimeSeconds) }
+        showChatMessage.onValueChanged { onConfigUpdate(showChatMessage) }
+    }
+
+    override fun getConfigs(): List<ConfigOption<*>> = listOf(
+        userEnabled, afkTimeSeconds, showChatMessage
+    )
+
+    private val mc: Minecraft get() = Minecraft.getInstance()
 
     private var lastActivityTime: Long = System.currentTimeMillis()
     private var lastPlayerX: Double = 0.0
@@ -47,21 +64,20 @@ class AutoSitFeature : Feature() {
         CivutilsMod.logger.info("AutoSitFeature enabled with ${afkTimeSeconds.value}s timeout")
     }
 
-    override fun onDisable() {
-        // Nothing to clean up
+    override fun onDisable() {}
+
+    override fun onConfigUpdate(config: ConfigOption<*>) {
+        CivutilsMod.configManager.markDirty()
     }
 
     @Subscribe
     fun onClientTick(event: ClientTickEvent) {
         val player = mc.player ?: return
-
-        // Check if player has moved or rotated
         val hasMoved = hasPlayerMoved()
 
         if (hasMoved) {
             resetActivity()
         } else {
-            // Check if AFK time exceeded
             val afkDurationMs = System.currentTimeMillis() - lastActivityTime
             val afkThresholdMs = afkTimeSeconds.value * 1000L
 
@@ -70,7 +86,6 @@ class AutoSitFeature : Feature() {
             }
         }
 
-        // Update last known position/rotation
         lastPlayerX = PlayerModel.x
         lastPlayerY = PlayerModel.y
         lastPlayerZ = PlayerModel.z
@@ -102,15 +117,14 @@ class AutoSitFeature : Feature() {
 
     private fun sendSitCommand() {
         val player = mc.player ?: return
-        val networkHandler = mc.networkHandler ?: return
+        val connection = mc.connection ?: return
 
-        // Send /sit command
-        networkHandler.sendChatCommand("sit")
+        connection.sendCommand("sit")
         hasSentSitCommand = true
 
         if (showChatMessage.value) {
-            mc.inGameHud.chatHud.addMessage(
-                net.minecraft.text.Text.literal("§7[CivUtils] §aAuto-sitting due to AFK")
+            mc.gui.chat.addMessage(
+                Component.literal("§7[CivUtils] §aAuto-sitting due to AFK")
             )
         }
 

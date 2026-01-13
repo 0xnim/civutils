@@ -1,11 +1,15 @@
 package xyz.nim.civutils.overlays
 
-import net.minecraft.item.BlockItem
-import xyz.nim.civutils.core.config.Config
-import xyz.nim.civutils.core.config.Persisted
+import net.minecraft.world.item.BlockItem
+import xyz.nim.civutils.core.CivutilsMod
+import xyz.nim.civutils.core.config.booleanConfig
+import xyz.nim.civutils.core.config.onChange
+import xyz.nim.civutils.core.config.value
 import xyz.nim.civutils.core.overlay.OverlayPosition
 import xyz.nim.civutils.core.overlay.OverlaySize
 import xyz.nim.civutils.core.overlay.TextOverlay
+import xyz.nim.lib.config.ConfigOption
+import xyz.nim.lib.config.options.BooleanConfig
 
 /**
  * Builder helper: Shows the total count of the currently held block type
@@ -22,18 +26,34 @@ class BlockCountOverlay : TextOverlay(
     /**
      * Only show for block items (not tools, food, etc).
      */
-    @Persisted
-    val onlyBlocks = Config(defaultValue = true)
+    val onlyBlocks: BooleanConfig = booleanConfig(
+        name = "onlyBlocks",
+        default = true,
+        displayName = "Only Blocks",
+        comment = "Only show for block items"
+    ).onChange { onConfigUpdate(onlyBlocks) }
 
     /**
      * Show the item name alongside the count.
      */
-    @Persisted
-    val showItemName = Config(defaultValue = false)
+    val showItemName: BooleanConfig = booleanConfig(
+        name = "showItemName",
+        default = false,
+        displayName = "Show Item Name",
+        comment = "Show item name with count"
+    ).onChange { onConfigUpdate(showItemName) }
+
+    override fun getConfigs(): List<ConfigOption<*>> = listOf(
+        enabled, textShadow, textColor, onlyBlocks, showItemName
+    )
+
+    override fun onConfigUpdate(config: ConfigOption<*>) {
+        CivutilsMod.configManager.markDirty()
+    }
 
     override fun getTemplate(): String {
         val player = mc.player ?: return ""
-        val heldStack = player.mainHandStack
+        val heldStack = player.mainHandItem
 
         if (heldStack.isEmpty) return ""
 
@@ -45,15 +65,15 @@ class BlockCountOverlay : TextOverlay(
 
         // Count all matching items in the inventory
         val inventory = player.inventory
-        for (i in 0 until inventory.size()) {
-            val stack = inventory.getStack(i)
+        for (i in 0 until inventory.containerSize) {
+            val stack = inventory.getItem(i)
             if (!stack.isEmpty && stack.item == heldItem) {
                 totalCount += stack.count
             }
         }
 
         return if (showItemName.value) {
-            val itemName = heldStack.name.string
+            val itemName = heldStack.hoverName.string
             "§f$totalCount §7$itemName"
         } else {
             "§6Total: §f$totalCount"
