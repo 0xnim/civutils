@@ -1,11 +1,13 @@
 package xyz.nim.civutils.gui.widgets
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.widget.ButtonWidget
-import net.minecraft.client.gui.widget.SliderWidget
-import net.minecraft.text.Text
-import xyz.nim.civutils.core.config.Config
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.components.Button
+import net.minecraft.client.gui.components.AbstractSliderButton
+import net.minecraft.network.chat.Component
+import xyz.nim.civutils.core.config.value
+import xyz.nim.lib.config.options.BooleanConfig
+import xyz.nim.lib.config.options.IntegerConfig
 import xyz.nim.lib.ui.NlibTheme
 import kotlin.math.roundToInt
 
@@ -36,30 +38,30 @@ class ToggleButton(
     y: Int,
     width: Int,
     height: Int,
-    private val config: Config<Boolean>,
+    private val config: BooleanConfig,
     private val label: String
-) : ButtonWidget(
+) : Button(
     x, y, width, height,
-    Text.literal(if (config.value) "§a$label: ON" else "§c$label: OFF"),
+    Component.literal(if (config.value) "§a$label: ON" else "§c$label: OFF"),
     { button ->
         config.value = !config.value
-        button.message = Text.literal(if (config.value) "§a$label: ON" else "§c$label: OFF")
+        button.message = Component.literal(if (config.value) "§a$label: ON" else "§c$label: OFF")
     },
-    DEFAULT_NARRATION_SUPPLIER
+    DEFAULT_NARRATION
 ) {
-    override fun renderWidget(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
-        val mc = MinecraftClient.getInstance()
+    override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        val mc = Minecraft.getInstance()
         val color = if (isHovered) Colors.BACKGROUND_HOVER else Colors.BACKGROUND_LIGHT
-        context.fill(x, y, x + width, y + height, color)
+        guiGraphics.fill(x, y, x + width, y + height, color)
 
         // Draw border
         val borderColor = if (config.value) Colors.ENABLED else Colors.DISABLED
-        context.drawBorder(x, y, width, height, borderColor)
+        guiGraphics.renderOutline(x, y, width, height, borderColor)
 
         // Draw text centered
-        val textX = x + width / 2 - mc.textRenderer.getWidth(message) / 2
+        val textX = x + width / 2 - mc.font.width(message) / 2
         val textY = y + (height - 8) / 2
-        context.drawText(mc.textRenderer, message, textX, textY, Colors.TEXT, true)
+        guiGraphics.drawString(mc.font, message, textX, textY, Colors.TEXT, true)
     }
 }
 
@@ -71,17 +73,18 @@ class IntSlider(
     y: Int,
     width: Int,
     height: Int,
-    private val config: Config<Int>,
-    private val label: String,
-    private val min: Int,
-    private val max: Int
-) : SliderWidget(
+    private val config: IntegerConfig,
+    private val label: String
+) : AbstractSliderButton(
     x, y, width, height,
-    Text.literal("$label: ${config.value}"),
-    ((config.value - min).toDouble() / (max - min).toDouble()).coerceIn(0.0, 1.0)
+    Component.literal("$label: ${config.value}"),
+    ((config.value - config.minValue).toDouble() / (config.maxValue - config.minValue).toDouble()).coerceIn(0.0, 1.0)
 ) {
+    private val min: Int = config.minValue
+    private val max: Int = config.maxValue
+
     override fun updateMessage() {
-        message = Text.literal("$label: ${getValue()}")
+        message = Component.literal("$label: ${getValue()}")
     }
 
     override fun applyValue() {
@@ -92,23 +95,23 @@ class IntSlider(
         return (min + (value * (max - min))).roundToInt()
     }
 
-    override fun renderWidget(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
-        val mc = MinecraftClient.getInstance()
+    override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        val mc = Minecraft.getInstance()
 
         // Background
-        context.fill(x, y, x + width, y + height, Colors.BACKGROUND_LIGHT)
+        guiGraphics.fill(x, y, x + width, y + height, Colors.BACKGROUND_LIGHT)
 
         // Filled portion
         val filledWidth = (width * value).toInt()
-        context.fill(x, y, x + filledWidth, y + height, Colors.ACCENT)
+        guiGraphics.fill(x, y, x + filledWidth, y + height, Colors.ACCENT)
 
         // Border
-        context.drawBorder(x, y, width, height, if (isHovered) Colors.ACCENT_HOVER else Colors.TEXT_SECONDARY)
+        guiGraphics.renderOutline(x, y, width, height, if (isHovered) Colors.ACCENT_HOVER else Colors.TEXT_SECONDARY)
 
         // Text
-        val textX = x + width / 2 - mc.textRenderer.getWidth(message) / 2
+        val textX = x + width / 2 - mc.font.width(message) / 2
         val textY = y + (height - 8) / 2
-        context.drawText(mc.textRenderer, message, textX, textY, Colors.TEXT, true)
+        guiGraphics.drawString(mc.font, message, textX, textY, Colors.TEXT, true)
     }
 }
 
@@ -122,22 +125,22 @@ fun textButton(
     height: Int,
     text: String,
     onClick: () -> Unit
-): ButtonWidget {
-    return ButtonWidget.builder(Text.literal(text)) { onClick() }
-        .dimensions(x, y, width, height)
+): Button {
+    return Button.builder(Component.literal(text)) { onClick() }
+        .bounds(x, y, width, height)
         .build()
 }
 
 /**
  * Draw a tooltip box.
  */
-fun DrawContext.drawTooltip(text: List<String>, x: Int, y: Int) {
-    val mc = MinecraftClient.getInstance()
-    val textRenderer = mc.textRenderer
+fun GuiGraphics.drawTooltip(text: List<String>, x: Int, y: Int) {
+    val mc = Minecraft.getInstance()
+    val font = mc.font
 
     if (text.isEmpty()) return
 
-    val maxWidth = text.maxOf { textRenderer.getWidth(it) }
+    val maxWidth = text.maxOf { font.width(it) }
     val totalHeight = text.size * 10
 
     val boxX = x + 8
@@ -145,12 +148,12 @@ fun DrawContext.drawTooltip(text: List<String>, x: Int, y: Int) {
 
     // Background
     fill(boxX - 3, boxY - 3, boxX + maxWidth + 3, boxY + totalHeight + 3, Colors.BACKGROUND)
-    drawBorder(boxX - 3, boxY - 3, maxWidth + 6, totalHeight + 6, Colors.TEXT_SECONDARY)
+    renderOutline(boxX - 3, boxY - 3, maxWidth + 6, totalHeight + 6, Colors.TEXT_SECONDARY)
 
     // Text
     var lineY = boxY
     for (line in text) {
-        drawText(textRenderer, line, boxX, lineY, Colors.TEXT, false)
+        drawString(font, line, boxX, lineY, Colors.TEXT, false)
         lineY += 10
     }
 }

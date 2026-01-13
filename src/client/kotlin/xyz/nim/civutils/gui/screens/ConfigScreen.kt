@@ -1,13 +1,17 @@
 package xyz.nim.civutils.gui.screens
 
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.widget.ButtonWidget
-import net.minecraft.text.Text
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.components.Button
+import net.minecraft.network.chat.Component
 import xyz.nim.civutils.core.CivutilsMod
-import xyz.nim.civutils.core.config.Config
+import xyz.nim.civutils.core.config.value
 import xyz.nim.civutils.core.feature.Feature
 import xyz.nim.civutils.core.overlay.Overlay
+import xyz.nim.lib.config.ConfigOption
+import xyz.nim.lib.config.options.*
 import xyz.nim.lib.ui.NlibTheme
+import xyz.nim.lib.ui.components.ColorInput
 import xyz.nim.lib.ui.components.NlibListWidget
 import xyz.nim.civutils.gui.widgets.*
 
@@ -15,7 +19,7 @@ import xyz.nim.civutils.gui.widgets.*
  * Main configuration screen for CivUtils.
  * Uses the CivutilsScreen base class for theming and features.
  */
-class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
+class ConfigScreen : CivutilsScreen(Component.literal("CivUtils Configuration")) {
 
     private enum class Tab {
         FEATURES,
@@ -37,7 +41,7 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
     // Widgets
     private var featureList: FeatureListWidget? = null
     private var overlayList: OverlayListWidget? = null
-    private val configWidgets = mutableListOf<net.minecraft.client.gui.widget.ClickableWidget>()
+    private val configWidgets = mutableListOf<net.minecraft.client.gui.components.AbstractWidget>()
 
     override fun init() {
         super.init()
@@ -54,25 +58,25 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
         // Tab buttons - centered below title
         val tabWidth = 100
         val tabY = 25  // Below the title
-        addDrawableChild(
-            ButtonWidget.builder(Text.literal("Features")) {
+        addRenderableWidget(
+            Button.builder(Component.literal("Features")) {
                 currentTab = Tab.FEATURES
                 selectedFeature = null
                 updateListVisibility()
                 rebuildConfigWidgets()
             }
-                .dimensions(width / 2 - tabWidth - 5, tabY, tabWidth, 20)
+                .bounds(width / 2 - tabWidth - 5, tabY, tabWidth, 20)
                 .build()
         )
 
-        addDrawableChild(
-            ButtonWidget.builder(Text.literal("Overlays")) {
+        addRenderableWidget(
+            Button.builder(Component.literal("Overlays")) {
                 currentTab = Tab.OVERLAYS
                 selectedOverlay = null
                 updateListVisibility()
                 rebuildConfigWidgets()
             }
-                .dimensions(width / 2 + 5, tabY, tabWidth, 20)
+                .bounds(width / 2 + 5, tabY, tabWidth, 20)
                 .build()
         )
 
@@ -81,7 +85,7 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
         val listY = contentY + listHeaderOffset
         val listHeight = contentHeight - listHeaderOffset
 
-        featureList = FeatureListWidget(client!!, leftPanelWidth, listHeight, listY, 36) { feature ->
+        featureList = FeatureListWidget(minecraft!!, leftPanelWidth, listHeight, listY, 36) { feature ->
             selectedFeature = feature
             rebuildConfigWidgets()
         }
@@ -89,10 +93,10 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
         for (feature in CivutilsMod.featureManager.getFeatures()) {
             featureList?.addEntryToList(FeatureEntry(feature))
         }
-        addSelectableChild(featureList)
+        addWidget(featureList)
 
         // Overlay list - positioned below panel header
-        overlayList = OverlayListWidget(client!!, leftPanelWidth, listHeight, listY, 36) { overlay ->
+        overlayList = OverlayListWidget(minecraft!!, leftPanelWidth, listHeight, listY, 36) { overlay ->
             selectedOverlay = overlay
             rebuildConfigWidgets()
         }
@@ -100,17 +104,17 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
         for (overlay in CivutilsMod.overlayManager.getOverlays()) {
             overlayList?.addEntryToList(OverlayEntry(overlay))
         }
-        addSelectableChild(overlayList)
+        addWidget(overlayList)
 
         // Set initial visibility
         updateListVisibility()
 
         // Overlay Editor button - top right
-        addDrawableChild(
-            ButtonWidget.builder(Text.literal("Open Overlay Editor")) {
-                client?.setScreen(OverlayEditorScreen())
+        addRenderableWidget(
+            Button.builder(Component.literal("Open Overlay Editor")) {
+                minecraft?.setScreen(OverlayEditorScreen())
             }
-                .dimensions(width - 150 - layout.margin, 5, 150, 20)
+                .bounds(width - 150 - layout.margin, 5, 150, 20)
                 .build()
         )
     }
@@ -122,7 +126,7 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
 
     private fun rebuildConfigWidgets() {
         // Remove old config widgets
-        configWidgets.forEach { remove(it) }
+        configWidgets.forEach { removeWidget(it) }
         configWidgets.clear()
 
         val startY = contentY + 24  // Below panel header
@@ -137,7 +141,7 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
                         rightPanelX + 10, y, widgetWidth, 20,
                         feature.userEnabled, "Enabled"
                     )
-                    addDrawableChild(toggle)
+                    addRenderableWidget(toggle)
                     configWidgets.add(toggle)
                     y += 30
 
@@ -146,7 +150,7 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
                         if (config === feature.userEnabled) continue
                         val widget = createWidgetForConfig(config, rightPanelX + 10, y, widgetWidth)
                         if (widget != null) {
-                            addDrawableChild(widget)
+                            addRenderableWidget(widget)
                             configWidgets.add(widget)
                             y += 30
                         }
@@ -160,7 +164,7 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
                         rightPanelX + 10, y, widgetWidth, 20,
                         overlay.enabled, "Enabled"
                     )
-                    addDrawableChild(toggle)
+                    addRenderableWidget(toggle)
                     configWidgets.add(toggle)
                     y += 30
 
@@ -169,46 +173,53 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
                         if (config === overlay.enabled) continue
                         val widget = createWidgetForConfig(config, rightPanelX + 10, y, widgetWidth)
                         if (widget != null) {
-                            addDrawableChild(widget)
+                            addRenderableWidget(widget)
                             configWidgets.add(widget)
                             y += 30
                         }
                     }
 
                     // Edit Position button
-                    val editBtn = ButtonWidget.builder(Text.literal("Edit Position")) {
-                        client?.setScreen(OverlayEditorScreen())
+                    val editBtn = Button.builder(Component.literal("Edit Position")) {
+                        minecraft?.setScreen(OverlayEditorScreen())
                     }
-                        .dimensions(rightPanelX + 10, y, widgetWidth, 20)
+                        .bounds(rightPanelX + 10, y, widgetWidth, 20)
                         .build()
-                    addDrawableChild(editBtn)
+                    addRenderableWidget(editBtn)
                     configWidgets.add(editBtn)
                 }
             }
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun createWidgetForConfig(config: Config<*>, x: Int, y: Int, width: Int): net.minecraft.client.gui.widget.ClickableWidget? {
-        val name = config.fieldName.replaceFirstChar { it.uppercase() }
-            .replace(Regex("([A-Z])"), " $1").trim()
+    private fun createWidgetForConfig(config: ConfigOption<*>, x: Int, y: Int, width: Int): net.minecraft.client.gui.components.AbstractWidget? {
+        val displayName = config.getDisplayName()
+        val name = if (displayName.isNullOrEmpty()) {
+            config.getName().replaceFirstChar { c -> c.uppercase() }
+                .replace(Regex("([A-Z])"), " $1").trim()
+        } else {
+            displayName
+        }
 
-        return when (config.defaultValue) {
-            is Boolean -> ToggleButton(x, y, width, 20, config as Config<Boolean>, name)
-            is Int -> IntSlider(x, y, width, 20, config as Config<Int>, name, 0, 100)
-            is Enum<*> -> {
-                val enumConfig = config as Config<Enum<*>>
-                val values = enumConfig.getValidLiterals() ?: return null
-                var currentIndex = values.indexOf(enumConfig.value.name)
+        return when (config) {
+            is BooleanConfig -> ToggleButton(x, y, width, 20, config, name)
+            is IntegerConfig -> IntSlider(x, y, width, 20, config, name)
+            is ColorConfig -> ColorInput(x, y, width, 20, config.getValue()) { newColor ->
+                config.setValue(newColor)
+            }
+            is OptionListConfig<*> -> {
+                val values = config.getAllowedValues()
+                val currentValueEnum = config.getValue() as Enum<*>
+                var currentIndex = values.indexOfFirst { (it as Enum<*>).name == currentValueEnum.name }
+                if (currentIndex < 0) currentIndex = 0
 
-                ButtonWidget.builder(Text.literal("$name: ${enumConfig.value.name}")) { btn ->
+                Button.builder(Component.literal("$name: ${currentValueEnum.name}")) { btn ->
                     currentIndex = (currentIndex + 1) % values.size
-                    enumConfig.tryParseString(values[currentIndex])?.let {
-                        enumConfig.value = it
-                        btn.message = Text.literal("$name: ${enumConfig.value.name}")
-                    }
+                    val nextValue = values[currentIndex] as Enum<*>
+                    config.setFromName(nextValue.name)
+                    btn.message = Component.literal("$name: ${nextValue.name}")
                 }
-                    .dimensions(x, y, width, 20)
+                    .bounds(x, y, width, 20)
                     .build()
             }
             else -> null
@@ -216,48 +227,55 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
     }
 
 
-    override fun renderPanels(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun renderPanels(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         // Title at top center
-        context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 8, NlibTheme.TEXT_PRIMARY)
+        guiGraphics.drawCenteredString(font, title, width / 2, 8, NlibTheme.TEXT_PRIMARY)
 
         // Tab indicator (underline for selected tab)
         val tabY = 25 + 20 + 2  // Below the tab buttons
         val indicatorX = if (currentTab == Tab.FEATURES) width / 2 - 105 else width / 2 + 5
-        context.fill(indicatorX, tabY, indicatorX + 100, tabY + 2, NlibTheme.ACCENT)
+        guiGraphics.fill(indicatorX, tabY, indicatorX + 100, tabY + 2, NlibTheme.ACCENT)
 
         // Panel backgrounds using theme colors
-        drawPanel(context, leftPanelX, contentY, leftPanelWidth, contentHeight)
-        drawPanel(context, rightPanelX, contentY, rightPanelWidth, contentHeight)
+        drawPanel(guiGraphics, leftPanelX, contentY, leftPanelWidth, contentHeight)
+        drawPanel(guiGraphics, rightPanelX, contentY, rightPanelWidth, contentHeight)
 
         // Render the appropriate list
         when (currentTab) {
-            Tab.FEATURES -> featureList?.render(context, mouseX, mouseY, delta)
-            Tab.OVERLAYS -> overlayList?.render(context, mouseX, mouseY, delta)
+            Tab.FEATURES -> featureList?.render(guiGraphics, mouseX, mouseY, partialTick)
+            Tab.OVERLAYS -> overlayList?.render(guiGraphics, mouseX, mouseY, partialTick)
         }
     }
 
-    override fun renderOverlays(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun renderOverlays(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         // Draw panel headers on top of content
         val leftTitle = if (currentTab == Tab.FEATURES) "Features" else "Overlays"
-        context.drawText(textRenderer, leftTitle, leftPanelX + 8, contentY + 6, NlibTheme.TEXT_PRIMARY, true)
+        guiGraphics.drawString(font, leftTitle, leftPanelX + 8, contentY + 6, NlibTheme.TEXT_PRIMARY, true)
 
         val rightTitle = when (currentTab) {
             Tab.FEATURES -> selectedFeature?.displayName ?: "Select a feature"
             Tab.OVERLAYS -> selectedOverlay?.displayName ?: "Select an overlay"
         }
-        context.drawText(textRenderer, rightTitle, rightPanelX + 8, contentY + 6, NlibTheme.TEXT_PRIMARY, true)
+        guiGraphics.drawString(font, rightTitle, rightPanelX + 8, contentY + 6, NlibTheme.TEXT_PRIMARY, true)
+
+        // Render color picker popups on top of everything
+        for (widget in configWidgets) {
+            if (widget is ColorInput) {
+                widget.renderPickerPopup(guiGraphics, mouseX, mouseY)
+            }
+        }
     }
 
-    override fun close() {
+    override fun onClose() {
         CivutilsMod.configManager.saveAll()
         toastManager.success("Configuration saved")
-        super.close()
+        super.onClose()
     }
 
     // === List Widgets ===
 
     private inner class FeatureListWidget(
-        client: net.minecraft.client.MinecraftClient,
+        client: Minecraft,
         width: Int,
         height: Int,
         y: Int,
@@ -272,25 +290,27 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
     }
 
     private inner class FeatureEntry(val feature: Feature) : NlibListWidget.Entry<FeatureEntry>() {
-        override fun render(
-            context: DrawContext, index: Int, y: Int, x: Int,
-            entryWidth: Int, entryHeight: Int,
-            mouseX: Int, mouseY: Int, hovered: Boolean, tickDelta: Float
+        override fun renderContent(
+            guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, hovered: Boolean, delta: Float
         ) {
-            val selected = (featureList?.selectedOrNull === this)
-            renderBackground(context, x, y, entryWidth, entryHeight, hovered, selected)
+            val x = getX()
+            val y = getY()
+            val entryWidth = getWidth()
+            val entryHeight = getHeight()
+            val selected = (featureList?.selected === this)
+            renderBackground(guiGraphics, x, y, entryWidth, entryHeight, hovered, selected)
 
             val statusColor = if (feature.enabled) Colors.ENABLED else Colors.DISABLED
-            context.fill(x + 4, y + 4, x + 8, y + entryHeight - 4, statusColor)
+            guiGraphics.fill(x + 4, y + 4, x + 8, y + entryHeight - 4, statusColor)
 
-            val font = client!!.textRenderer
-            context.drawText(font, feature.displayName, x + 14, y + 6, Colors.TEXT, true)
-            context.drawText(font, "§7${feature.category.name.lowercase()}", x + 14, y + 18, Colors.TEXT_SECONDARY, false)
+            val font = minecraft?.font ?: return
+            guiGraphics.drawString(font, feature.displayName, x + 14, y + 6, Colors.TEXT, true)
+            guiGraphics.drawString(font, "§7${feature.category.name.lowercase()}", x + 14, y + 18, Colors.TEXT_SECONDARY, false)
         }
     }
 
     private inner class OverlayListWidget(
-        client: net.minecraft.client.MinecraftClient,
+        client: Minecraft,
         width: Int,
         height: Int,
         y: Int,
@@ -305,21 +325,23 @@ class ConfigScreen : CivutilsScreen(Text.literal("CivUtils Configuration")) {
     }
 
     private inner class OverlayEntry(val overlay: Overlay) : NlibListWidget.Entry<OverlayEntry>() {
-        override fun render(
-            context: DrawContext, index: Int, y: Int, x: Int,
-            entryWidth: Int, entryHeight: Int,
-            mouseX: Int, mouseY: Int, hovered: Boolean, tickDelta: Float
+        override fun renderContent(
+            guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, hovered: Boolean, delta: Float
         ) {
-            val selected = (overlayList?.selectedOrNull === this)
-            renderBackground(context, x, y, entryWidth, entryHeight, hovered, selected)
+            val x = getX()
+            val y = getY()
+            val entryWidth = getWidth()
+            val entryHeight = getHeight()
+            val selected = (overlayList?.selected === this)
+            renderBackground(guiGraphics, x, y, entryWidth, entryHeight, hovered, selected)
 
             val statusColor = if (overlay.enabled.value) Colors.ENABLED else Colors.DISABLED
-            context.fill(x + 4, y + 4, x + 8, y + entryHeight - 4, statusColor)
+            guiGraphics.fill(x + 4, y + 4, x + 8, y + entryHeight - 4, statusColor)
 
-            val font = client!!.textRenderer
-            context.drawText(font, overlay.displayName, x + 14, y + 6, Colors.TEXT, true)
+            val font = minecraft?.font ?: return
+            guiGraphics.drawString(font, overlay.displayName, x + 14, y + 6, Colors.TEXT, true)
             val posText = "§7${overlay.position.anchorSection.name.lowercase().replace("_", " ")}"
-            context.drawText(font, posText, x + 14, y + 18, Colors.TEXT_SECONDARY, false)
+            guiGraphics.drawString(font, posText, x + 14, y + 18, Colors.TEXT_SECONDARY, false)
         }
     }
 }
