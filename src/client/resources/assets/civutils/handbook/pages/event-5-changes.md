@@ -1,0 +1,148 @@
+---
+title: Event 5 Changes
+summary: New features and changes in Event 5
+---
+
+# Event 5 Changes
+
+This page summarizes the major changes introduced in Event 5.
+
+## New Systems
+
+### Gravity System
+- Unsupported blocks will **fall down**
+- [Reinforced blocks](reinforcements) act as support
+- Nether bricks work as support blocks
+- Hold scaffolding as a Level 1 [Builder](builder) to see block integrity
+
+### Lodestone Prison System
+- Bind a compass to a lodestone
+- Kill a player while holding the bound compass
+- Their spawn is set to that lodestone
+- Kill them again with the compass to free them
+
+### Natural Path System
+- Walking on grass slowly creates paths
+- Removes leaf litter, snow, and natural decor
+- Armored players/horses create coarse dirt instead
+- Paths give a slight speed boost
+
+### Food System Overhaul
+- [Food Expiration](food-expiration) - all food spoils over time
+- Preservation methods: barrels, smoking, blessing, ice
+- Rotten food can be smelted into rotten flesh → bone meal
+
+## Combat & Survival
+
+### Fishing Changes
+- Fish are now entities when caught
+- Dangerous mobs can be fished up (pufferfish, guardians)
+- Fishing is more dangerous at night
+- Rare "shiny goodies" possible
+
+### Torches
+- Torches go out in rain
+- Can be relit with other torches
+
+### Animal Changes
+- Naturally spawned animals don't starve
+- Auto-breeding if enough grass/snow around
+- Breeding cost scales with animal count in pen
+
+## Crafting & Equipment
+
+### [Beacon System](beacons)
+- Custom recipe and ownership system
+- Whitelisted players get positive effects
+- Non-whitelisted get negative effects
+- Requires fuel (coal or ingots)
+
+### [Emerald Infusion](emerald-infusion)
+- Transfer Class XP using emeralds
+- Emeralds store 100 CXP, blocks store 900 CXP
+- Craft with bottle to make drinkable XP
+
+### Durability Overhaul
+- Waxing tools/armor makes them last longer
+- Whetstone restores decayed stats
+- Broken items return some materials
+
+### Copper Gear
+- Added copper tools and armor
+- Server is 1.21.8, so copper gear is plugin-added
+
+### Craftable Chainmail
+- Can now craft chainmail armor
+- Uses chainmail plates (iron nuggets + padded leather)
+
+## [Golemancy](golemancy) Upgrades
+
+### Iron Golems
+- Builders can set codes for defense targeting
+- Golems defend players with matching code
+- Require honeycomb maintenance
+
+### Snow Golems
+- Can be fed coal/charcoal to grow
+- Upgraded snowmen shoot faster and deal damage
+
+## [Interdimensional Travel](interdimensional-travel)
+
+- Nether is now 1:1 with Overworld (no fast travel)
+- Players share the Nether between worlds
+- Portal corner blocks determine destination world
+- Original homeworld affects default respawn
+
+## New Player Experience
+
+### Player Locator
+- First 5 minutes: shows players within 350 blocks
+- Disappears after time expires
+
+### Worker Class
+- Level 0 in everything = "Worker"
+- Craft simple recipes without hunger cost
+- Advanced recipes still cost hunger
+
+### Spawn Grace
+- 2 minutes of mob ignore after respawning without bed
+- Ends early if you attack anything
+
+## Farming Changes
+
+### Soil Quality
+Biome affects crop growth:
+
+| Tier | Effect |
+|------|--------|
+| Ungrowable | Crops become dead bushes |
+| Very Slow | Functional but slow |
+| Slow | Moderate speed |
+| Good | Normal speed |
+| Optimal | Fastest growth |
+
+After farming 750 of a crop, hold it to see local soil quality.
+
+### Breeding Changes
+- More animals in pen = more food needed + longer cooldown
+- Build small pens (2 animals) for efficiency
+
+## Miscellaneous
+
+### Pronoun Symbols
+- Access in /class menu
+- Shows icon next to your name
+
+### Stonecutters
+- Can cut wood into various wooden blocks
+
+### Snowballs
+- Extra cold effect (possibly freezes creatures)
+
+### Ore Changes
+- Biome-specific ores
+- Completely overhauled ore generation
+
+---
+
+> **See Also:** [Class Basics](class-basics), [Commands](commands)

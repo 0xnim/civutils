@@ -1,0 +1,86 @@
+---
+title: Golemancy
+summary: Create and control iron and snow golems
+---
+
+# Golemancy
+
+[Builders](builder) have the unique ability to create and control golems for defense. Both iron golems and snow golems have special mechanics in CivLabs.
+
+## Iron Golems
+
+Only Builders can create iron golems.
+
+### Growth Stages
+
+Iron golems start **small** with vanilla behavior (attacking hostile mobs).
+
+**To grow them:**
+1. Feed iron blocks to the golem
+2. After 8 iron blocks, they reach full size
+3. At full size, they can be assigned a **code**
+
+### Code System
+
+Full-size iron golems can be given a code that determines who they protect:
+
+**Assigning a Code:**
+1. Write a code in a **Book & Quill**
+2. **Shift right-click** the golem with the book
+3. Only the Builder who created the golem can do this
+
+**How Codes Work:**
+- Any player holding a book with the **exact same contents** has the code
+- Golems defend players with the code when they're attacked
+- Players with the code can hit the golem to **reset its target**
+- If both players in a fight have the code, the golem won't intervene
+- Golems won't help an aggressor with the code unless they're attacked by someone without it
+
+### Maintenance
+
+Full-size iron golems require upkeep:
+- Feed them **honeycombs** every hour
+- Without maintenance, they rust and become inactive
+
+## Snow Golems
+
+Snow golems also start small and can be upgraded.
+
+### Growing Snow Golems
+
+Feed the snow golem 8 pieces of **coal or charcoal** to grow it.
+
+**Upgraded Snow Golem:**
+- Shoots faster
+- Deals actual damage to mobs
+- Acts as a defensive turret
+
+## Strategic Uses
+
+### Base Defense
+- Station coded iron golems at entry points
+- They'll defend anyone with the code who gets attacked
+
+### Territory Control
+- Golems can protect a wide area
+- Use codes to define friend vs foe
+
+### Mob Farms
+- Snow golem turrets can help with mob control
+- Combine with Builder walls for safe grinding
+
+### PvP Support
+- Iron golems can turn the tide in fights
+- Make sure allies have the code book
+
+## Tips
+
+1. **Code Security:** Keep your code phrase secret
+2. **Backup Codes:** If a golem is stolen, having the code lets you manipulate it
+3. **Strategic Placement:** Position golems at chokepoints
+4. **Maintenance Schedule:** Set reminders for honeycomb feeding
+5. **Multiple Golems:** More golems = more coverage, but more upkeep
+
+---
+
+> **See Also:** [Builder](builder), [Reinforcements](reinforcements)

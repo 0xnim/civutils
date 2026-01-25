@@ -1,0 +1,100 @@
+---
+title: Builder
+summary: Build and reinforce structures against mobs
+---
+
+# Builder
+
+The Builder's role is to create sturdy, mob-proof bases using [reinforced](reinforcements) blocks. They are the only class able to craft brick-type blocks (stone bricks, mud bricks, etc.) that are indestructible by mobs. Builders also have exclusive access to redstone components.
+
+## Primary Abilities
+
+### Reinforcement
+Builders can reinforce blocks to make them mob-resistant and harder to break. See [Reinforcements](reinforcements) for full details.
+
+| Type | Material | Effect |
+|------|----------|--------|
+| Wooden | Planks + Stick | Temporary mob resistance (2 days) |
+| Light | Copper Ingot | Mob-proof, fireproof, 5x break time |
+| Heavy | Iron Ingot | Mob-proof, fireproof, 10x break time |
+
+### Brick Blocks
+Builders are the only class that can craft brick-type blocks, which are **automatically mob-proof** without needing reinforcement.
+
+### Golemancy
+Builders can create and control [iron and snow golems](golemancy) to defend players.
+
+## Unlocks by Level
+
+### Apprentice (1)
+- Light Reinforcement
+- Stonecutter and Loom usage
+- **Haste I**
+- Stone, Smooth Stone, Stone Bricks variants
+- Andesite, Diorite, Granite variants
+- Deepslate variants
+- Sandstone variants
+- Terracotta variants
+
+### Journeyman (2)
+- Heavy Reinforcement
+- **Haste II**
+- Bricks, Mud Bricks variants
+- Stained Glass and Panes
+- Lever, Redstone Torch, Trip Wire Hooks
+
+### Expert (3)
+- Scaffolding, Concrete Powder
+- Tuff Bricks, Nether Bricks, Blackstone, Basalt
+- Daylight Detector
+- Redstone Repeater and Comparator
+- Dropper, Hopper
+
+### Master (4)
+- **Haste III**
+- Prismarine Bricks, End Stone Bricks
+- Red Nether Brick, Quartz
+- Glazed Terracotta
+- Pistons, Redstone Lamp, Note Block
+- Dispenser, Observer
+- Auto Crafter interaction
+
+### Grandmaster (5)
+- **Haste IV**
+
+## Gaining XP
+
+| Action | XP | Level Required |
+|--------|-----|----------------|
+| Stripping Bark | 1 | Novice (0) |
+| Pathing (shovel) | 1 | Novice (0) |
+| Light Reinforcement | 5 | Apprentice (1) |
+| Heavy Reinforcement | 5 | Journeyman (2) |
+| Placing many blocks | 1 | Novice (0) |
+
+### Smelting XP
+| Item | XP |
+|------|-----|
+| Brick | 2 |
+| Glass | 1 |
+| Stone | 1 |
+| Smooth Stone | 2 |
+| Deepslate | 3 |
+
+## Class Interactions
+
+- **[Miners](miner)** provide stone for bricks and building
+- **[Guardsmen](guardsman)** benefit from mob farms and safe areas
+- **[Farmers](farmer)** need protected perimeters for their farms
+
+## Tips
+
+1. **Early Game:** Smelt cobblestone, clay, and glass for XP
+2. **Deepslate:** Gives 3 XP per smelt vs 2 for smooth stone
+3. **Don't Waste Stone:** Smooth stone isn't mob-proof and can't become bricks
+4. **Mob Farms:** Work with Guardsmen to create grinding spots
+5. **Aesthetics:** Good builds raise morale and group identity
+
+---
+
+> **See Also:** [Reinforcements](reinforcements), [Golemancy](golemancy)

@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component
 import xyz.nim.civutils.core.CivutilsMod
 import xyz.nim.civutils.data.handbook.*
 import xyz.nim.civutils.gui.widgets.Colors
+import xyz.nim.civutils.gui.widgets.ItemSlotWidget
 import xyz.nim.civutils.gui.widgets.MarkdownRenderer
 import xyz.nim.civutils.models.HandbookModel
 import xyz.nim.lib.ui.NlibTheme
@@ -39,7 +40,11 @@ class HandbookScreen(
     private var backButton: Button? = null
     private var forwardButton: Button? = null
     private var searchBox: EditBox? = null
+    private var clearSearchButton: Button? = null
     private var searchQuery = ""
+
+    // Search results (for showing match info)
+    private var searchResults: Map<String, SearchResult> = emptyMap()
 
     // Content
     private var currentPage: HandbookPage? = null
@@ -65,6 +70,9 @@ class HandbookScreen(
 
     // Content renderer
     private val markdownRenderer = MarkdownRenderer()
+
+    // Header item slot for item pages
+    private var headerItemSlot: ItemSlotWidget? = null
 
     // Content area dimensions (for renderer)
     private var contentStartX = 0
@@ -114,14 +122,29 @@ class HandbookScreen(
         forwardButton?.active = HandbookModel.canGoForward()
         addRenderableWidget(forwardButton!!)
 
-        // Search box
-        searchBox = EditBox(font, leftPanelX + 58, 25, leftPanelWidth - 58, 18, Component.literal(""))
+        // Search box (with space for clear button)
+        val clearButtonWidth = 20
+        searchBox = EditBox(font, leftPanelX + 58, 25, leftPanelWidth - 58 - clearButtonWidth - 2, 18, Component.literal(""))
         searchBox?.setHint(Component.literal("Search..."))
         searchBox?.setResponder { query ->
             searchQuery = query
             refreshPageList()
+            updateClearButtonVisibility()
         }
         addWidget(searchBox)
+
+        // Clear search button
+        clearSearchButton = Button.builder(Component.literal("\u00D7")) { // × symbol
+            searchBox?.value = ""
+            searchQuery = ""
+            refreshPageList()
+            updateClearButtonVisibility()
+        }
+            .bounds(leftPanelX + leftPanelWidth - clearButtonWidth, 25, clearButtonWidth, 18)
+            .build()
+        clearSearchButton?.active = false
+        clearSearchButton?.visible = false
+        addRenderableWidget(clearSearchButton!!)
 
         // Category list
         val listHeaderOffset = 22
@@ -167,17 +190,31 @@ class HandbookScreen(
     private fun refreshPageList() {
         pageList?.clearEntries()
 
-        val pages = if (searchQuery.isNotBlank()) {
-            HandbookModel.searchPages(searchQuery)
-        } else if (selectedCategory != null && selectedCategory?.id != "__all__") {
-            HandbookModel.getPagesInCategory(selectedCategory!!.id)
+        if (searchQuery.isNotBlank()) {
+            // Search mode - use full-text search with results
+            val results = HandbookModel.searchPages(searchQuery)
+            searchResults = results.associateBy { it.page.id }
+            for (result in results) {
+                pageList?.addEntryToList(PageEntry(result.page, result))
+            }
         } else {
-            HandbookModel.getPages()
+            // Browse mode - show by category
+            searchResults = emptyMap()
+            val pages = if (selectedCategory != null && selectedCategory?.id != "__all__") {
+                HandbookModel.getPagesInCategory(selectedCategory!!.id)
+            } else {
+                HandbookModel.getPages()
+            }
+            for (page in pages.sortedBy { it.order }) {
+                pageList?.addEntryToList(PageEntry(page, null))
+            }
         }
+    }
 
-        for (page in pages.sortedBy { it.order }) {
-            pageList?.addEntryToList(PageEntry(page))
-        }
+    private fun updateClearButtonVisibility() {
+        val hasQuery = searchQuery.isNotBlank()
+        clearSearchButton?.active = hasQuery
+        clearSearchButton?.visible = hasQuery
     }
 
     private fun loadPage(pageId: String, addToHistory: Boolean = true) {
@@ -192,6 +229,11 @@ class HandbookScreen(
         // Update navigation button states
         backButton?.active = HandbookModel.canGoBack()
         forwardButton?.active = HandbookModel.canGoForward()
+
+        // Create header item slot if this is an item page
+        headerItemSlot = currentPage?.meta?.itemId?.let { itemId ->
+            ItemSlotWidget(itemId, 1, ItemSlotWidget.SlotSize.LARGE)
+        }
 
         // Calculate max scroll with dynamic heights
         currentPage?.let { page ->
@@ -381,22 +423,44 @@ class HandbookScreen(
         // Panel headers
         guiGraphics.drawString(font, "Categories", leftPanelX + 8, contentY + 6, NlibTheme.TEXT_PRIMARY, true)
 
+        // Right panel header with optional item icon
+        val headerX = rightPanelX + 8
+        val headerY = contentY + 6
+
+        // Render item icon if this is an item page
+        val itemSlot = headerItemSlot
+        val titleX = if (itemSlot != null) {
+            // Render item icon
+            itemSlot.render(guiGraphics, headerX, headerY - 4, mouseX, mouseY, renderBackground = false)
+            headerX + ItemSlotWidget.SlotSize.LARGE.pixels + 4
+        } else {
+            headerX
+        }
+
         val rightTitle = currentPage?.meta?.title ?: "Select a page"
-        guiGraphics.drawString(font, rightTitle, rightPanelX + 8, contentY + 6, NlibTheme.TEXT_PRIMARY, true)
+        guiGraphics.drawString(font, rightTitle, titleX, headerY, NlibTheme.TEXT_PRIMARY, true)
 
         // Breadcrumb
         currentPage?.let { page ->
             val category = HandbookModel.getCategories().find { it.id == page.meta.category }
             if (category != null) {
                 val breadcrumb = "${category.name} > ${page.meta.title}"
-                guiGraphics.drawString(font, breadcrumb, rightPanelX + 8, contentY + 18, NlibTheme.TEXT_SECONDARY, false)
+                guiGraphics.drawString(font, breadcrumb, titleX, contentY + 18, NlibTheme.TEXT_SECONDARY, false)
             }
         }
 
-        // Copy feedback tooltip
-        if (markdownRenderer.isHoveringCopyButton()) {
-            // Could show a tooltip here
+        // Render item tooltips (after all content so they appear on top)
+        val adjustedMouseY = if (mouseX in contentStartX..(contentStartX + contentAreaWidth) &&
+            mouseY in contentStartY..(contentStartY + contentAreaHeight)
+        ) {
+            (mouseY + contentScroll - contentStartY).toInt() + contentStartY
+        } else {
+            mouseY
         }
+        markdownRenderer.renderItemTooltips(guiGraphics, mouseX, adjustedMouseY)
+
+        // Render header item slot tooltip
+        itemSlot?.renderTooltip(guiGraphics, mouseX, mouseY)
     }
 
     override fun mouseScrolled(
@@ -451,6 +515,13 @@ class HandbookScreen(
                         return true
                     }
 
+                    // Check for item click
+                    val itemId = markdownRenderer.getItemAt(mouseX.toInt(), adjustedY)
+                    if (itemId != null) {
+                        handleItemClick(itemId)
+                        return true
+                    }
+
                     // Check for link click
                     val link = markdownRenderer.getLinkAt(mouseX.toInt(), adjustedY)
                     if (link != null) {
@@ -502,6 +573,20 @@ class HandbookScreen(
                     toastManager.error("Page not found: $link")
                 }
             }
+        }
+    }
+
+    /**
+     * Handle click on an item slot - navigate to the item's page if one exists.
+     */
+    private fun handleItemClick(itemId: String) {
+        // Find a page with this itemId
+        val itemPage = HandbookModel.getPages().find { it.itemId == itemId }
+        if (itemPage != null) {
+            loadPage(itemPage.id)
+        } else {
+            // No page for this item - just show the item name
+            CivutilsMod.logger.debug("No handbook page for item: $itemId")
         }
     }
 
@@ -563,7 +648,11 @@ class HandbookScreen(
         }
     }
 
-    private inner class PageEntry(val page: HandbookPageMeta) : NlibListWidget.Entry<PageEntry>() {
+    private inner class PageEntry(
+        val page: HandbookPageMeta,
+        val searchResult: SearchResult?
+    ) : NlibListWidget.Entry<PageEntry>() {
+
         override fun renderContent(
             guiGraphics: GuiGraphics,
             mouseX: Int,
@@ -578,17 +667,60 @@ class HandbookScreen(
             val selected = (pageList?.selected === this) || (currentPage?.meta?.id == page.id)
             renderBackground(guiGraphics, x, y, entryWidth, entryHeight, hovered, selected)
 
+            // Title
             guiGraphics.drawString(font, page.title, x + 8, y + 4, Colors.TEXT, true)
 
-            // Summary preview
-            if (page.summary.isNotEmpty()) {
+            // Show match type indicators when in search mode
+            if (searchResult != null && searchResult.matchTypes.isNotEmpty()) {
+                val indicatorX = x + entryWidth - 8
+                renderMatchIndicators(guiGraphics, indicatorX, y + 4, searchResult.matchTypes)
+            }
+
+            // Show snippet or summary in second line
+            val secondLine = if (searchResult?.matchSnippet != null && searchQuery.isNotBlank()) {
+                // Show content snippet with query highlighted
+                searchResult.matchSnippet
+            } else if (page.summary.isNotEmpty()) {
+                page.summary
+            } else {
+                null
+            }
+
+            if (secondLine != null) {
                 val maxLen = (entryWidth - 16) / 4
-                val summary = if (page.summary.length > maxLen) {
-                    page.summary.take(maxLen - 3) + "..."
+                val displayText = if (secondLine.length > maxLen) {
+                    secondLine.take(maxLen - 3) + "..."
                 } else {
-                    page.summary
+                    secondLine
                 }
-                guiGraphics.drawString(font, summary, x + 8, y + 16, Colors.TEXT_SECONDARY, false)
+                guiGraphics.drawString(font, displayText, x + 8, y + 16, Colors.TEXT_SECONDARY, false)
+            }
+        }
+
+        private fun renderMatchIndicators(
+            guiGraphics: GuiGraphics,
+            rightX: Int,
+            y: Int,
+            matchTypes: Set<SearchMatchType>
+        ) {
+            // Render small colored letters indicating where match was found
+            var indicatorX = rightX
+            val indicatorSpacing = 10
+
+            // Render in reverse order so they appear left-to-right: T S # C
+            val indicators = listOf(
+                SearchMatchType.CONTENT to Pair("C", 0xFF88CC88.toInt()),  // Green - content
+                SearchMatchType.TAG to Pair("#", 0xFFCC88CC.toInt()),      // Purple - tag
+                SearchMatchType.SUMMARY to Pair("S", 0xFF88CCCC.toInt()),  // Cyan - summary
+                SearchMatchType.TITLE to Pair("T", 0xFFCCCC88.toInt())     // Yellow - title
+            )
+
+            for ((type, pair) in indicators) {
+                if (type in matchTypes) {
+                    indicatorX -= indicatorSpacing
+                    val (letter, color) = pair
+                    guiGraphics.drawString(font, letter, indicatorX, y, color, false)
+                }
             }
         }
     }

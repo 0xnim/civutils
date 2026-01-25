@@ -44,11 +44,17 @@ data class ClassInfo(
         get() = if (xpForLevel > 0) ((currentXp.toDouble() / xpForLevel) * 100).toInt() else 0
 
     /**
-     * Level progress percentage (0-100) calculated from totalXp using server formula.
-     * Shows progress within current level toward next level.
+     * Level progress percentage (0-100) within current level toward next level.
+     * Prefers /class menu data when available (more accurate), falls back to formula-based calculation.
      */
     val levelProgressPercent: Int
-        get() = if (totalXp > 0) ClassModel.calculateLevelProgress(totalXp) else xpPercent
+        get() {
+            // Prefer /class menu data when available (authoritative source)
+            if (xpForLevel > 0) return xpPercent
+            // Fall back to formula-based calculation from totalXp
+            if (totalXp > 0) return ClassModel.calculateLevelProgress(totalXp)
+            return 0
+        }
 
     /**
      * Total progress percentage (0-100) toward max level (level 5).
@@ -451,7 +457,7 @@ object ClassModel : Model() {
             CivutilsMod.logger.info("ClassModel: isInClassMenu = $isInClassMenu")
 
             if (isInClassMenu) {
-                classes.clear()
+                // Don't clear classes - preserve totalXp, session stats, and xpHistory from actionbar
                 CivutilsMod.logger.info("ClassModel: Detected class menu opened, ready to parse items")
             }
         } else {

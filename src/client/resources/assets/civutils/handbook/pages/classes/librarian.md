@@ -1,0 +1,116 @@
+---
+title: Librarian
+summary: Enchant items and create maps and blueprints
+---
+
+# Librarian
+
+The Librarian's main role is enchanting player gear, creating maps, and crafting the blueprints that [Blacksmiths](blacksmith) need for iron+ equipment. They also gain permanent speed bonuses.
+
+## Primary Abilities
+
+### Item Blessing (Enchanting)
+Level 2+ Librarians can bless items to give them random enchantments:
+
+1. Hold a **book** in your off-hand
+2. Hold the item to enchant in your main hand
+3. Shift right-click
+
+This consumes the book and Minecraft XP levels (equal to your Librarian level). The enchantment is random and may not be compatible with the item.
+
+### Equipment Blueprints
+Librarians create blueprints that Blacksmiths need for iron+ gear. See [Smithing Materials](smithing-materials) for details.
+
+**Recipe:** 3 paper + blue dye + plate set/tool head (not consumed)
+
+### EXP Transfer Books
+Level 3+ Librarians can turn Book & Quills into EXP Transfer Books by shift right-clicking.
+
+- Write 1, 2, or 3 and sign it
+- Deducts ~3 levels worth of Minecraft XP from you
+- Another player can use the book to receive that XP
+- Higher-level players give more XP when creating books
+
+### Netherite Smithing Template
+Level 5 Librarians can craft Netherite Templates:
+- 1 Netherite Ingot + 6 Diamonds + 1 Nether Wart Block
+
+## Unlocks by Level
+
+### Apprentice (1)
+- Bookshelves, Chiseled Bookshelves
+- Book and Quill, Lectern
+- Maps and Compass
+- **Speed I**
+
+### Journeyman (2)
+- Cartography Table
+- Copied Books
+- Iron Gear Blueprints
+- **Speed II**
+- One-color Banners
+- Loom crafting
+- Item Blessing
+
+### Expert (3)
+- Enchanting Table (crafting only)
+- Ender Chests
+- EXP Transfer Books
+- Gold Gear Blueprints
+
+### Master (4)
+- **Speed III**
+- Enchanting Table usage
+- Diamond Gear Blueprints
+
+### Grandmaster (5)
+- Netherite Smithing Template
+- Beacon crafting
+- Netherite Gear Blueprints
+
+## Gaining XP
+
+| Action | XP | Level Required |
+|--------|-----|----------------|
+| Crafting Book | 3 | Novice (0) |
+| Crafting Signs | 3 | Novice (0) |
+| Crafting Dye | 2 per dye | Novice (0) |
+| Crafting Bookshelf | 6 | Apprentice (1) |
+| Crafting Book and Quill | 12 | Apprentice (1) |
+| Crafting Lectern | 3 | Apprentice (1) |
+| Crafting Compass | 10 | Apprentice (1) |
+| Crafting Blueprint | 3 | Apprentice (1) |
+| Crafting Map | 3 | Apprentice (1) |
+| Walking with Map | ~1 per distance | Apprentice (1) |
+| Placing Bookshelf | 1 | Apprentice (1) |
+
+## Class Interactions
+
+- **[Healers](healer)** and **[Farmers](farmer)** supply paper and leather
+- **[Blacksmiths](blacksmith)** need your blueprints for iron+ gear
+- **[Miners](miner)** and **[Guardsmen](guardsman)** benefit most from enchantments
+
+## Tips
+
+### Leveling Strategy
+1. Craft signs or books to reach Apprentice
+2. Craft bookshelves, place them (1 XP), break them, repeat
+3. Craft Book & Quills when possible (12 XP each)
+4. Keep planks flowing - you need lots
+
+### XP Management
+- Store levels above 30 in EXP Transfer Books before enchanting
+- Grindstones work for disenchanting
+- Fishing gives Minecraft XP and can yield enchanted items
+- Stay near animals being bred to passively gain XP
+
+| Current Level | XP to Level 30 |
+|---------------|----------------|
+| 0 | 1,395 |
+| 27 | 306 |
+| 28 | 209 |
+| 29 | 107 |
+
+---
+
+> **See Also:** [Smithing Materials](smithing-materials), [Smithing System](smithing), [Blacksmith](blacksmith)

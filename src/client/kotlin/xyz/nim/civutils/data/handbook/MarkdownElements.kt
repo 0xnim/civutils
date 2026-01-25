@@ -168,3 +168,46 @@ data class TableElement(
         return (rows.size + 1) * rowHeight + 2 // +1 for header, +2 for borders
     }
 }
+
+/**
+ * Represents an item specification with ID and count.
+ */
+data class ItemSpec(
+    val itemId: String,
+    val count: Int = 1
+)
+
+/**
+ * Types of recipes that can be displayed.
+ */
+enum class RecipeType {
+    CUSTOM,     // Custom factory/machine recipes
+    CRAFTING,   // 3x3 crafting grid (optional)
+    SMELTING    // Furnace-style smelting (optional)
+}
+
+/**
+ * Recipe element for displaying crafting/processing recipes.
+ */
+data class RecipeElement(
+    val type: RecipeType,
+    val name: String? = null,
+    val inputs: List<ItemSpec>,
+    val outputs: List<ItemSpec>,
+    val metadata: Map<String, String> = emptyMap()
+) : MarkdownElement() {
+    override val baseHeight: Int = 60 // Base height for recipe box
+
+    override fun calculateHeight(width: Int, font: Font): Int {
+        // Header line if name exists
+        val headerHeight = if (name != null) font.lineHeight + 8 else 0
+        // Input/output row with item slots (18px each + padding)
+        val itemRowHeight = 26
+        // Metadata lines
+        val metadataHeight = metadata.size * (font.lineHeight + 2)
+        // Padding
+        val padding = 12
+
+        return headerHeight + itemRowHeight + metadataHeight + padding
+    }
+}

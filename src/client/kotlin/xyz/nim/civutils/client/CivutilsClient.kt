@@ -15,11 +15,13 @@ import xyz.nim.civutils.core.keybind.KeybindManager
 import xyz.nim.civutils.core.network.CivChannelManager
 import xyz.nim.civutils.features.players.PlayerTagCommands
 import xyz.nim.civutils.features.utilities.AutoSitFeature
+import xyz.nim.civutils.features.utilities.HandbookFeature
 import xyz.nim.civutils.gui.screens.ConfigScreen
 import xyz.nim.civutils.gui.screens.OverlayEditorScreen
 import xyz.nim.civutils.gui.screens.QuickTagScreen
 import xyz.nim.civutils.models.BossBarModel
 import xyz.nim.civutils.models.ClassModel
+import xyz.nim.civutils.models.HandbookModel
 import xyz.nim.civutils.models.PlayerModel
 import xyz.nim.civutils.models.PlayerTagModel
 import xyz.nim.civutils.models.ServerFeaturesModel
@@ -80,7 +82,8 @@ class CivutilsClient : ClientModInitializer {
             ClassModel,
             PlayerTagModel,
             BossBarModel,
-            ServerFeaturesModel
+            ServerFeaturesModel,
+            HandbookModel
         )
     }
 
@@ -89,8 +92,8 @@ class CivutilsClient : ClientModInitializer {
      */
     private fun registerFeatures() {
         CivutilsMod.featureManager.registerFeatures(
-            AutoSitFeature()
-            // PlayerTagFeature() - disabled
+            AutoSitFeature(),
+            HandbookFeature()
         )
     }
 

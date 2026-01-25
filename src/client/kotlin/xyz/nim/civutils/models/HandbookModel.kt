@@ -39,6 +39,10 @@ object HandbookModel : Model() {
     private val pageCache = mutableMapOf<String, HandbookPage>()
     private var currentServerHash: String? = null
 
+    // Search index: pageId -> plain text content (for full-text search)
+    private val contentIndex = mutableMapOf<String, String>()
+    private var indexBuilt = false
+
     // Navigation history
     private val history = mutableListOf<String>()
     private var historyIndex = -1
@@ -47,6 +51,8 @@ object HandbookModel : Model() {
         serverIndex = null
         mergedIndex = null
         pageCache.clear()
+        contentIndex.clear()
+        indexBuilt = false
         currentServerHash = null
         history.clear()
         historyIndex = -1
@@ -137,6 +143,58 @@ object HandbookModel : Model() {
         )
 
         pageCache.clear()
+        contentIndex.clear()
+        indexBuilt = false
+    }
+
+    /**
+     * Build the search index by loading all page content.
+     * Called lazily on first search.
+     */
+    private fun buildSearchIndex() {
+        if (indexBuilt) return
+
+        for (page in getPages()) {
+            val content = loadPageContent(page)
+            if (content != null) {
+                // Store plain text version for searching (strip markdown)
+                contentIndex[page.id] = stripMarkdownForSearch(content)
+            }
+        }
+        indexBuilt = true
+        CivutilsMod.logger.info("Built search index for ${contentIndex.size} pages")
+    }
+
+    /**
+     * Strip markdown syntax for plain text search.
+     */
+    private fun stripMarkdownForSearch(markdown: String): String {
+        return markdown
+            // Remove YAML front matter
+            .replace(Regex("^---[\\s\\S]*?---\\s*"), "")
+            // Remove code blocks
+            .replace(Regex("```[\\s\\S]*?```"), " ")
+            // Remove inline code
+            .replace(Regex("`[^`]+`"), " ")
+            // Remove links but keep text
+            .replace(Regex("\\[([^]]+)]\\([^)]+\\)"), "$1")
+            // Remove images
+            .replace(Regex("!\\[([^]]*)]\\([^)]+\\)"), "$1")
+            // Remove heading markers
+            .replace(Regex("^#{1,6}\\s+", RegexOption.MULTILINE), "")
+            // Remove bold/italic markers
+            .replace(Regex("[*_]{1,3}"), "")
+            // Remove horizontal rules
+            .replace(Regex("^[-*_]{3,}$", RegexOption.MULTILINE), "")
+            // Remove blockquote markers
+            .replace(Regex("^>\\s*", RegexOption.MULTILINE), "")
+            // Remove list markers
+            .replace(Regex("^\\s*[-*+]\\s+", RegexOption.MULTILINE), "")
+            .replace(Regex("^\\s*\\d+\\.\\s+", RegexOption.MULTILINE), "")
+            // Normalize whitespace
+            .replace(Regex("\\s+"), " ")
+            .trim()
+            .lowercase()
     }
 
     // === Page Access ===
@@ -151,15 +209,78 @@ object HandbookModel : Model() {
         return getPages().filter { it.category == categoryId }
     }
 
-    fun searchPages(query: String): List<HandbookPageMeta> {
-        if (query.isBlank()) return getPages()
+    /**
+     * Search pages with full-text search and match information.
+     * Returns SearchResult objects with match type and snippet.
+     */
+    fun searchPages(query: String): List<SearchResult> {
+        if (query.isBlank()) {
+            return getPages().map { SearchResult(it, emptySet()) }
+        }
+
+        // Build index on first search
+        buildSearchIndex()
 
         val lowerQuery = query.lowercase()
-        return getPages().filter { page ->
-            page.title.lowercase().contains(lowerQuery) ||
-                    page.tags.any { it.lowercase().contains(lowerQuery) } ||
-                    page.summary.lowercase().contains(lowerQuery)
+        val results = mutableListOf<SearchResult>()
+
+        for (page in getPages()) {
+            val matchTypes = mutableSetOf<SearchMatchType>()
+            var snippet: String? = null
+
+            // Check title
+            if (page.title.lowercase().contains(lowerQuery)) {
+                matchTypes.add(SearchMatchType.TITLE)
+            }
+
+            // Check tags
+            if (page.tags.any { it.lowercase().contains(lowerQuery) }) {
+                matchTypes.add(SearchMatchType.TAG)
+            }
+
+            // Check summary
+            if (page.summary.lowercase().contains(lowerQuery)) {
+                matchTypes.add(SearchMatchType.SUMMARY)
+            }
+
+            // Check content (full-text search)
+            val content = contentIndex[page.id]
+            if (content != null && content.contains(lowerQuery)) {
+                matchTypes.add(SearchMatchType.CONTENT)
+
+                // Extract snippet around match
+                if (snippet == null) {
+                    snippet = extractSnippet(content, lowerQuery)
+                }
+            }
+
+            if (matchTypes.isNotEmpty()) {
+                results.add(SearchResult(page, matchTypes, snippet))
+            }
         }
+
+        // Sort: title matches first, then by page order
+        return results.sortedWith(
+            compareByDescending<SearchResult> { SearchMatchType.TITLE in it.matchTypes }
+                .thenBy { it.page.order }
+        )
+    }
+
+    /**
+     * Extract a snippet around the search match for preview.
+     */
+    private fun extractSnippet(content: String, query: String): String {
+        val index = content.indexOf(query)
+        if (index < 0) return ""
+
+        val snippetRadius = 40
+        val start = maxOf(0, index - snippetRadius)
+        val end = minOf(content.length, index + query.length + snippetRadius)
+
+        val prefix = if (start > 0) "..." else ""
+        val suffix = if (end < content.length) "..." else ""
+
+        return "$prefix${content.substring(start, end).trim()}$suffix"
     }
 
     fun getPage(pageId: String): HandbookPage? {

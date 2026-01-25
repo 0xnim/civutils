@@ -1,0 +1,90 @@
+---
+title: Reinforcements
+summary: Protect blocks from mobs and players
+---
+
+# Reinforcements
+
+Reinforcement is a system that makes blocks unbreakable by mobs and harder to destroy by players. It revolves primarily around the [Builder](builder) class.
+
+There are two types: **passive reinforcement** (automatic) and **active reinforcement** (manually applied).
+
+## Passive Reinforcement
+
+Some blocks are **automatically mob-proof** when placed:
+
+- Any block with **"Brick"** in the name
+- Obsidian
+
+**Examples of passively reinforced blocks:**
+- Stone Bricks, Deepslate Bricks (Builder Level 1)
+- Mud Bricks (Builder Level 2)
+- Nether Bricks, Tuff Bricks (Builder Level 3)
+
+**Important:** Deepslate **Brick** stairs are reinforced. Deepslate **Tiles** are NOT.
+
+These blocks require a pickaxe to break and can be further reinforced for additional protection.
+
+## Active Reinforcement
+
+Active reinforcement lets you make **any block** mob-resistant by consuming materials.
+
+### Wooden Reinforcement
+**Anyone can do this** (gives Builder XP)
+
+- **How:** Right-click a block with a stick while holding planks
+- **Effect:** Mob-resistant for 2 Minecraft days
+- **Visual:** Brown particles when holding a stick
+- **Use:** Temporary protection, not for permanent bases
+
+### Light Reinforcement
+**Requires Builder Level 1**
+
+- **Material:** Copper Ingot
+- **How:** Right-click a block while holding copper
+- **Effects:**
+  - Mob-resistant
+  - Fireproof
+  - Requires pickaxe to break
+  - **5x** longer break time
+  - Blast resistant
+- **Visual:** Orange particles when holding copper
+- **XP:** 5 Builder XP
+
+### Heavy Reinforcement
+**Requires Builder Level 2**
+
+- **Material:** Iron Ingot
+- **How:** Right-click a block while holding iron
+- **Effects:**
+  - Mob-resistant
+  - Fireproof
+  - Requires pickaxe to break
+  - **10x** longer break time
+  - High blast resistance
+- **XP:** 5 Builder XP
+
+## Reinforcement Decay
+
+All active reinforcement decays over time and must be reapplied:
+
+- Wooden reinforcement decays fastest (2 days)
+- Light and Heavy reinforcement decay slowly
+- Mobs attacking blocks can speed up decay
+
+## Strategy Tips
+
+1. **Prioritize Brick Blocks:** They're permanently mob-proof without upkeep
+2. **Use Wooden for Emergencies:** Quick temporary protection
+3. **Heavy Reinforce Entrances:** Critical points need maximum protection
+4. **Layer Defenses:** Brick walls + heavy reinforcement = very secure
+
+## Gravity Interaction (Event 5)
+
+Reinforced blocks act as **support blocks** for the gravity system. Unsupported blocks will fall, but reinforced blocks can hold structures in place.
+
+Nether bricks also work as support blocks.
+
+---
+
+> **See Also:** [Builder](builder), [Event 5 Changes](event-5-changes)

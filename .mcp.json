@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "civlabs-wiki": {
+      "command": "bun",
+      "args": ["run", "/Users/niklaswoj/CivlabsPublic/civlabs-wiki-mcp/src/index.js"]
+    }
+  }
+}

@@ -4,6 +4,7 @@ import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import xyz.nim.civutils.data.handbook.*
 import xyz.nim.lib.ui.NlibTheme
+import xyz.nim.civutils.gui.widgets.ItemSlotWidget.SlotSize
 
 /**
  * Renders markdown elements to the GUI.
@@ -14,6 +15,7 @@ class MarkdownRenderer {
 
     private val linkRegions = mutableListOf<LinkRegion>()
     private val codeBlockRegions = mutableListOf<CodeBlockRegion>()
+    private val itemSlotManager = ItemSlotManager()
 
     // Hover state
     private var hoveredLink: LinkRegion? = null
@@ -85,6 +87,7 @@ class MarkdownRenderer {
             is BlockQuoteElement -> renderBlockQuote(guiGraphics, element, x, y, width, font)
             is HorizontalRuleElement -> renderHorizontalRule(guiGraphics, x, y, width)
             is TableElement -> renderTable(guiGraphics, element, x, y, width, font)
+            is RecipeElement -> renderRecipe(guiGraphics, element, x, y, width, font)
         }
     }
 
@@ -137,13 +140,36 @@ class MarkdownRenderer {
         startX: Int,
         startY: Int,
         maxWidth: Int,
-        font: Font
+        font: Font,
+        mouseX: Int = 0,
+        mouseY: Int = 0
     ): Int {
         var currentX = startX
         var currentY = startY
         val lineHeight = font.lineHeight + 2
 
         for (span in spans) {
+            // Handle inline item references
+            if (span.isItem && span.itemId != null) {
+                val slotSize = SlotSize.SMALL.pixels // 14px for inline items
+
+                // Wrap if needed
+                if (currentX + slotSize > startX + maxWidth && currentX > startX) {
+                    currentX = startX
+                    currentY += lineHeight
+                }
+
+                // Create and render item slot (vertically centered with text)
+                val slot = ItemSlotWidget(span.itemId, span.itemCount, SlotSize.SMALL)
+                val slotY = currentY + (font.lineHeight - slotSize) / 2
+                slot.render(guiGraphics, currentX, slotY, mouseX, mouseY, renderBackground = true)
+                itemSlotManager.addSlot(slot)
+                itemSlotManager.recordBounds(slot)
+
+                currentX += slotSize + 2 // Small gap after item
+                continue
+            }
+
             val isHovered = span.link != null && hoveredLink?.target == span.link
 
             // Determine color
@@ -378,6 +404,78 @@ class MarkdownRenderer {
         return currentY - y
     }
 
+    private fun renderRecipe(
+        guiGraphics: GuiGraphics,
+        element: RecipeElement,
+        x: Int,
+        y: Int,
+        width: Int,
+        font: Font,
+        mouseX: Int = 0,
+        mouseY: Int = 0
+    ): Int {
+        var currentY = y
+        val padding = 6
+        val slotSize = SlotSize.NORMAL.pixels // 18px for recipe items
+
+        // Calculate total height
+        val headerHeight = if (element.name != null) font.lineHeight + 4 else 0
+        val itemRowHeight = slotSize + 8
+        val metadataHeight = element.metadata.size * (font.lineHeight + 2)
+        val totalHeight = headerHeight + itemRowHeight + metadataHeight + padding * 2
+
+        // Background box
+        guiGraphics.fill(x, y, x + width, y + totalHeight, 0x40000000)
+        guiGraphics.renderOutline(x, y, width, totalHeight, 0x60FFFFFF)
+
+        currentY += padding
+
+        // Recipe name header
+        if (element.name != null) {
+            guiGraphics.drawString(font, "\u00A7l${element.name}\u00A7r", x + padding, currentY, NlibTheme.ACCENT, true)
+            currentY += font.lineHeight + 4
+        }
+
+        // Input items
+        var itemX = x + padding
+        for (input in element.inputs) {
+            val slot = ItemSlotWidget(input.itemId, input.count, SlotSize.NORMAL)
+            slot.render(guiGraphics, itemX, currentY, mouseX, mouseY, renderBackground = true)
+            itemSlotManager.addSlot(slot)
+            itemSlotManager.recordBounds(slot)
+            itemX += slotSize + 4
+        }
+
+        // Arrow
+        val arrowX = itemX + 4
+        guiGraphics.drawString(font, "\u2192", arrowX, currentY + (slotSize - font.lineHeight) / 2, NlibTheme.TEXT_PRIMARY, false)
+        itemX = arrowX + font.width("\u2192") + 8
+
+        // Output items
+        for (output in element.outputs) {
+            val slot = ItemSlotWidget(output.itemId, output.count, SlotSize.NORMAL)
+            slot.render(guiGraphics, itemX, currentY, mouseX, mouseY, renderBackground = true)
+            itemSlotManager.addSlot(slot)
+            itemSlotManager.recordBounds(slot)
+            itemX += slotSize + 4
+        }
+
+        currentY += slotSize + 4
+
+        // Metadata (time, fuel, etc.)
+        for ((key, value) in element.metadata) {
+            val metaText = when (key) {
+                "time" -> "\u23F1 $value"  // Timer icon
+                "fuel" -> "\uD83D\uDD25 $value"  // Fire icon (may not render)
+                else -> "$key: $value"
+            }
+            guiGraphics.drawString(font, metaText, x + padding, currentY, NlibTheme.TEXT_SECONDARY, false)
+            currentY += font.lineHeight + 2
+        }
+
+        return totalHeight
+    }
+
     private fun renderHorizontalRule(
         guiGraphics: GuiGraphics,
         x: Int,
@@ -409,17 +507,40 @@ class MarkdownRenderer {
     }
 
     /**
-     * Clear tracked link and code block regions. Call before rendering a frame.
+     * Clear tracked link, code block, and item regions. Call before rendering a frame.
      */
     fun clearRegions() {
         linkRegions.clear()
         codeBlockRegions.clear()
+        itemSlotManager.clear()
     }
 
     /**
      * @deprecated Use clearRegions() instead
      */
     fun clearLinkRegions() = clearRegions()
+
+    /**
+     * Render item tooltips for hovered items. Call after content rendering.
+     */
+    fun renderItemTooltips(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
+        itemSlotManager.renderHoveredTooltip(guiGraphics, mouseX, mouseY)
+    }
+
+    /**
+     * Get the item ID at the given screen coordinates, if any.
+     * Used for click handling to navigate to item pages.
+     */
+    fun getItemAt(x: Int, y: Int): String? {
+        return itemSlotManager.getItemAt(x, y)
+    }
+
+    /**
+     * Check if mouse is hovering over an item slot.
+     */
+    fun isHoveringItem(mouseX: Int, mouseY: Int): Boolean {
+        return itemSlotManager.getItemAt(mouseX, mouseY) != null
+    }
 
     companion object {
         private const val LINK_HOVER_COLOR = 0xFF88CCFF.toInt()

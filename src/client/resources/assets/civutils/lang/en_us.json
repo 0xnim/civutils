@@ -4,5 +4,6 @@
   "civutils.keybind.open_overlay_editor": "Open Overlay Editor",
   "civutils.keybind.quick_tag_popup": "Quick Tag Player",
   "civutils.keybind.instant_hostile": "Tag as Hostile",
-  "civutils.keybind.instant_friendly": "Tag as Friendly"
+  "civutils.keybind.instant_friendly": "Tag as Friendly",
+  "civutils.keybind.open_handbook": "Open Handbook"
 }

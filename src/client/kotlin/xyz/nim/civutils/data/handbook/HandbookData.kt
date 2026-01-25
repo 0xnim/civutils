@@ -21,8 +21,13 @@ data class HandbookPageMeta(
     val tags: List<String> = emptyList(),
     val order: Int = 0,
     val summary: String = "",
-    val related: List<String> = emptyList()
-)
+    val related: List<String> = emptyList(),
+    /** If set, this page represents an item and will show the item icon in the header */
+    val itemId: String? = null
+) {
+    /** Check if this page represents an item */
+    val isItemPage: Boolean get() = itemId != null
+}
 
 /**
  * Represents a loaded handbook page with content.
@@ -41,4 +46,23 @@ data class HandbookIndex(
     val defaultPage: String = "",
     val categories: List<HandbookCategory> = emptyList(),
     val pages: List<HandbookPageMeta> = emptyList()
+)
+
+/**
+ * Represents where a search match was found.
+ */
+enum class SearchMatchType {
+    TITLE,
+    TAG,
+    SUMMARY,
+    CONTENT
+}
+
+/**
+ * A search result with match information for highlighting.
+ */
+data class SearchResult(
+    val page: HandbookPageMeta,
+    val matchTypes: Set<SearchMatchType>,
+    val matchSnippet: String? = null
 )

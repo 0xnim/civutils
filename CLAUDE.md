@@ -90,8 +90,15 @@ In `CivutilsClient.onInitializeClient()`:
 
 Client mixins are in `xyz.nim.civutils.mixin.client` (Java) and configured in `civutils.client.mixins.json`. Mixins fire events through `CivutilsMod.INSTANCE.getEventBus().post(event)` for features to consume. Cancellable events use `ci.cancel()` when `event.getCancelled()` is true.
 
+### Network/Plugin Channels
+
+**CivChannelManager** (`core/network/CivChannelManager.kt`):
+- Handles server-to-client plugin channel communication
+- Registers payload types in `CivPayloads.kt`
+- Used for server feature detection (e.g., CivMC-specific features)
+
 ## Key Conventions
 
 - Features use categories: COMBAT, CHAT, INVENTORY, MAP, OVERLAYS, PLAYERS, UTILITIES, DEBUG
-- Keybinds: Right Shift opens config menu, F6 opens overlay editor
+- Keybinds: Right Shift opens config menu, overlay editor is unbound by default (configurable in Minecraft controls)
 - Configs stored in `.minecraft/config/civutils/`

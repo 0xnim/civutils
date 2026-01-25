@@ -1,0 +1,77 @@
+---
+title: Emerald Infusion
+summary: Transfer class XP between players using emeralds
+---
+
+# Emerald Infusion
+
+The Emerald Infusion system allows players to transfer Class XP (CXP) between each other using emeralds. This has two parts: **Infusing** and **Condensing**.
+
+## Emerald Infusion
+
+### How to Infuse
+
+1. Hold an **Emerald** or **Emerald Block** in your hand
+2. **Shift right-click** to open the Infusion GUI
+3. Select a class to infuse
+
+### Infusion Amounts
+
+| Item | CXP Stored | CXP Lost |
+|------|------------|----------|
+| Emerald | 100 CXP | Some loss |
+| Emerald Block | 900 CXP | Some loss |
+
+**Note:** Some CXP is lost in the transfer process.
+
+### Identifying Infused Emeralds
+
+- Infused emeralds have an **enchantment glint**
+- Hover over them to see which class CXP they contain
+- Only emeralds with the **same class** will stack together
+
+## XP Condensing
+
+To make infused emeralds usable, combine them with a bottle.
+
+### Creating Liquid XP
+
+**Recipe:** Infused Emerald(s) + Glass Bottle
+
+- Creates a **Liquid XP Bottle**
+- Multiple infused emeralds/blocks can go into one bottle
+- All emeralds must be infused with the **same class**
+
+### Using Liquid XP
+
+Simply drink the bottle to receive the stored CXP in that class.
+
+## Use Cases
+
+### Helping New Players
+Experienced players can infuse some of their XP to help newcomers level up faster.
+
+### Class Switching
+If someone needs to switch their main class, others can donate CXP to help them catch up.
+
+### Specialist Boosting
+Concentrate resources on getting one player to high level quickly for critical unlocks.
+
+### Recovery After Death
+Help a player recover some progress after a death reset.
+
+## Tips
+
+1. **Plan Transfers:** CXP loss means you shouldn't transfer casually
+2. **Use Blocks:** Emerald blocks are more efficient for large transfers
+3. **Same Class:** You can only bottle emeralds of the same class type
+4. **Stock Emeralds:** Keep some emeralds available for emergencies
+5. **Consider Death Reset:** Sometimes dying and releveling is more efficient than transfer
+
+## Finding Emeralds
+
+Emeralds can be mined by [Miners](miner) at Expert (Level 3) or higher. They give 50 Miner XP when harvested.
+
+---
+
+> **See Also:** [Class Basics](class-basics), [Class Levels](class-levels), [Miner](miner)

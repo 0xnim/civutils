@@ -1,0 +1,67 @@
+---
+title: Food Expiration
+summary: How food expires and how to preserve it
+---
+
+# Food Expiration
+
+In CivLabs, food expires after a certain amount of time, making it unsafe to eat. Different foods have different expiration times, with meats generally spoiling faster than vegetables.
+
+## Checking Expiration
+
+Hover over any food item to see its expiration timer in the tooltip.
+
+## Preservation Methods
+
+You can extend food's expiration time using these methods. **All methods stack multiplicatively.**
+
+### Barrel Storage (1.5x)
+Simply store food in a **Barrel** to multiply its expiration timer by 1.5x while it remains inside. This is the simplest and most accessible method.
+
+### Smoking (Permanent Multiplier)
+Food cooked in a **Smoker** gains the "Smoked" tag, permanently extending its expiration time. Only [Farmers](farmer) (Level 1+) can access smokers.
+
+### Blessing (Multiplier)
+Food blessed by [Healers](healer) gains an expiration multiplier in addition to its healing effects.
+
+### Ice Preservation (Large Multiplier)
+Place food in a container with **Ice** to gain "Ice Preserved" status:
+
+- **Requirement:** Container must ONLY contain food, ice, or empty space
+- Anything else in the container breaks the preservation
+- Greatly extends expiration time
+
+## Combining Methods
+
+For maximum preservation, combine all methods:
+
+1. Smoke the food (Farmer)
+2. Bless it (Healer)
+3. Store in a barrel with ice
+
+This can make food last for very long periods.
+
+## Expired Food
+
+When the timer hits zero, food becomes **Expired**:
+
+- Shows "Expired" tag instead of timer
+- Can still be eaten
+- Chance to inflict **Poison 2** when eaten
+- Blessed food that expires inflicts **Wither** instead
+
+### Recycling Expired Food
+
+Expired food can be smelted into **Rotten Flesh**, which can then be crafted into **Bone Meal** (2 per flesh) for farming.
+
+## Tips
+
+1. **Prioritize Smoking:** It's permanent and stacks with everything
+2. **Blessed Food First:** Use it before it expires for the healing bonus
+3. **Ice Barrels:** Great for long-term storage of critical food
+4. **Compost Old Food:** Better than eating poisoned food
+5. **Keep Backup Fresh:** Always have some non-expired food available
+
+---
+
+> **See Also:** [Farmer](farmer), [Healer](healer), [Healing Items](healing-items)

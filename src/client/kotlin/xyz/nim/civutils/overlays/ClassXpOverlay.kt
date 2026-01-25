@@ -32,12 +32,10 @@ enum class DisplayStyle {
  * How to calculate XP percentage.
  */
 enum class PercentageMode {
-    /** Progress within current level toward next level (uses server XP formula) */
-    LEVEL_PROGRESS,
+    /** Progress within current level from /class menu data */
+    PLUGIN,
     /** Overall progress from 0 XP toward max level (totalXp / maxXp) */
-    TOTAL_PROGRESS,
-    /** Tier progress - factors in % of total XP in this class (other classes can bring it down) */
-    TIER_PROGRESS
+    TOTAL
 }
 
 /**
@@ -101,9 +99,9 @@ class ClassXpOverlay : Overlay(
      */
     val percentageMode: OptionListConfig<PercentageMode> = enumConfig(
         name = "percentageMode",
-        default = PercentageMode.LEVEL_PROGRESS,
+        default = PercentageMode.PLUGIN,
         displayName = "Percentage Mode",
-        comment = "Level = within level, Total = toward max, Tier = factors in other classes"
+        comment = "Plugin = from /class menu, Total = toward max level"
     ).onChange { onConfigUpdate(percentageMode) }
 
     // === XP Tracking Options ===
@@ -372,9 +370,8 @@ class ClassXpOverlay : Overlay(
 
         // Calculate percentage based on mode
         val percentage = when (percentageMode.value) {
-            PercentageMode.LEVEL_PROGRESS -> classInfo.levelProgressPercent
-            PercentageMode.TOTAL_PROGRESS -> classInfo.totalProgressPercent
-            PercentageMode.TIER_PROGRESS -> classInfo.tierProgressPercent
+            PercentageMode.PLUGIN -> classInfo.levelProgressPercent
+            PercentageMode.TOTAL -> classInfo.totalProgressPercent
         }
 
         // XP display text
@@ -474,15 +471,13 @@ class ClassXpOverlay : Overlay(
         y += font.lineHeight + 2
 
         // XP display based on percentage mode
-        // Preview: Level 2, totalXp = 3500, 50% of total XP in this class
-        // Level progress: (3500-2221)/(5962-2221) = 1279/3741 = 34% within level
+        // Preview: Level 2, totalXp = 3500
+        // Plugin progress: 34% within level (from /class menu)
         // Total progress: 3500/36219 = 9.7% toward max
-        // Tier progress: 34% * 50% = 17% (other classes bring it down)
         val xpText = if (showPercentage.value) {
             when (percentageMode.value) {
-                PercentageMode.LEVEL_PROGRESS -> "§734%"
-                PercentageMode.TOTAL_PROGRESS -> "§79%"
-                PercentageMode.TIER_PROGRESS -> "§717%"
+                PercentageMode.PLUGIN -> "§734%"
+                PercentageMode.TOTAL -> "§79%"
             }
         } else {
             "§71279§8/§73741 XP"
@@ -492,9 +487,8 @@ class ClassXpOverlay : Overlay(
             val xpTextWidth = font.width(xpText.replace("§7", "").replace("§8", ""))
             val inlineWidth = barWidth.value + 4 + xpTextWidth
             val previewProgress = when (percentageMode.value) {
-                PercentageMode.LEVEL_PROGRESS -> 0.34f
-                PercentageMode.TOTAL_PROGRESS -> 0.09f
-                PercentageMode.TIER_PROGRESS -> 0.17f
+                PercentageMode.PLUGIN -> 0.34f
+                PercentageMode.TOTAL -> 0.09f
             }
 
             if (inlineWidth <= size.width) {

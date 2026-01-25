@@ -43,6 +43,12 @@ object KeybindManager {
         private set
 
     /**
+     * Keybind to open the handbook.
+     */
+    lateinit var openHandbook: KeyMapping
+        private set
+
+    /**
      * Register all keybindings. Called during initialization.
      */
     fun register() {
@@ -74,6 +80,12 @@ object KeybindManager {
         instantFriendly = registerKeybind(
             id = "instant_friendly",
             key = GLFW.GLFW_KEY_UNKNOWN, // Unbound by default
+            category = "civutils.keybind.category"
+        )
+
+        openHandbook = registerKeybind(
+            id = "open_handbook",
+            key = GLFW.GLFW_KEY_H,
             category = "civutils.keybind.category"
         )
 

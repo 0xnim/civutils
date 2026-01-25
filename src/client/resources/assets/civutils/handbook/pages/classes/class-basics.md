@@ -1,0 +1,55 @@
+---
+title: Class Basics
+summary: How the class system works
+---
+
+# Class Basics
+
+Classes are the core of the CivLabs plugin, representing different specialized roles that can be leveled up. By leveling these roles you gain access to new crafting recipes, buffs, and mechanics.
+
+## What are Classes?
+
+Each person can only have **one main class** at a time, and these classes rely on each other to make progress. The specialization system encourages cooperation between players.
+
+The 7 classes are:
+
+| Class | Primary Role |
+|-------|--------------|
+| [Blacksmith](blacksmith) | Create tools and armor |
+| [Builder](builder) | Build mob-proof bases and redstone |
+| [Farmer](farmer) | Produce food and manage animals |
+| [Guardsman](guardsman) | Combat and security |
+| [Healer](healer) | Heal and revive players |
+| [Librarian](librarian) | Enchanting, maps, and blueprints |
+| [Miner](miner) | Mine ores and resources |
+
+## How Do I Check My Class?
+
+Type `/class` to open an interface displaying your current class progression and XP.
+
+## How Do I Become a Class?
+
+You become a class by performing actions that grant XP in that class. These actions give you a pop-up showing how much XP you gained. Upon reaching certain XP thresholds, you level up and gain new abilities.
+
+**Generally:**
+- **Blacksmiths** level by making tools and smelting ores
+- **Builders** level by building and stonecutting
+- **Farmers** level by tilling, planting, and breeding
+- **Guardsmen** level by attacking mobs
+- **Healers** level by making paper and healing items
+- **Librarians** level by creating books and bookshelves
+- **Miners** level by mining stone and ores
+
+## Switching Classes
+
+Besides XP thresholds, classes also require a certain **percentage of your total XP** to match a given class. Basic multiclassing is possible, though the percentage requirements become stricter at higher levels.
+
+Because having lots of XP in one class makes it difficult to level another, it can often be faster to **intentionally die** to reset all class levels to zero, then level the desired class.
+
+## Worker Class
+
+When you have level 0 in everything, you are considered a "Worker". This allows you to craft simple recipes (those that don't give class XP) without consuming hunger.
+
+---
+
+> **See Also:** [Class Levels](class-levels) for XP thresholds and requirements

@@ -37,6 +37,21 @@ class MarkdownParser {
                     i++
                 }
 
+                trimmed.startsWith("```recipe") -> {
+                    // Recipe block
+                    val recipeLines = mutableListOf<String>()
+                    i++
+                    while (i < lines.size && !lines[i].trim().startsWith("```")) {
+                        recipeLines.add(lines[i])
+                        i++
+                    }
+                    val recipe = parseRecipeBlock(recipeLines)
+                    if (recipe != null) {
+                        elements.add(recipe)
+                    }
+                    i++
+                }
+
                 trimmed.startsWith("```") -> {
                     val language = trimmed.removePrefix("```").trim()
                     val codeLines = mutableListOf<String>()
@@ -153,7 +168,105 @@ class MarkdownParser {
     }
 
     /**
-     * Parse inline formatting (bold, italic, code, links).
+     * Parse a recipe block from lines inside ```recipe ... ```.
+     * Format is YAML-like:
+     *   type: custom
+     *   name: Ore Smelter
+     *   inputs:
+     *     - minecraft:iron_ore|64
+     *   outputs:
+     *     - minecraft:iron_ingot|64
+     *   time: 30m
+     */
+    private fun parseRecipeBlock(lines: List<String>): RecipeElement? {
+        var type = RecipeType.CUSTOM
+        var name: String? = null
+        val inputs = mutableListOf<ItemSpec>()
+        val outputs = mutableListOf<ItemSpec>()
+        val metadata = mutableMapOf<String, String>()
+
+        var currentList: MutableList<ItemSpec>? = null
+
+        for (line in lines) {
+            val trimmed = line.trim()
+            if (trimmed.isEmpty()) continue
+
+            // List item (under inputs: or outputs:)
+            if (trimmed.startsWith("-") && currentList != null) {
+                val spec = trimmed.removePrefix("-").trim()
+                val itemSpec = parseItemSpec(spec)
+                if (itemSpec != null) {
+                    currentList.add(itemSpec)
+                }
+                continue
+            }
+
+            // Key: value
+            val colonIndex = trimmed.indexOf(':')
+            if (colonIndex > 0) {
+                val key = trimmed.substring(0, colonIndex).trim().lowercase()
+                val value = trimmed.substring(colonIndex + 1).trim()
+
+                when (key) {
+                    "type" -> {
+                        type = when (value.lowercase()) {
+                            "crafting" -> RecipeType.CRAFTING
+                            "smelting" -> RecipeType.SMELTING
+                            else -> RecipeType.CUSTOM
+                        }
+                        currentList = null
+                    }
+                    "name" -> {
+                        name = value
+                        currentList = null
+                    }
+                    "inputs", "input" -> {
+                        currentList = inputs
+                        // Single-line input: input: minecraft:iron_ore|64
+                        if (value.isNotEmpty()) {
+                            parseItemSpec(value)?.let { inputs.add(it) }
+                            currentList = null
+                        }
+                    }
+                    "outputs", "output" -> {
+                        currentList = outputs
+                        // Single-line output: output: minecraft:iron_ingot
+                        if (value.isNotEmpty()) {
+                            parseItemSpec(value)?.let { outputs.add(it) }
+                            currentList = null
+                        }
+                    }
+                    else -> {
+                        // Generic metadata (time, fuel, etc.)
+                        metadata[key] = value
+                        currentList = null
+                    }
+                }
+            }
+        }
+
+        // Must have at least inputs or outputs
+        if (inputs.isEmpty() && outputs.isEmpty()) return null
+
+        return RecipeElement(type, name, inputs, outputs, metadata)
+    }
+
+    /**
+     * Parse an item specification like "minecraft:iron_ore|64" or "minecraft:iron_ore".
+     */
+    private fun parseItemSpec(spec: String): ItemSpec? {
+        val trimmed = spec.trim()
+        if (trimmed.isEmpty()) return null
+
+        val parts = trimmed.split("|", limit = 2)
+        val itemId = parts[0].trim()
+        val count = parts.getOrNull(1)?.trim()?.toIntOrNull() ?: 1
+
+        return ItemSpec(itemId, count)
+    }
+
+    /**
+     * Parse inline formatting (bold, italic, code, links, items).
      */
     private fun parseInlineText(text: String): List<TextSpan> {
         val spans = mutableListOf<TextSpan>()
@@ -161,6 +274,13 @@ class MarkdownParser {
 
         while (remaining.isNotEmpty()) {
             val patterns = listOf(
+                // Inline item: [[minecraft:iron_ore]] or [[minecraft:iron_ore|64]]
+                Regex("^\\[\\[([^\\]|]+)(\\|\\d+)?\\]\\]") to { m: MatchResult ->
+                    val itemId = m.groupValues[1]
+                    val countStr = m.groupValues[2].removePrefix("|")
+                    val count = countStr.toIntOrNull() ?: 1
+                    TextSpan("", itemId = itemId, itemCount = count)
+                },
                 // Links: [text](url)
                 Regex("^\\[([^\\]]+)\\]\\(([^)]+)\\)") to { m: MatchResult ->
                     TextSpan(m.groupValues[1], link = m.groupValues[2])
@@ -220,8 +340,15 @@ class MarkdownParser {
                     spans.add(TextSpan(remaining))
                     remaining = ""
                 } else {
-                    spans.add(TextSpan(remaining.first().toString()))
-                    remaining = remaining.drop(1)
+                    // Check for [[ (item syntax) vs [ (link syntax)
+                    if (remaining.startsWith("[[")) {
+                        // Not a match for item regex, so consume one [ and continue
+                        spans.add(TextSpan("["))
+                        remaining = remaining.drop(1)
+                    } else {
+                        spans.add(TextSpan(remaining.first().toString()))
+                        remaining = remaining.drop(1)
+                    }
                 }
             }
         }
@@ -231,6 +358,7 @@ class MarkdownParser {
 
     /**
      * Merge adjacent plain text spans for efficiency.
+     * Does not merge spans with formatting, links, or item references.
      */
     private fun mergeAdjacentPlainText(spans: List<TextSpan>): List<TextSpan> {
         if (spans.isEmpty()) return spans
@@ -239,9 +367,13 @@ class MarkdownParser {
         var current = spans.first()
 
         for (span in spans.drop(1)) {
-            if (!current.bold && !current.italic && !current.code && current.link == null &&
-                !span.bold && !span.italic && !span.code && span.link == null
-            ) {
+            // Only merge if both are plain text (no formatting, links, or items)
+            val currentIsPlain = !current.bold && !current.italic && !current.code &&
+                current.link == null && current.itemId == null
+            val spanIsPlain = !span.bold && !span.italic && !span.code &&
+                span.link == null && span.itemId == null
+
+            if (currentIsPlain && spanIsPlain) {
                 current = current.copy(text = current.text + span.text)
             } else {
                 result.add(current)
