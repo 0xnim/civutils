@@ -3,6 +3,7 @@ package xyz.nim.civutils.core.keybind
 import com.mojang.blaze3d.platform.InputConstants
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.minecraft.client.KeyMapping
+import net.minecraft.resources.Identifier
 import org.lwjgl.glfw.GLFW
 import xyz.nim.civutils.core.CivutilsMod
 
@@ -11,6 +12,14 @@ import xyz.nim.civutils.core.CivutilsMod
  */
 object KeybindManager {
     private val keybindings = mutableMapOf<String, KeyMapping>()
+
+    /**
+     * Custom keybinding category for CivUtils.
+     * Registered once on first use.
+     */
+    private val CATEGORY: KeyMapping.Category by lazy {
+        KeyMapping.Category.register(Identifier.fromNamespaceAndPath("civutils", "keybinds"))
+    }
 
     /**
      * Keybind to open the config GUI.
@@ -54,39 +63,33 @@ object KeybindManager {
     fun register() {
         openConfigGui = registerKeybind(
             id = "open_config",
-            key = GLFW.GLFW_KEY_RIGHT_SHIFT,
-            category = "civutils.keybind.category"
+            key = GLFW.GLFW_KEY_RIGHT_SHIFT
         )
 
         openOverlayEditor = registerKeybind(
             id = "open_overlay_editor",
-            key = GLFW.GLFW_KEY_UNKNOWN, // Unbound by default
-            category = "civutils.keybind.category"
+            key = GLFW.GLFW_KEY_UNKNOWN // Unbound by default
         )
 
         // Player tagging keybinds
         quickTagPopup = registerMouseKeybind(
             id = "quick_tag_popup",
-            button = GLFW.GLFW_MOUSE_BUTTON_MIDDLE, // Middle mouse button
-            category = "civutils.keybind.category"
+            button = GLFW.GLFW_MOUSE_BUTTON_MIDDLE // Middle mouse button
         )
 
         instantHostile = registerKeybind(
             id = "instant_hostile",
-            key = GLFW.GLFW_KEY_UNKNOWN, // Unbound by default
-            category = "civutils.keybind.category"
+            key = GLFW.GLFW_KEY_UNKNOWN // Unbound by default
         )
 
         instantFriendly = registerKeybind(
             id = "instant_friendly",
-            key = GLFW.GLFW_KEY_UNKNOWN, // Unbound by default
-            category = "civutils.keybind.category"
+            key = GLFW.GLFW_KEY_UNKNOWN // Unbound by default
         )
 
         openHandbook = registerKeybind(
             id = "open_handbook",
-            key = GLFW.GLFW_KEY_H,
-            category = "civutils.keybind.category"
+            key = GLFW.GLFW_KEY_H
         )
 
         CivutilsMod.logger.info("Registered ${keybindings.size} keybindings")
@@ -95,12 +98,12 @@ object KeybindManager {
     /**
      * Register a single keybinding (keyboard).
      */
-    private fun registerKeybind(id: String, key: Int, category: String): KeyMapping {
+    private fun registerKeybind(id: String, key: Int): KeyMapping {
         val keybind = KeyMapping(
             "civutils.keybind.$id",
             InputConstants.Type.KEYSYM,
             key,
-            category
+            CATEGORY
         )
         KeyBindingHelper.registerKeyBinding(keybind)
         keybindings[id] = keybind
@@ -110,12 +113,12 @@ object KeybindManager {
     /**
      * Register a mouse button keybinding.
      */
-    private fun registerMouseKeybind(id: String, button: Int, category: String): KeyMapping {
+    private fun registerMouseKeybind(id: String, button: Int): KeyMapping {
         val keybind = KeyMapping(
             "civutils.keybind.$id",
             InputConstants.Type.MOUSE,
             button,
-            category
+            CATEGORY
         )
         KeyBindingHelper.registerKeyBinding(keybind)
         keybindings[id] = keybind

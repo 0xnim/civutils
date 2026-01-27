@@ -93,7 +93,7 @@ class ConfigScreen : CivutilsScreen(Component.literal("CivUtils Configuration"))
         for (feature in CivutilsMod.featureManager.getFeatures()) {
             featureList?.addEntryToList(FeatureEntry(feature))
         }
-        addWidget(featureList)
+        featureList?.let { addWidget(it) }
 
         // Overlay list - positioned below panel header
         overlayList = OverlayListWidget(minecraft!!, leftPanelWidth, listHeight, listY, 36) { overlay ->
@@ -104,7 +104,7 @@ class ConfigScreen : CivutilsScreen(Component.literal("CivUtils Configuration"))
         for (overlay in CivutilsMod.overlayManager.getOverlays()) {
             overlayList?.addEntryToList(OverlayEntry(overlay))
         }
-        addWidget(overlayList)
+        overlayList?.let { addWidget(it) }
 
         // Set initial visibility
         updateListVisibility()

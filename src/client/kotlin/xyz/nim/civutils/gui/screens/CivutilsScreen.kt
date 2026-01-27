@@ -3,6 +3,7 @@ package xyz.nim.civutils.gui.screens
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Renderable
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.input.KeyEvent
 import net.minecraft.network.chat.Component
 import xyz.nim.lib.ui.NlibTheme
 import xyz.nim.lib.ui.ResponsiveLayout
@@ -24,14 +25,14 @@ abstract class CivutilsScreen(title: Component) : Screen(title) {
 
     override fun isPauseScreen(): Boolean = false
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+    override fun keyPressed(keyEvent: KeyEvent): Boolean {
         // ESC to close
-        if (keyCode == 256) { // GLFW_KEY_ESCAPE
+        if (keyEvent.key() == 256) { // GLFW_KEY_ESCAPE
             onClose()
             return true
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        return super.keyPressed(keyEvent)
     }
 
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {

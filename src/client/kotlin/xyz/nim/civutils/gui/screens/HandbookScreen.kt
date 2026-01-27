@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
+import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 import xyz.nim.civutils.core.CivutilsMod
 import xyz.nim.civutils.data.handbook.*
@@ -152,7 +153,7 @@ class HandbookScreen(
             refreshPageList()
             updateClearButtonVisibility()
         }
-        addWidget(searchBox)
+        searchBox?.let { addWidget(it) }
 
         // Clear search button
         clearSearchButton = Button.builder(Component.literal("\u00D7")) { // × symbol
@@ -195,7 +196,7 @@ class HandbookScreen(
             )
             categoryList?.addEntryToList(CategoryEntry(handbookCat))
         }
-        addWidget(categoryList)
+        categoryList?.let { addWidget(it) }
 
         // Page list
         val pageListY = contentY + listHeaderOffset + categoryListHeight + 8
@@ -207,7 +208,7 @@ class HandbookScreen(
             loadPage(contentId)
         }
         pageList?.setX(leftPanelX)
-        addWidget(pageList)
+        pageList?.let { addWidget(it) }
 
         refreshPageList()
 
@@ -873,7 +874,11 @@ class HandbookScreen(
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, consumed: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
+        val button = event.button()
+
         if (button == 0) {
             // Check scrollbar click
             if (maxScroll > 0 && mouseX >= scrollbarX && mouseX < scrollbarX + SCROLLBAR_WIDTH) {
@@ -926,25 +931,27 @@ class HandbookScreen(
             }
         }
 
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, consumed)
     }
 
-    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseReleased(event: MouseButtonEvent): Boolean {
+        val button = event.button()
         if (button == 0 && isDraggingScrollbar) {
             isDraggingScrollbar = false
             return true
         }
-        return super.mouseReleased(mouseX, mouseY, button)
+        return super.mouseReleased(event)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, dragX: Double, dragY: Double): Boolean {
+    override fun mouseDragged(event: MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+        val mouseY = event.y()
         if (isDraggingScrollbar && maxScroll > 0) {
             val newThumbY = mouseY - scrollbarDragOffset
             val scrollRatio = (newThumbY - scrollbarTrackY) / (scrollbarTrackHeight - scrollbarThumbHeight)
             contentScroll = (scrollRatio * maxScroll).toInt().coerceIn(0, maxScroll)
             return true
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 
     private fun copyToClipboard(text: String) {

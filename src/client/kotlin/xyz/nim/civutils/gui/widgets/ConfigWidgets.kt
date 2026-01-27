@@ -10,6 +10,7 @@ import xyz.nim.lib.config.options.BooleanConfig
 import xyz.nim.lib.config.options.IntegerConfig
 import xyz.nim.lib.ui.NlibTheme
 import kotlin.math.roundToInt
+import xyz.nim.civutils.utils.renderOutline
 
 /**
  * Color constants for the UI.
@@ -49,15 +50,8 @@ class ToggleButton(
     },
     DEFAULT_NARRATION
 ) {
-    override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    override fun renderContents(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         val mc = Minecraft.getInstance()
-        val color = if (isHovered) Colors.BACKGROUND_HOVER else Colors.BACKGROUND_LIGHT
-        guiGraphics.fill(x, y, x + width, y + height, color)
-
-        // Draw border
-        val borderColor = if (config.value) Colors.ENABLED else Colors.DISABLED
-        guiGraphics.renderOutline(x, y, width, height, borderColor)
-
         // Draw text centered
         val textX = x + width / 2 - mc.font.width(message) / 2
         val textY = y + (height - 8) / 2

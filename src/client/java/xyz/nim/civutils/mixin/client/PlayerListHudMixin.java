@@ -30,7 +30,7 @@ public abstract class PlayerListHudMixin {
             return;
         }
 
-        String playerName = entry.getProfile().getName();
+        String playerName = entry.getProfile().name();
         if (playerName == null || playerName.isEmpty()) {
             return;
         }

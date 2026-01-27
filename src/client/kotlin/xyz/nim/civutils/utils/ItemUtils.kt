@@ -1,7 +1,7 @@
 package xyz.nim.civutils.utils
 
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
@@ -16,7 +16,7 @@ object ItemUtils {
      * @return ItemStack or null if item not found
      */
     fun parseItemId(id: String): ItemStack? {
-        val resourceLocation = ResourceLocation.tryParse(id) ?: return null
+        val resourceLocation = Identifier.tryParse(id) ?: return null
         val optionalItem = BuiltInRegistries.ITEM.getOptional(resourceLocation)
         if (optionalItem.isEmpty) return null
         val item = optionalItem.get()
@@ -51,7 +51,7 @@ object ItemUtils {
      * Check if an item ID is valid (exists in registry).
      */
     fun isValidItemId(id: String): Boolean {
-        val resourceLocation = ResourceLocation.tryParse(id) ?: return false
+        val resourceLocation = Identifier.tryParse(id) ?: return false
         return BuiltInRegistries.ITEM.getOptional(resourceLocation).isPresent
     }
 }

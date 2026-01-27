@@ -9,6 +9,7 @@ import xyz.nim.civutils.data.handbook.RecipeType
 import xyz.nim.civutils.models.HandbookModel
 import xyz.nim.lib.ui.NlibTheme
 import kotlin.math.max
+import xyz.nim.civutils.utils.renderOutline
 
 /**
  * Renders recipes visually for the handbook.

@@ -6,6 +6,7 @@ import xyz.nim.civutils.data.handbook.*
 import xyz.nim.civutils.utils.ItemMatcher
 import xyz.nim.lib.ui.NlibTheme
 import xyz.nim.civutils.gui.widgets.ItemSlotWidget.SlotSize
+import xyz.nim.civutils.utils.renderOutline
 
 /**
  * Renders markdown elements to the GUI.

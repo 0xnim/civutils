@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.PlayerFaceRenderer
 import net.minecraft.client.multiplayer.PlayerInfo
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import java.util.UUID
 
 /**
@@ -16,7 +16,7 @@ object PlayerHeadRenderer {
     private val mc: Minecraft get() = Minecraft.getInstance()
 
     // Default Steve skin for fallback
-    private val STEVE_SKIN = ResourceLocation.withDefaultNamespace("textures/entity/player/wide/steve.png")
+    private val STEVE_SKIN = Identifier.withDefaultNamespace("textures/entity/player/wide/steve.png")
 
     /**
      * Render a player's head at the given position.

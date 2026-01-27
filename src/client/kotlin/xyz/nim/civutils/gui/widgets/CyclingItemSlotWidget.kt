@@ -2,6 +2,7 @@ package xyz.nim.civutils.gui.widgets
 
 import net.minecraft.client.gui.GuiGraphics
 import xyz.nim.civutils.data.handbook.ItemDefinition
+import xyz.nim.civutils.utils.renderOutline
 
 /**
  * A widget that cycles through multiple items on a timer.

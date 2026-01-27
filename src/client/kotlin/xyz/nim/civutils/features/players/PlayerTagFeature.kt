@@ -115,7 +115,7 @@ class PlayerTagFeature : Feature() {
                 x = entity.blockX,
                 y = entity.blockY,
                 z = entity.blockZ,
-                dimension = level.dimension().location().toString(),
+                dimension = level.dimension().identifier().toString(),
                 serverAddress = ""
             )
 

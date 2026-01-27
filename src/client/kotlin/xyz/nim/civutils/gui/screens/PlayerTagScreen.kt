@@ -14,7 +14,9 @@ import xyz.nim.civutils.utils.PlayerTagStyler
 import xyz.nim.lib.ui.DropdownWidget
 import xyz.nim.lib.ui.NlibTheme
 import xyz.nim.lib.ui.components.ColorInput
+import net.minecraft.client.input.MouseButtonEvent
 import xyz.nim.lib.ui.components.NlibListWidget
+import xyz.nim.civutils.utils.renderOutline
 
 /**
  * Screen for managing player tags and attribute types.
@@ -121,7 +123,7 @@ class PlayerTagScreen : CivutilsScreen(Component.literal("Player Tags")) {
             searchQuery = query
             refreshLists()
         }
-        addWidget(searchBox)
+        searchBox?.let { addWidget(it) }
 
         // Lists - player list has extra offset for search box
         val listHeaderOffset = 22  // Space for panel title
@@ -137,14 +139,14 @@ class PlayerTagScreen : CivutilsScreen(Component.literal("Player Tags")) {
             rebuildRightPanel()
         }
         playerList?.setX(leftPanelX)
-        addWidget(playerList)
+        playerList?.let { addWidget(it) }
 
         nearbyList = NearbyListWidget(minecraft!!, leftPanelWidth, otherListHeight, otherListY, 36) { name, uuid ->
             // Quick tag nearby player
             openQuickTagForPlayer(name, uuid)
         }
         nearbyList?.setX(leftPanelX)
-        addWidget(nearbyList)
+        nearbyList?.let { addWidget(it) }
 
         typeList = TypeListWidget(minecraft!!, leftPanelWidth, otherListHeight, otherListY, 40) { type ->
             selectedType = type
@@ -152,7 +154,7 @@ class PlayerTagScreen : CivutilsScreen(Component.literal("Player Tags")) {
             rebuildRightPanel()
         }
         typeList?.setX(leftPanelX)
-        addWidget(typeList)
+        typeList?.let { addWidget(it) }
 
         // Add Defaults button (bottom of left panel, only on Types tab)
         addDefaultsButton = Button.builder(Component.literal("Add Default Types")) {
@@ -664,7 +666,11 @@ class PlayerTagScreen : CivutilsScreen(Component.literal("Player Tags")) {
         confirmDialog?.render(guiGraphics, font, width, height, mouseX, mouseY)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, consumed: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
+        val button = event.button()
+
         // Handle confirmation dialog first
         confirmDialog?.let { dialog ->
             if (dialog.mouseClicked(mouseX, mouseY, button)) return true
@@ -674,7 +680,7 @@ class PlayerTagScreen : CivutilsScreen(Component.literal("Player Tags")) {
         for (dropdown in dropdowns) {
             if (dropdown.mouseClicked(mouseX, mouseY, button)) return true
         }
-        return super.mouseClicked(mouseX, mouseY, button)
+        return super.mouseClicked(event, consumed)
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, horizontalAmount: Double, verticalAmount: Double): Boolean {

@@ -3,7 +3,7 @@ package xyz.nim.civutils.core.network.payloads
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /**
  * Base payload for CivUtils plugin channel communication.
@@ -21,7 +21,7 @@ data class CivHandshakePayload(
     override fun type(): CustomPacketPayload.Type<CivHandshakePayload> = TYPE
 
     companion object {
-        val ID: ResourceLocation = ResourceLocation.fromNamespaceAndPath("civ", "handshake")
+        val ID: Identifier = Identifier.fromNamespaceAndPath("civ", "handshake")
         val TYPE: CustomPacketPayload.Type<CivHandshakePayload> = CustomPacketPayload.Type(ID)
 
         val CODEC: StreamCodec<FriendlyByteBuf, CivHandshakePayload> = StreamCodec.of(
@@ -42,7 +42,7 @@ data class ClassXpPayload(
     override fun type(): CustomPacketPayload.Type<ClassXpPayload> = TYPE
 
     companion object {
-        val ID: ResourceLocation = ResourceLocation.fromNamespaceAndPath("civ", "class_xp")
+        val ID: Identifier = Identifier.fromNamespaceAndPath("civ", "class_xp")
         val TYPE: CustomPacketPayload.Type<ClassXpPayload> = CustomPacketPayload.Type(ID)
 
         val CODEC: StreamCodec<FriendlyByteBuf, ClassXpPayload> = StreamCodec.of(

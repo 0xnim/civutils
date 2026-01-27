@@ -9,7 +9,9 @@ import xyz.nim.civutils.data.playertag.AttributeValue
 import xyz.nim.civutils.models.PlayerTagModel
 import xyz.nim.civutils.utils.PlayerHeadRenderer
 import xyz.nim.civutils.utils.PlayerTagStyler
+import net.minecraft.client.input.KeyEvent
 import xyz.nim.lib.ui.NlibTheme
+import xyz.nim.civutils.utils.renderOutline
 
 /**
  * Quick tag popup for rapidly tagging players.
@@ -112,39 +114,9 @@ class QuickTagScreen(
                 val isSelected = currentTagValue == value.id
                 val label = "[${index + 1}] ${value.style.prefix} ${value.displayName}".trim()
 
-                val button = object : Button(
-                    panelX + 10, buttonY, buttonWidth, BUTTON_HEIGHT,
-                    Component.literal(label),
-                    { selectValue(type.id, value) },
-                    { supplier -> supplier.get() }
-                ) {
-                    override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-                        val color = value.style.color
-                        val bgColor = if (isHovered) {
-                            blendColor(color, 0x444444, 0.5f)
-                        } else if (isSelected) {
-                            blendColor(color, 0x222222, 0.6f)
-                        } else {
-                            blendColor(color, 0x1A1A1A, 0.2f)
-                        }
-
-                        // Background
-                        guiGraphics.fill(x, y, x + width, y + height, bgColor or (0xFF shl 24))
-
-                        // Border with value color
-                        val borderColor = if (isSelected) color or (0xFF shl 24) else blendColor(color, 0x666666, 0.5f) or (0xFF shl 24)
-                        guiGraphics.renderOutline(x, y, width, height, borderColor)
-
-                        // Selected indicator
-                        if (isSelected) {
-                            guiGraphics.fill(x + 2, y + 2, x + 5, y + height - 2, color or (0xFF shl 24))
-                        }
-
-                        // Text with value color
-                        val textColor = if (isSelected || isHovered) color else blendColor(color, 0xAAAAAA, 0.7f)
-                        guiGraphics.drawString(font, message, x + 10, y + (height - 8) / 2, textColor, true)
-                    }
-                }
+                val button = Button.builder(Component.literal(label)) {
+                    selectValue(type.id, value)
+                }.bounds(panelX + 10, buttonY, buttonWidth, BUTTON_HEIGHT).build()
 
                 addRenderableWidget(button)
                 valueButtons.add(ValueButton(value, panelX + 10, buttonY, buttonWidth, BUTTON_HEIGHT, index))
@@ -188,7 +160,9 @@ class QuickTagScreen(
         return (r shl 16) or (g shl 8) or b
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+    override fun keyPressed(keyEvent: KeyEvent): Boolean {
+        val keyCode = keyEvent.key()
+
         // Number keys 1-9 for quick selection
         val values = currentType?.values ?: emptyList()
         for ((index, value) in values.withIndex()) {
@@ -211,7 +185,7 @@ class QuickTagScreen(
             return true
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        return super.keyPressed(keyEvent)
     }
 
     private fun cycleType() {

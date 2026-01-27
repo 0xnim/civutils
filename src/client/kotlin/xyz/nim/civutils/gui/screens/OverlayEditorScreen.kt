@@ -7,7 +7,10 @@ import net.minecraft.network.chat.Component
 import xyz.nim.civutils.core.CivutilsMod
 import xyz.nim.civutils.core.overlay.*
 import xyz.nim.lib.ui.NlibTheme
+import net.minecraft.client.input.KeyEvent
+import net.minecraft.client.input.MouseButtonEvent
 import xyz.nim.civutils.gui.widgets.Colors
+import xyz.nim.civutils.utils.renderOutline
 
 /**
  * Visual editor for positioning overlays on screen.
@@ -195,8 +198,12 @@ class OverlayEditorScreen : CivutilsScreen(Component.literal("Overlay Editor")) 
         guiGraphics.renderOutline(x, y, 6, 6, NlibTheme.TEXT_PRIMARY)
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        if (super.mouseClicked(mouseX, mouseY, button)) return true
+    override fun mouseClicked(event: MouseButtonEvent, consumed: Boolean): Boolean {
+        if (super.mouseClicked(event, consumed)) return true
+
+        val mouseX = event.x()
+        val mouseY = event.y()
+        val button = event.button()
 
         if (button == 0) {
             // Find clicked overlay
@@ -224,7 +231,8 @@ class OverlayEditorScreen : CivutilsScreen(Component.literal("Overlay Editor")) 
         return false
     }
 
-    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
+    override fun mouseReleased(event: MouseButtonEvent): Boolean {
+        val button = event.button()
         if (button == 0 && isDragging) {
             isDragging = false
 
@@ -277,10 +285,13 @@ class OverlayEditorScreen : CivutilsScreen(Component.literal("Overlay Editor")) 
             }
         }
 
-        return super.mouseReleased(mouseX, mouseY, button)
+        return super.mouseReleased(event)
     }
 
-    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, deltaX: Double, deltaY: Double): Boolean {
+    override fun mouseDragged(event: MouseButtonEvent, deltaX: Double, deltaY: Double): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
+
         if (isDragging && selectedOverlay != null) {
             val overlay = selectedOverlay!!
 
@@ -323,10 +334,11 @@ class OverlayEditorScreen : CivutilsScreen(Component.literal("Overlay Editor")) 
             return true
         }
 
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
+        return super.mouseDragged(event, deltaX, deltaY)
     }
 
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+    override fun keyPressed(keyEvent: KeyEvent): Boolean {
+        val keyCode = keyEvent.key()
         // Delete selected overlay's position (reset to default)
         if (keyCode == 261 && selectedOverlay != null) { // Delete key
             selectedOverlay?.let {
@@ -339,6 +351,7 @@ class OverlayEditorScreen : CivutilsScreen(Component.literal("Overlay Editor")) 
 
         // Arrow keys for fine adjustment
         selectedOverlay?.let { overlay ->
+            val modifiers = keyEvent.modifiers()
             val step = if (modifiers and 1 != 0) 10 else 1 // Shift for larger steps
             when (keyCode) {
                 265 -> { overlay.position.offsetY -= step; return true } // Up
@@ -348,6 +361,6 @@ class OverlayEditorScreen : CivutilsScreen(Component.literal("Overlay Editor")) 
             }
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers)
+        return super.keyPressed(keyEvent)
     }
 }

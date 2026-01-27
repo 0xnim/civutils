@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.component.CustomModelData
 import net.minecraft.world.item.component.ItemLore
@@ -13,6 +13,7 @@ import xyz.nim.civutils.data.handbook.CustomTextureRegistry
 import xyz.nim.civutils.data.handbook.ItemDefinition
 import xyz.nim.civutils.utils.ItemUtils
 import xyz.nim.lib.ui.NlibTheme
+import xyz.nim.civutils.utils.renderOutline
 
 /**
  * Renders an item like an inventory slot with hover tooltip support.

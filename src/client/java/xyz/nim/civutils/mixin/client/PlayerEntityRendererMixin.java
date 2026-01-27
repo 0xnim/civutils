@@ -1,35 +1,47 @@
 package xyz.nim.civutils.mixin.client;
 
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xyz.nim.civutils.utils.PlayerTagStyler;
 
 /**
  * Mixin to modify player name tag rendering to apply attribute-based styling.
  */
-@Mixin(PlayerRenderer.class)
+@Mixin(EntityRenderer.class)
 public abstract class PlayerEntityRendererMixin {
 
     /**
      * Modify the name tag text before it's rendered.
-     * This intercepts the Component parameter in renderNameTag and applies our styling.
+     * This intercepts the getNameTag return value and applies our styling for players.
      */
-    @ModifyVariable(
-            method = "renderNameTag(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At("HEAD"),
-            argsOnly = true,
-            ordinal = 0
+    @Inject(
+            method = "getNameTag",
+            at = @At("RETURN"),
+            cancellable = true
     )
-    private Component civutils$modifyNameTag(Component originalText, PlayerRenderState state) {
-        String playerName = state.name;
-        if (playerName == null || playerName.isEmpty()) {
-            return originalText;
+    private void civutils$modifyNameTag(Entity entity, CallbackInfoReturnable<Component> cir) {
+        // Only modify for players
+        if (!(entity instanceof Player player)) {
+            return;
         }
 
-        return PlayerTagStyler.INSTANCE.applyStyle(originalText, playerName);
+        String playerName = player.getGameProfile().name();
+        if (playerName == null || playerName.isEmpty()) {
+            return;
+        }
+
+        Component original = cir.getReturnValue();
+        if (original == null) {
+            return;
+        }
+
+        Component styled = PlayerTagStyler.INSTANCE.applyStyle(original, playerName);
+        cir.setReturnValue(styled);
     }
 }

@@ -77,7 +77,7 @@ class HandbookFeature : Feature() {
      * TODO: Add accessor mixin for KeyMapping.key to support custom keybindings in screens.
      */
     private fun isHandbookKeyDown(): Boolean {
-        return InputConstants.isKeyDown(mc.window.window, GLFW.GLFW_KEY_H)
+        return InputConstants.isKeyDown(mc.window, GLFW.GLFW_KEY_H)
     }
 
     /**

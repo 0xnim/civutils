@@ -54,8 +54,8 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
 
     // NLib UI library
-    modImplementation("xyz.nim:nlib:0.1.0")
-    include("xyz.nim:nlib:0.1.0")
+    modImplementation("xyz.nim:nlib:0.1.0+1.21.11")
+    include("xyz.nim:nlib:0.1.0+1.21.11")
 
     // Kotlin reflection for config and event systems
     implementation(kotlin("reflect"))
