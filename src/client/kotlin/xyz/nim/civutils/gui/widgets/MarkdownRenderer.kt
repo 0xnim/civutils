@@ -117,7 +117,8 @@ class MarkdownRenderer {
 
         // Draw underline for H1
         if (element.level == 1) {
-            val textWidth = font.width(element.text)
+            // Calculate width WITH bold formatting - bold text is wider
+            val textWidth = font.width("\u00A7l${element.text}")
             guiGraphics.fill(x, y + font.lineHeight + 2, x + textWidth, y + font.lineHeight + 3, color)
         }
 
@@ -185,20 +186,21 @@ class MarkdownRenderer {
             val tokens = span.text.split(Regex("(?<= )|(?= )")).filter { it.isNotEmpty() }
 
             for (token in tokens) {
-                val tokenWidth = font.width(token)
-
-                // Word wrap (but not for spaces at start of line)
-                if (currentX + tokenWidth > startX + maxWidth && currentX > startX && token.isNotBlank()) {
-                    currentX = startX
-                    currentY += lineHeight
-                }
-
-                // Build formatted text
+                // Build formatted text (need this first to calculate correct width)
                 val formattedToken = buildString {
                     if (span.bold) append("\u00A7l")
                     if (span.italic) append("\u00A7o")
                     append(token)
                     if (span.bold || span.italic) append("\u00A7r")
+                }
+
+                // Calculate width WITH formatting - bold text is wider than regular text
+                val tokenWidth = font.width(formattedToken)
+
+                // Word wrap (but not for spaces at start of line)
+                if (currentX + tokenWidth > startX + maxWidth && currentX > startX && token.isNotBlank()) {
+                    currentX = startX
+                    currentY += lineHeight
                 }
 
                 // Code background

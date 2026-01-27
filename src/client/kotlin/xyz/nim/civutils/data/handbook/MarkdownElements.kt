@@ -46,7 +46,13 @@ data class ParagraphElement(
         for (span in spans) {
             val tokens = span.text.split(Regex("(?<= )|(?= )")).filter { it.isNotEmpty() }
             for (token in tokens) {
-                val tokenWidth = font.width(token)
+                // Calculate width WITH formatting - bold/italic text is wider
+                val formattedToken = buildString {
+                    if (span.bold) append("\u00A7l")
+                    if (span.italic) append("\u00A7o")
+                    append(token)
+                }
+                val tokenWidth = font.width(formattedToken)
                 if (currentX + tokenWidth > width && currentX > 0 && token.isNotBlank()) {
                     currentX = 0
                     lines++
@@ -91,7 +97,13 @@ data class ListElement(
             for (span in item.spans) {
                 val tokens = span.text.split(Regex("(?<= )|(?= )")).filter { it.isNotEmpty() }
                 for (token in tokens) {
-                    val tokenWidth = font.width(token)
+                    // Calculate width WITH formatting - bold/italic text is wider
+                    val formattedToken = buildString {
+                        if (span.bold) append("\u00A7l")
+                        if (span.italic) append("\u00A7o")
+                        append(token)
+                    }
+                    val tokenWidth = font.width(formattedToken)
                     if (currentX + tokenWidth > availableWidth && currentX > 0 && token.isNotBlank()) {
                         currentX = 0
                         itemLines++
@@ -144,7 +156,13 @@ data class BlockQuoteElement(
         for (span in spans) {
             val tokens = span.text.split(Regex("(?<= )|(?= )")).filter { it.isNotEmpty() }
             for (token in tokens) {
-                val tokenWidth = font.width(token)
+                // Calculate width WITH formatting - bold/italic text is wider
+                val formattedToken = buildString {
+                    if (span.bold) append("\u00A7l")
+                    if (span.italic) append("\u00A7o")
+                    append(token)
+                }
+                val tokenWidth = font.width(formattedToken)
                 if (currentX + tokenWidth > availableWidth && currentX > 0 && token.isNotBlank()) {
                     currentX = 0
                     lines++
