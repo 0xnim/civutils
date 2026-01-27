@@ -79,6 +79,7 @@ dependencies {
 
     // YAML parsing for MDX frontmatter
     implementation("org.yaml:snakeyaml:2.2")
+    include("org.yaml:snakeyaml:2.2")
 }
 
 // Generate items-manifest.json from MDX files in handbook/items/
