@@ -70,6 +70,10 @@ class HandbookScreen(
     // Cached item relationships (items that use this item, grouped by type)
     private var itemRelationships: List<ItemRelationGroup> = emptyList()
 
+    // Cached element heights (calculated once per page load, not every frame)
+    private var cachedElementHeights: List<Int> = emptyList()
+    private var cachedDescriptionHeights: List<Int> = emptyList()
+
     // Scrollbar dragging
     private var isDraggingScrollbar = false
     private var scrollbarDragOffset = 0.0
@@ -278,6 +282,8 @@ class HandbookScreen(
         targetScroll = 0.0
         parsedItemDescription = emptyList()
         itemRelationships = emptyList()
+        cachedElementHeights = emptyList()
+        cachedDescriptionHeights = emptyList()
 
         // Try to find content by ID - check items database first, then markdown pages
         val item = HandbookModel.getItem(pageId)
@@ -318,6 +324,11 @@ class HandbookScreen(
             parsedItemDescription = markdownParser.parse(description)
         }
 
+        // Cache description element heights
+        cachedDescriptionHeights = parsedItemDescription.map { element ->
+            element.calculateHeight(contentAreaWidth, font)
+        }
+
         // Compute item relationships (items that use this as an ingredient, grouped by type)
         itemRelationships = HandbookModel.getItemRelationships(item.id)
 
@@ -343,10 +354,15 @@ class HandbookScreen(
             else -> null
         }
 
-        // Calculate max scroll with dynamic heights
+        // Cache element heights (calculate once, not every frame)
+        cachedElementHeights = page.renderedContent.map { element ->
+            element.calculateHeight(contentAreaWidth, font)
+        }
+
+        // Calculate max scroll using cached heights
         var totalHeight = 0
         var isFirst = true
-        for (element in page.renderedContent) {
+        for ((index, element) in page.renderedContent.withIndex()) {
             // Top margin for headings
             if (!isFirst && element is HeadingElement) {
                 totalHeight += when (element.level) {
@@ -355,8 +371,8 @@ class HandbookScreen(
                     else -> 8
                 }
             }
-            // Use dynamic height calculation
-            totalHeight += element.calculateHeight(contentAreaWidth, font)
+            // Use cached height
+            totalHeight += cachedElementHeights[index]
             // Bottom margin
             totalHeight += when (element) {
                 is HeadingElement -> 8
@@ -406,9 +422,9 @@ class HandbookScreen(
             }
         }
 
-        // Description (markdown)
-        for (element in parsedItemDescription) {
-            height += element.calculateHeight(contentAreaWidth, font) + 6
+        // Description (markdown) - use cached heights if available
+        for ((index, element) in parsedItemDescription.withIndex()) {
+            height += cachedDescriptionHeights.getOrElse(index) { element.baseHeight } + 6
         }
 
         // Used in section
@@ -450,10 +466,12 @@ class HandbookScreen(
     override fun tick() {
         super.tick()
 
-        // Smooth scroll animation
-        if (kotlin.math.abs(contentScroll - targetScroll) > 0.5) {
+        // Smooth scroll animation - snap to target when close enough to avoid endless tiny updates
+        val diff = kotlin.math.abs(contentScroll - targetScroll)
+        if (diff > 1.0) {
             contentScroll += (targetScroll - contentScroll) * SCROLL_SPEED
-        } else {
+        } else if (diff > 0.01) {
+            // Snap to target to stop the animation completely
             contentScroll = targetScroll
         }
     }
@@ -528,7 +546,7 @@ class HandbookScreen(
         var y = contentStartY - contentScroll.toInt()
         var isFirst = true
 
-        for (element in page.renderedContent) {
+        for ((index, element) in page.renderedContent.withIndex()) {
             // Add extra top margin before headings (except the first element)
             val topMargin = if (!isFirst && element is HeadingElement) {
                 when (element.level) {
@@ -541,8 +559,8 @@ class HandbookScreen(
             }
             y += topMargin
 
-            // Calculate dynamic height
-            val elementHeight = element.calculateHeight(contentAreaWidth, font)
+            // Use cached height instead of recalculating every frame
+            val elementHeight = cachedElementHeights.getOrElse(index) { element.baseHeight }
 
             // Calculate bottom margin based on element type
             val bottomMargin = when (element) {
@@ -681,11 +699,11 @@ class HandbookScreen(
             }
         }
 
-        // Markdown description
+        // Markdown description - use cached heights
         if (parsedItemDescription.isNotEmpty()) {
             y += 8 // Extra spacing before description
-            for (element in parsedItemDescription) {
-                val elementHeight = element.calculateHeight(contentAreaWidth, font)
+            for ((index, element) in parsedItemDescription.withIndex()) {
+                val elementHeight = cachedDescriptionHeights.getOrElse(index) { element.baseHeight }
                 if (y + elementHeight >= contentStartY && y <= contentStartY + contentAreaHeight) {
                     markdownRenderer.render(guiGraphics, element, contentStartX, y, contentAreaWidth, font)
                 }
