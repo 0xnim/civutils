@@ -1,0 +1,11 @@
+{
+  "name": "civutils-tools",
+  "type": "module",
+  "scripts": {
+    "start": "bun item-editor.ts",
+    "migrate": "bun migrate-items.ts"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.0.0"
+  }
+}

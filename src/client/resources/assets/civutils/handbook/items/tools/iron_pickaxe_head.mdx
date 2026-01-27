@@ -1,0 +1,25 @@
+---
+id: iron_pickaxe_head
+name: Iron Pickaxe Head
+summary: Metal component for iron pickaxe
+category: TOOLS
+tags: [smithing, blacksmith, iron, tools, pickaxe]
+order: 70
+displayItem: "minecraft:iron_ingot"
+customTexture: item/iron_pickaxe_head
+filters:
+  baseItem: "minecraft:iron_ingot"
+  customNameContains: Pickaxe Head
+requiredClass: "blacksmith:2"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Iron Pickaxe Head
+    pattern: [SSS]
+    key:
+      S:
+        item: iron_plate_stack
+    outputs:
+      - item: iron_pickaxe_head
+---
+
+Combine with a Tool Handle and Iron Pickaxe Blueprint at a smithing table to create an Iron Pickaxe.

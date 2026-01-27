@@ -51,6 +51,9 @@ data class ItemDefinition(
     /** List of recipes that produce this item (nullable due to Gson) */
     val recipes: List<Recipe>? = emptyList(),
 
+    /** Items that drop when this block/item is broken (e.g., ore drops gems) */
+    val drops: List<RecipeSlot>? = null,
+
     /** List of item IDs that use this item as an ingredient (nullable due to Gson) */
     val usedIn: List<String>? = emptyList(),
 

@@ -45,10 +45,10 @@ Builders can create and control [iron and snow golems](golemancy) to defend play
 
 ### Expert (3)
 - Scaffolding, Concrete Powder
-- Tuff Bricks, Nether Bricks, Blackstone, Basalt
+- Tuff Bricks, Nether Bricks, Blackstone, Gilded Blackstone, Basalt
 - Daylight Detector
 - Redstone Repeater and Comparator
-- Dropper, Hopper
+- Dropper, Hopper (crafting and usage)
 
 ### Master (4)
 - **Haste III**
@@ -56,7 +56,7 @@ Builders can create and control [iron and snow golems](golemancy) to defend play
 - Red Nether Brick, Quartz
 - Glazed Terracotta
 - Pistons, Redstone Lamp, Note Block
-- Dispenser, Observer
+- Dispenser, Observer, Calibrated Skulk Sensor
 - Auto Crafter interaction
 
 ### Grandmaster (5)

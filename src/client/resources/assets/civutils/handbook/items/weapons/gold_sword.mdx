@@ -1,0 +1,23 @@
+---
+id: gold_sword
+name: Gold Sword
+summary: Fast but fragile sword requiring blueprint
+category: WEAPONS
+tags: [weapons, blacksmith, gold, sword]
+order: 232
+displayItem: "minecraft:golden_sword"
+requiredClass: "blacksmith:3"
+recipes:
+  - type: SMITHING
+    name: Gold Sword
+    template:
+      item: blueprint
+    base:
+      item: tool_handle
+    addition:
+      item: gold_sword_head
+    outputs:
+      - item: "minecraft:golden_sword"
+---
+
+Gold weapons require a blueprint to craft. Combine a Tool Handle and Gold Sword Head with a Gold Sword Blueprint at a smithing table.

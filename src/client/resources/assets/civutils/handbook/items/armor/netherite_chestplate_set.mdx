@@ -1,0 +1,25 @@
+---
+id: netherite_chestplate_set
+name: Netherite Chestplate Set
+summary: Pre-smithed netherite chestplate piece
+category: ARMOR
+tags: [smithing, blacksmith, netherite, armor, chestplate]
+order: 141
+displayItem: "minecraft:netherite_ingot"
+customTexture: item/netherite_breastplate
+filters:
+  baseItem: "minecraft:netherite_ingot"
+  customNameContains: Chestplate Set
+requiredClass: "blacksmith:5"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Netherite Chestplate Set
+    pattern: [S S, SSS, SSS]
+    key:
+      S:
+        item: netherite_plate_stack
+    outputs:
+      - item: netherite_chestplate_set
+---
+
+Combine with Diamond Chestplate and Netherite Upgrade Template at a smithing table to create a Netherite Chestplate.

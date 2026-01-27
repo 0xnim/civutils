@@ -13,7 +13,7 @@ In CivLabs, tools and armor have a completely overhauled crafting process. This 
 Uses **Padded Leather** instead of regular leather.
 
 **Padded Leather Recipe:**
-- Leather + Wool (shapeless)
+- 2 Leather + 2 Wool (2x2 grid)
 
 ### Chainmail Armor
 Now craftable by Blacksmiths using **Chainmail Armor Plates**.
@@ -50,7 +50,7 @@ Each tier requires the previous tier as a base.
 Copper+ tools use a different process:
 
 ### Step 1: Create Tool Handle
-- 1 Stick + 2 String + 2 Padded Leather
+- 2 Padded Leather (top/bottom center) + 1 Stick (center) + 2 String (sides)
 
 ### Step 2: Create Tool Head
 Use plate stacks in tool shapes:
@@ -87,7 +87,7 @@ Blacksmiths use blueprints to **learn** the recipe, keeping it until death.
 ## Material Requirements
 
 Making iron armor requires:
-1. **Padded Leather** (leather + wool)
+1. **Padded Leather** (2 leather + 2 wool)
 2. **Chainmail Armor** (as base)
 3. **Iron Plates** (from iron ingots)
 4. **Iron Plate Stacks**

@@ -59,8 +59,7 @@ class HandbookScreen(
 
     // Content - can be either markdown page or item page
     private var currentContent: PageContent? = null
-    private var contentScroll = 0.0  // Float for smooth scrolling
-    private var targetScroll = 0.0   // Target for animation
+    private var contentScroll = 0
     private var maxScroll = 0
 
     // Parsed markdown for item descriptions
@@ -104,7 +103,6 @@ class HandbookScreen(
     private var contentAreaHeight = 0
 
     companion object {
-        private const val SCROLL_SPEED = 0.3  // Smooth scroll interpolation factor
         private const val SCROLLBAR_WIDTH = 6
     }
 
@@ -278,8 +276,7 @@ class HandbookScreen(
     }
 
     private fun loadPage(pageId: String, addToHistory: Boolean = true) {
-        contentScroll = 0.0
-        targetScroll = 0.0
+        contentScroll = 0
         parsedItemDescription = emptyList()
         itemRelationships = emptyList()
         cachedElementHeights = emptyList()
@@ -465,15 +462,6 @@ class HandbookScreen(
 
     override fun tick() {
         super.tick()
-
-        // Smooth scroll animation - snap to target when close enough to avoid endless tiny updates
-        val diff = kotlin.math.abs(contentScroll - targetScroll)
-        if (diff > 1.0) {
-            contentScroll += (targetScroll - contentScroll) * SCROLL_SPEED
-        } else if (diff > 0.01) {
-            // Snap to target to stop the animation completely
-            contentScroll = targetScroll
-        }
     }
 
     override fun renderPanels(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
@@ -543,7 +531,7 @@ class HandbookScreen(
     }
 
     private fun renderMarkdownContent(guiGraphics: GuiGraphics, page: HandbookPage, adjustedMouseY: Int) {
-        var y = contentStartY - contentScroll.toInt()
+        var y = contentStartY - contentScroll
         var isFirst = true
 
         for ((index, element) in page.renderedContent.withIndex()) {
@@ -588,7 +576,7 @@ class HandbookScreen(
     }
 
     private fun renderItemContent(guiGraphics: GuiGraphics, item: ItemDefinition, mouseX: Int, mouseY: Int) {
-        var y = contentStartY - contentScroll.toInt()
+        var y = contentStartY - contentScroll
 
         // Clear recipe renderer slots at the start of each frame
         recipeRenderer.clearSlots()
@@ -785,7 +773,7 @@ class HandbookScreen(
         scrollbarTrackHeight = contentAreaHeight
 
         scrollbarThumbHeight = max(20, (contentAreaHeight * contentAreaHeight) / (contentAreaHeight + maxScroll))
-        scrollbarThumbY = scrollbarTrackY + ((contentScroll.toInt() * (scrollbarTrackHeight - scrollbarThumbHeight)) / maxScroll)
+        scrollbarThumbY = scrollbarTrackY + ((contentScroll * (scrollbarTrackHeight - scrollbarThumbHeight)) / maxScroll)
 
         // Track background
         guiGraphics.fill(
@@ -878,8 +866,7 @@ class HandbookScreen(
         if (mouseX >= rightPanelX && mouseX < rightPanelX + rightPanelWidth &&
             mouseY >= contentY && mouseY < contentY + contentHeight
         ) {
-            // Update target for smooth scrolling
-            targetScroll = (targetScroll - (verticalAmount * 30)).coerceIn(0.0, maxScroll.toDouble())
+            contentScroll = (contentScroll - (verticalAmount * 30).toInt()).coerceIn(0, maxScroll)
             return true
         }
 
@@ -899,7 +886,7 @@ class HandbookScreen(
                     // Clicking on track - jump to position
                     val clickRatio = (mouseY - scrollbarTrackY - scrollbarThumbHeight / 2) /
                             (scrollbarTrackHeight - scrollbarThumbHeight)
-                    targetScroll = (clickRatio * maxScroll).coerceIn(0.0, maxScroll.toDouble())
+                    contentScroll = (clickRatio * maxScroll).toInt().coerceIn(0, maxScroll)
                     return true
                 }
             }
@@ -954,8 +941,7 @@ class HandbookScreen(
         if (isDraggingScrollbar && maxScroll > 0) {
             val newThumbY = mouseY - scrollbarDragOffset
             val scrollRatio = (newThumbY - scrollbarTrackY) / (scrollbarTrackHeight - scrollbarThumbHeight)
-            targetScroll = (scrollRatio * maxScroll).coerceIn(0.0, maxScroll.toDouble())
-            contentScroll = targetScroll // Immediate update while dragging
+            contentScroll = (scrollRatio * maxScroll).toInt().coerceIn(0, maxScroll)
             return true
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY)

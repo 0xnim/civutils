@@ -1,0 +1,25 @@
+---
+id: gold_pickaxe_head
+name: Gold Pickaxe Head
+summary: Metal component for gold pickaxe
+category: TOOLS
+tags: [smithing, blacksmith, gold, tools, pickaxe]
+order: 80
+displayItem: "minecraft:gold_ingot"
+customTexture: item/gold_pickaxe_head
+filters:
+  baseItem: "minecraft:gold_ingot"
+  customNameContains: Pickaxe Head
+requiredClass: "blacksmith:3"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Gold Pickaxe Head
+    pattern: [SSS]
+    key:
+      S:
+        item: gold_plate_stack
+    outputs:
+      - item: gold_pickaxe_head
+---
+
+Combine with a Tool Handle and Gold Pickaxe Blueprint at a smithing table to create a Gold Pickaxe.

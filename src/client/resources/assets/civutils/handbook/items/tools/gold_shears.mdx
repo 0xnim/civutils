@@ -1,0 +1,25 @@
+---
+id: gold_shears
+name: Gold Shears
+summary: Fast but fragile gold shears
+category: TOOLS
+tags: [tools, shears, blacksmith, gold]
+order: 54
+displayItem: "minecraft:shears"
+customTexture: item/gold_shear
+filters:
+  baseItem: "minecraft:shears"
+  customNameContains: Gold
+requiredClass: "blacksmith:3"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Gold Shears
+    pattern: [" G", "G "]
+    key:
+      G:
+        item: "minecraft:gold_ingot"
+    outputs:
+      - item: gold_shears
+---
+
+Gold Shears are fast but have low durability, typical of gold tools.

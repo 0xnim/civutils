@@ -1,0 +1,25 @@
+---
+id: netherite_boots_set
+name: Netherite Boots Set
+summary: Pre-smithed netherite boots piece
+category: ARMOR
+tags: [smithing, blacksmith, netherite, armor, boots]
+order: 143
+displayItem: "minecraft:netherite_ingot"
+customTexture: item/netherite_sabaton
+filters:
+  baseItem: "minecraft:netherite_ingot"
+  customNameContains: Boots Set
+requiredClass: "blacksmith:5"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Netherite Boots Set
+    pattern: [S S, S S]
+    key:
+      S:
+        item: netherite_plate_stack
+    outputs:
+      - item: netherite_boots_set
+---
+
+Combine with Diamond Boots and Netherite Upgrade Template at a smithing table to create Netherite Boots.

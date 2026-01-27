@@ -1,0 +1,25 @@
+---
+id: gold_boots_set
+name: Gold Boots Set
+summary: Pre-smithed gold boots piece
+category: ARMOR
+tags: [smithing, blacksmith, gold, armor, boots]
+order: 123
+displayItem: "minecraft:gold_ingot"
+customTexture: item/gold_sabaton
+filters:
+  baseItem: "minecraft:gold_ingot"
+  customNameContains: Boots Set
+requiredClass: "blacksmith:3"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Gold Boots Set
+    pattern: [S S, S S]
+    key:
+      S:
+        item: gold_plate_stack
+    outputs:
+      - item: gold_boots_set
+---
+
+Combine with Iron Boots and Gold Boots Blueprint at a smithing table to create Gold Boots.

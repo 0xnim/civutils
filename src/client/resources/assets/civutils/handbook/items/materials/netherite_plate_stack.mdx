@@ -1,0 +1,25 @@
+---
+id: netherite_plate_stack
+name: Netherite Plate Stack
+summary: Combined netherite plates for crafting equipment
+category: MATERIALS
+tags: [smithing, blacksmith, netherite, plates]
+order: 44
+displayItem: "minecraft:netherite_ingot"
+customTexture: item/netherite_armor_plateset
+filters:
+  baseItem: "minecraft:netherite_ingot"
+  customNameContains: Plate Stack
+requiredClass: "blacksmith:5"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Netherite Plate Stack
+    pattern: [P, P, P]
+    key:
+      P:
+        item: netherite_plate
+    outputs:
+      - item: netherite_plate_stack
+---
+
+Netherite Plate Stacks are used to craft Tool Heads and Plate Sets for netherite tier equipment.

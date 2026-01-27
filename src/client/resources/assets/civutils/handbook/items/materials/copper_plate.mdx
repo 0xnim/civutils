@@ -1,0 +1,26 @@
+---
+id: copper_plate
+name: Copper Plate
+summary: Crafted copper for armor and tools
+category: MATERIALS
+tags: [smithing, blacksmith, copper, plates]
+order: 30
+displayItem: "minecraft:copper_ingot"
+customTexture: item/armor_plate_copper
+filters:
+  baseItem: "minecraft:copper_ingot"
+  customNameContains: Plate
+  customNameExcludes: Stack
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Copper Plate
+    pattern: [CCC]
+    key:
+      C:
+        item: "minecraft:copper_ingot"
+    outputs:
+      - item: copper_plate
+---
+
+Copper Plates are created by crafting 3 copper ingots in a row. They are combined into Plate Stacks for crafting equipment.

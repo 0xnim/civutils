@@ -1,0 +1,23 @@
+---
+id: diamond_pickaxe
+name: Diamond Pickaxe
+summary: High-tier pickaxe requiring blueprint
+category: TOOLS
+tags: [tools, blacksmith, diamond, pickaxe]
+order: 240
+displayItem: "minecraft:diamond_pickaxe"
+requiredClass: "blacksmith:4"
+recipes:
+  - type: SMITHING
+    name: Diamond Pickaxe
+    template:
+      item: blueprint
+    base:
+      item: tool_handle
+    addition:
+      item: diamond_pickaxe_head
+    outputs:
+      - item: "minecraft:diamond_pickaxe"
+---
+
+Diamond tools require a blueprint to craft. Combine a Tool Handle and Diamond Pickaxe Head with a Diamond Pickaxe Blueprint at a smithing table.

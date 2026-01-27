@@ -1,0 +1,25 @@
+---
+id: diamond_helmet_set
+name: Diamond Helmet Set
+summary: Pre-smithed diamond helmet piece
+category: ARMOR
+tags: [smithing, blacksmith, diamond, armor, helmet]
+order: 130
+displayItem: "minecraft:diamond"
+customTexture: item/diamond_helm
+filters:
+  baseItem: "minecraft:diamond"
+  customNameContains: Helmet Set
+requiredClass: "blacksmith:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Diamond Helmet Set
+    pattern: [SSS, S S]
+    key:
+      S:
+        item: diamond_plate_stack
+    outputs:
+      - item: diamond_helmet_set
+---
+
+Combine with Gold Helmet and Diamond Helmet Blueprint at a smithing table to create a Diamond Helmet.

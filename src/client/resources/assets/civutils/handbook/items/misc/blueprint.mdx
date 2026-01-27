@@ -1,0 +1,34 @@
+---
+id: blueprint
+name: Blueprint
+summary: Unlock recipes for iron+ equipment
+category: MISC
+tags: [smithing, librarian, blueprints]
+order: 150
+displayItem: "minecraft:map"
+customTexture: item/blueprint
+filters:
+  baseItem: "minecraft:map"
+  customNameContains: Blueprint
+requiredClass: "librarian:2"
+metadata:
+  crafterXp: 3 Librarian XP
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Blueprint (Generic)
+    pattern: [PPP, BXB, "   "]
+    key:
+      P:
+        item: "minecraft:paper"
+      B:
+        item: "minecraft:blue_dye"
+      X:
+        item: "minecraft:barrier"
+        alternatives: [iron_pickaxe_head, iron_helmet_set]
+    outputs:
+      - item: blueprint
+    metadata:
+      note: X = the tool head or plate set for the desired blueprint (NOT consumed)
+---
+
+Blueprints are created by Librarians and required by Blacksmiths to craft iron tier and above equipment. Each item type requires its own specific blueprint. The tool head or plate set used in the recipe is NOT consumed.

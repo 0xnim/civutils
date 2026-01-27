@@ -201,6 +201,15 @@
       "tags": ["golems", "builder", "defense"],
       "order": 6,
       "summary": "Create and control iron and snow golems"
+    },
+    {
+      "id": "animal-husbandry",
+      "title": "Animal Husbandry",
+      "file": "pages/mechanics/animal-husbandry.md",
+      "category": "mechanics",
+      "tags": ["animals", "farmer", "breeding", "taming"],
+      "order": 7,
+      "summary": "Taming and breeding animals in CivLabs"
     }
   ]
 }

@@ -1,0 +1,25 @@
+---
+id: gold_chestplate_set
+name: Gold Chestplate Set
+summary: Pre-smithed gold chestplate piece
+category: ARMOR
+tags: [smithing, blacksmith, gold, armor, chestplate]
+order: 121
+displayItem: "minecraft:gold_ingot"
+customTexture: item/gold_breastplate
+filters:
+  baseItem: "minecraft:gold_ingot"
+  customNameContains: Chestplate Set
+requiredClass: "blacksmith:3"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Gold Chestplate Set
+    pattern: [S S, SSS, SSS]
+    key:
+      S:
+        item: gold_plate_stack
+    outputs:
+      - item: gold_chestplate_set
+---
+
+Combine with Iron Chestplate and Gold Chestplate Blueprint at a smithing table to create a Gold Chestplate.

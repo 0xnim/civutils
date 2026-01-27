@@ -1,0 +1,25 @@
+---
+id: netherite_pickaxe_head
+name: Netherite Pickaxe Head
+summary: Metal component for netherite pickaxe
+category: TOOLS
+tags: [smithing, blacksmith, netherite, tools, pickaxe]
+order: 100
+displayItem: "minecraft:netherite_ingot"
+customTexture: item/netherite_pickaxe_head
+filters:
+  baseItem: "minecraft:netherite_ingot"
+  customNameContains: Pickaxe Head
+requiredClass: "blacksmith:5"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Netherite Pickaxe Head
+    pattern: [SSS]
+    key:
+      S:
+        item: netherite_plate_stack
+    outputs:
+      - item: netherite_pickaxe_head
+---
+
+Combine with a Tool Handle and Netherite Pickaxe Blueprint at a smithing table to create a Netherite Pickaxe.

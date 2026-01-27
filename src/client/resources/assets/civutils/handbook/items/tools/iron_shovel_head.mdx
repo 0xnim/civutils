@@ -1,0 +1,25 @@
+---
+id: iron_shovel_head
+name: Iron Shovel Head
+summary: Metal component for iron shovel
+category: TOOLS
+tags: [smithing, blacksmith, iron, tools, shovel]
+order: 73
+displayItem: "minecraft:iron_ingot"
+customTexture: item/iron_shovel_head
+filters:
+  baseItem: "minecraft:iron_ingot"
+  customNameContains: Shovel Head
+requiredClass: "blacksmith:2"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Iron Shovel Head
+    pattern: [S]
+    key:
+      S:
+        item: iron_plate_stack
+    outputs:
+      - item: iron_shovel_head
+---
+
+Combine with a Tool Handle and Iron Shovel Blueprint at a smithing table to create an Iron Shovel.

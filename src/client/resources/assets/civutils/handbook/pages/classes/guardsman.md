@@ -33,7 +33,7 @@ At level 1, shift right-click other players to inspect their inventory. You can'
 Right-click a player with food to feed them directly.
 
 ### Dog Taming
-Guardsmen can tame wolves into dogs for combat assistance.
+Guardsmen can tame wolves into dogs for combat assistance. Note that **breeding dogs requires a [Farmer](farmer)**, so building a dog army requires class coordination. See [Animal Husbandry](animal-husbandry) for details.
 
 ### Player Leashing
 At level 5, you can leash downed players using leads. Leashed players cannot move, attack, or break blocks, and can be dragged around.
@@ -101,4 +101,4 @@ XP is gained per **2 attack damage** (1 full heart) dealt to **hostile mobs**:
 
 ---
 
-> **See Also:** [Healer](healer), [Blacksmith](blacksmith)
+> **See Also:** [Healer](healer), [Blacksmith](blacksmith), [Animal Husbandry](animal-husbandry)

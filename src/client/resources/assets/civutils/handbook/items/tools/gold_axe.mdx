@@ -1,0 +1,23 @@
+---
+id: gold_axe
+name: Gold Axe
+summary: Fast but fragile axe requiring blueprint
+category: TOOLS
+tags: [tools, blacksmith, gold, axe]
+order: 231
+displayItem: "minecraft:golden_axe"
+requiredClass: "blacksmith:3"
+recipes:
+  - type: SMITHING
+    name: Gold Axe
+    template:
+      item: blueprint
+    base:
+      item: tool_handle
+    addition:
+      item: gold_axe_head
+    outputs:
+      - item: "minecraft:golden_axe"
+---
+
+Gold tools require a blueprint to craft. Combine a Tool Handle and Gold Axe Head with a Gold Axe Blueprint at a smithing table.

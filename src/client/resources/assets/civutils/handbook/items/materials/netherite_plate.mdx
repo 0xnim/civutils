@@ -1,0 +1,26 @@
+---
+id: netherite_plate
+name: Netherite Plate
+summary: Crafted netherite for armor and tools
+category: MATERIALS
+tags: [smithing, blacksmith, netherite, plates]
+order: 34
+displayItem: "minecraft:netherite_ingot"
+customTexture: item/armor_plate_netherite
+filters:
+  baseItem: "minecraft:netherite_ingot"
+  customNameContains: Plate
+  customNameExcludes: Stack
+requiredClass: "blacksmith:5"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Netherite Plate
+    pattern: [NNN]
+    key:
+      N:
+        item: "minecraft:netherite_ingot"
+    outputs:
+      - item: netherite_plate
+---
+
+Netherite Plates are created by crafting 3 netherite ingots in a row. They are combined into Plate Stacks for crafting equipment.

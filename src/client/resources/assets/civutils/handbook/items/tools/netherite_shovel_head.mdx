@@ -1,0 +1,25 @@
+---
+id: netherite_shovel_head
+name: Netherite Shovel Head
+summary: Metal component for netherite shovel
+category: TOOLS
+tags: [smithing, blacksmith, netherite, tools, shovel]
+order: 103
+displayItem: "minecraft:netherite_ingot"
+customTexture: item/netherite_shovel_head
+filters:
+  baseItem: "minecraft:netherite_ingot"
+  customNameContains: Shovel Head
+requiredClass: "blacksmith:5"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Netherite Shovel Head
+    pattern: [S]
+    key:
+      S:
+        item: netherite_plate_stack
+    outputs:
+      - item: netherite_shovel_head
+---
+
+Combine with a Tool Handle and Netherite Shovel Blueprint at a smithing table to create a Netherite Shovel.

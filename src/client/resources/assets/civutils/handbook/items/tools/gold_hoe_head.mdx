@@ -1,0 +1,25 @@
+---
+id: gold_hoe_head
+name: Gold Hoe Head
+summary: Metal component for gold hoe
+category: TOOLS
+tags: [smithing, blacksmith, gold, tools, hoe]
+order: 84
+displayItem: "minecraft:gold_ingot"
+customTexture: item/gold_hoe_head
+filters:
+  baseItem: "minecraft:gold_ingot"
+  customNameContains: Hoe Head
+requiredClass: "blacksmith:3"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Gold Hoe Head
+    pattern: [SS]
+    key:
+      S:
+        item: gold_plate_stack
+    outputs:
+      - item: gold_hoe_head
+---
+
+Combine with a Tool Handle and Gold Hoe Blueprint at a smithing table to create a Gold Hoe.

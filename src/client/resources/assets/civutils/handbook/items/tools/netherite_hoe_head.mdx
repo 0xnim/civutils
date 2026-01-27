@@ -1,0 +1,25 @@
+---
+id: netherite_hoe_head
+name: Netherite Hoe Head
+summary: Metal component for netherite hoe
+category: TOOLS
+tags: [smithing, blacksmith, netherite, tools, hoe]
+order: 104
+displayItem: "minecraft:netherite_ingot"
+customTexture: item/netherite_hoe_head
+filters:
+  baseItem: "minecraft:netherite_ingot"
+  customNameContains: Hoe Head
+requiredClass: "blacksmith:5"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Netherite Hoe Head
+    pattern: [SS]
+    key:
+      S:
+        item: netherite_plate_stack
+    outputs:
+      - item: netherite_hoe_head
+---
+
+Combine with a Tool Handle and Netherite Hoe Blueprint at a smithing table to create a Netherite Hoe.

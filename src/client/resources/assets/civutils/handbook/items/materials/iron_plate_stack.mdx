@@ -1,0 +1,25 @@
+---
+id: iron_plate_stack
+name: Iron Plate Stack
+summary: Combined iron plates for crafting equipment
+category: MATERIALS
+tags: [smithing, blacksmith, iron, plates]
+order: 41
+displayItem: "minecraft:iron_ingot"
+customTexture: item/iron_armor_plateset
+filters:
+  baseItem: "minecraft:iron_ingot"
+  customNameContains: Plate Stack
+requiredClass: "blacksmith:2"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Iron Plate Stack
+    pattern: [P, P, P]
+    key:
+      P:
+        item: iron_plate
+    outputs:
+      - item: iron_plate_stack
+---
+
+Iron Plate Stacks are used to craft Tool Heads and Plate Sets for iron tier equipment.

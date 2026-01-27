@@ -1,0 +1,25 @@
+---
+id: diamond_plate_stack
+name: Diamond Plate Stack
+summary: Combined diamond plates for crafting equipment
+category: MATERIALS
+tags: [smithing, blacksmith, diamond, plates]
+order: 43
+displayItem: "minecraft:diamond"
+customTexture: item/diamond_armor_plateset
+filters:
+  baseItem: "minecraft:diamond"
+  customNameContains: Plate Stack
+requiredClass: "blacksmith:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Diamond Plate Stack
+    pattern: [P, P, P]
+    key:
+      P:
+        item: diamond_plate
+    outputs:
+      - item: diamond_plate_stack
+---
+
+Diamond Plate Stacks are used to craft Tool Heads and Plate Sets for diamond tier equipment.

@@ -332,6 +332,7 @@ class MarkdownParser {
 
     /**
      * Parse inline formatting (bold, italic, code, links, items).
+     * Supports nested formatting like [**bold link**](url) or **[link](url)**.
      */
     private fun parseInlineText(text: String): List<TextSpan> {
         val spans = mutableListOf<TextSpan>()
@@ -344,33 +345,53 @@ class MarkdownParser {
                     val itemId = m.groupValues[1]
                     val countStr = m.groupValues[2].removePrefix("|")
                     val count = countStr.toIntOrNull() ?: 1
-                    TextSpan("", itemId = itemId, itemCount = count)
+                    listOf(TextSpan("", itemId = itemId, itemCount = count))
+                },
+                // Links with inner formatting: [**bold**](url), [*italic*](url), [***bold italic***](url)
+                Regex("^\\[\\*\\*\\*(.+?)\\*\\*\\*\\]\\(([^)]+)\\)") to { m: MatchResult ->
+                    listOf(TextSpan(m.groupValues[1], bold = true, italic = true, link = m.groupValues[2]))
+                },
+                Regex("^\\[\\*\\*(.+?)\\*\\*\\]\\(([^)]+)\\)") to { m: MatchResult ->
+                    listOf(TextSpan(m.groupValues[1], bold = true, link = m.groupValues[2]))
+                },
+                Regex("^\\[\\*(.+?)\\*\\]\\(([^)]+)\\)") to { m: MatchResult ->
+                    listOf(TextSpan(m.groupValues[1], italic = true, link = m.groupValues[2]))
                 },
                 // Links: [text](url)
                 Regex("^\\[([^\\]]+)\\]\\(([^)]+)\\)") to { m: MatchResult ->
-                    TextSpan(m.groupValues[1], link = m.groupValues[2])
+                    listOf(TextSpan(m.groupValues[1], link = m.groupValues[2]))
+                },
+                // Bold/italic wrapping a link: **[text](url)**, *[text](url)*
+                Regex("^\\*\\*\\*\\[([^\\]]+)\\]\\(([^)]+)\\)\\*\\*\\*") to { m: MatchResult ->
+                    listOf(TextSpan(m.groupValues[1], bold = true, italic = true, link = m.groupValues[2]))
+                },
+                Regex("^\\*\\*\\[([^\\]]+)\\]\\(([^)]+)\\)\\*\\*") to { m: MatchResult ->
+                    listOf(TextSpan(m.groupValues[1], bold = true, link = m.groupValues[2]))
+                },
+                Regex("^\\*\\[([^\\]]+)\\]\\(([^)]+)\\)\\*") to { m: MatchResult ->
+                    listOf(TextSpan(m.groupValues[1], italic = true, link = m.groupValues[2]))
                 },
                 // Bold + Italic: ***text*** or ___text___
                 Regex("^\\*\\*\\*(.+?)\\*\\*\\*") to { m: MatchResult ->
-                    TextSpan(m.groupValues[1], bold = true, italic = true)
+                    listOf(TextSpan(m.groupValues[1], bold = true, italic = true))
                 },
                 // Bold: **text** or __text__
                 Regex("^\\*\\*(.+?)\\*\\*") to { m: MatchResult ->
-                    TextSpan(m.groupValues[1], bold = true)
+                    listOf(TextSpan(m.groupValues[1], bold = true))
                 },
                 Regex("^__(.+?)__") to { m: MatchResult ->
-                    TextSpan(m.groupValues[1], bold = true)
+                    listOf(TextSpan(m.groupValues[1], bold = true))
                 },
                 // Italic: *text* or _text_
                 Regex("^\\*([^*]+)\\*") to { m: MatchResult ->
-                    TextSpan(m.groupValues[1], italic = true)
+                    listOf(TextSpan(m.groupValues[1], italic = true))
                 },
                 Regex("^_([^_]+)_") to { m: MatchResult ->
-                    TextSpan(m.groupValues[1], italic = true)
+                    listOf(TextSpan(m.groupValues[1], italic = true))
                 },
                 // Inline code: `text`
                 Regex("^`([^`]+)`") to { m: MatchResult ->
-                    TextSpan(m.groupValues[1], code = true)
+                    listOf(TextSpan(m.groupValues[1], code = true))
                 }
             )
 
@@ -381,9 +402,9 @@ class MarkdownParser {
                     if (match.range.first > 0) {
                         spans.add(TextSpan(remaining.substring(0, match.range.first)))
                     }
-                    val span = handler(match)
+                    val newSpans = handler(match)
                     remaining = remaining.substring(match.range.last + 1)
-                    spans.add(span)
+                    spans.addAll(newSpans)
 
                     // Add trailing space as separate plain span to prevent space loss
                     // (formatting codes can interfere with space rendering)

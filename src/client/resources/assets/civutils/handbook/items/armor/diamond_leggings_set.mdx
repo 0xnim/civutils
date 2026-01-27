@@ -1,0 +1,25 @@
+---
+id: diamond_leggings_set
+name: Diamond Leggings Set
+summary: Pre-smithed diamond leggings piece
+category: ARMOR
+tags: [smithing, blacksmith, diamond, armor, leggings]
+order: 132
+displayItem: "minecraft:diamond"
+customTexture: item/diamond_greaves
+filters:
+  baseItem: "minecraft:diamond"
+  customNameContains: Leggings Set
+requiredClass: "blacksmith:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Diamond Leggings Set
+    pattern: [SSS, S S, S S]
+    key:
+      S:
+        item: diamond_plate_stack
+    outputs:
+      - item: diamond_leggings_set
+---
+
+Combine with Gold Leggings and Diamond Leggings Blueprint at a smithing table to create Diamond Leggings.

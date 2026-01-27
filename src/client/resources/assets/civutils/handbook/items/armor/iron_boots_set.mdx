@@ -1,0 +1,25 @@
+---
+id: iron_boots_set
+name: Iron Boots Set
+summary: Pre-smithed iron boots piece
+category: ARMOR
+tags: [smithing, blacksmith, iron, armor, boots]
+order: 113
+displayItem: "minecraft:iron_ingot"
+customTexture: item/iron_sabaton
+filters:
+  baseItem: "minecraft:iron_ingot"
+  customNameContains: Boots Set
+requiredClass: "blacksmith:2"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Iron Boots Set
+    pattern: [S S, S S]
+    key:
+      S:
+        item: iron_plate_stack
+    outputs:
+      - item: iron_boots_set
+---
+
+Combine with Chainmail Boots and Iron Boots Blueprint at a smithing table to create Iron Boots.

@@ -1,0 +1,23 @@
+---
+id: iron_sword
+name: Iron Sword
+summary: Standard tier sword requiring blueprint
+category: WEAPONS
+tags: [weapons, blacksmith, iron, sword]
+order: 222
+displayItem: "minecraft:iron_sword"
+requiredClass: "blacksmith:2"
+recipes:
+  - type: SMITHING
+    name: Iron Sword
+    template:
+      item: blueprint
+    base:
+      item: tool_handle
+    addition:
+      item: iron_sword_head
+    outputs:
+      - item: "minecraft:iron_sword"
+---
+
+Iron weapons require a blueprint to craft. Combine a Tool Handle and Iron Sword Head with an Iron Sword Blueprint at a smithing table.

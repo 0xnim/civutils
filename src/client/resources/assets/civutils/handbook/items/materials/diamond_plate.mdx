@@ -1,0 +1,26 @@
+---
+id: diamond_plate
+name: Diamond Plate
+summary: Crafted diamond for armor and tools
+category: MATERIALS
+tags: [smithing, blacksmith, diamond, plates]
+order: 33
+displayItem: "minecraft:diamond"
+customTexture: item/armor_plate_diamond
+filters:
+  baseItem: "minecraft:diamond"
+  customNameContains: Plate
+  customNameExcludes: Stack
+requiredClass: "blacksmith:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Diamond Plate
+    pattern: [DDD]
+    key:
+      D:
+        item: "minecraft:diamond"
+    outputs:
+      - item: diamond_plate
+---
+
+Diamond Plates are created by crafting 3 diamonds in a row. They are combined into Plate Stacks for crafting equipment.

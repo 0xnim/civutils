@@ -1,0 +1,25 @@
+---
+id: copper_shears
+name: Copper Shears
+summary: Copper-tier shears
+category: TOOLS
+tags: [tools, shears, blacksmith, copper]
+order: 52
+displayItem: "minecraft:shears"
+customTexture: item/copper_shear
+filters:
+  baseItem: "minecraft:shears"
+  customNameContains: Copper
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Copper Shears
+    pattern: [" C", "C "]
+    key:
+      C:
+        item: "minecraft:copper_ingot"
+    outputs:
+      - item: copper_shears
+---
+
+Copper Shears offer improved durability over stone shears.

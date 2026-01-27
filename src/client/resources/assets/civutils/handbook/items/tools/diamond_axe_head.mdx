@@ -1,0 +1,25 @@
+---
+id: diamond_axe_head
+name: Diamond Axe Head
+summary: Metal component for diamond axe
+category: TOOLS
+tags: [smithing, blacksmith, diamond, tools, axe]
+order: 91
+displayItem: "minecraft:diamond"
+customTexture: item/diamond_axe_head
+filters:
+  baseItem: "minecraft:diamond"
+  customNameContains: Axe Head
+requiredClass: "blacksmith:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Diamond Axe Head
+    pattern: [SS, "S "]
+    key:
+      S:
+        item: diamond_plate_stack
+    outputs:
+      - item: diamond_axe_head
+---
+
+Combine with a Tool Handle and Diamond Axe Blueprint at a smithing table to create a Diamond Axe.

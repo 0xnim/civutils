@@ -1,0 +1,25 @@
+---
+id: copper_shovel_head
+name: Copper Shovel Head
+summary: Metal component for copper shovel
+category: TOOLS
+tags: [smithing, blacksmith, copper, tools, shovel]
+order: 63
+displayItem: "minecraft:copper_ingot"
+customTexture: item/copper_shovel_head
+filters:
+  baseItem: "minecraft:copper_ingot"
+  customNameContains: Shovel Head
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Copper Shovel Head
+    pattern: [S]
+    key:
+      S:
+        item: copper_plate_stack
+    outputs:
+      - item: copper_shovel_head
+---
+
+Combine with a Tool Handle at a smithing table to create a Copper Shovel.

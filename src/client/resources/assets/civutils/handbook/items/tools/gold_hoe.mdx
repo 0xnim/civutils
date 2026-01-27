@@ -1,0 +1,23 @@
+---
+id: gold_hoe
+name: Gold Hoe
+summary: Fast but fragile hoe requiring blueprint
+category: TOOLS
+tags: [tools, blacksmith, gold, hoe]
+order: 234
+displayItem: "minecraft:golden_hoe"
+requiredClass: "blacksmith:3"
+recipes:
+  - type: SMITHING
+    name: Gold Hoe
+    template:
+      item: blueprint
+    base:
+      item: tool_handle
+    addition:
+      item: gold_hoe_head
+    outputs:
+      - item: "minecraft:golden_hoe"
+---
+
+Gold tools require a blueprint to craft. Combine a Tool Handle and Gold Hoe Head with a Gold Hoe Blueprint at a smithing table.

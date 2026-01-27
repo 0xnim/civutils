@@ -1,0 +1,25 @@
+---
+id: copper_sword_head
+name: Copper Sword Head
+summary: Metal component for copper sword
+category: WEAPONS
+tags: [smithing, blacksmith, copper, weapons, sword]
+order: 62
+displayItem: "minecraft:copper_ingot"
+customTexture: item/copper_sword_head
+filters:
+  baseItem: "minecraft:copper_ingot"
+  customNameContains: Sword Head
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Copper Sword Head
+    pattern: [S, S]
+    key:
+      S:
+        item: copper_plate_stack
+    outputs:
+      - item: copper_sword_head
+---
+
+Combine with a Tool Handle at a smithing table to create a Copper Sword.

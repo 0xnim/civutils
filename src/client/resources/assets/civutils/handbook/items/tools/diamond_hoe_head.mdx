@@ -1,0 +1,25 @@
+---
+id: diamond_hoe_head
+name: Diamond Hoe Head
+summary: Metal component for diamond hoe
+category: TOOLS
+tags: [smithing, blacksmith, diamond, tools, hoe]
+order: 94
+displayItem: "minecraft:diamond"
+customTexture: item/diamond_hoe_head
+filters:
+  baseItem: "minecraft:diamond"
+  customNameContains: Hoe Head
+requiredClass: "blacksmith:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Diamond Hoe Head
+    pattern: [SS]
+    key:
+      S:
+        item: diamond_plate_stack
+    outputs:
+      - item: diamond_hoe_head
+---
+
+Combine with a Tool Handle and Diamond Hoe Blueprint at a smithing table to create a Diamond Hoe.

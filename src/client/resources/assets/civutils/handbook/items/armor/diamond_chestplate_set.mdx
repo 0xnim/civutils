@@ -1,0 +1,25 @@
+---
+id: diamond_chestplate_set
+name: Diamond Chestplate Set
+summary: Pre-smithed diamond chestplate piece
+category: ARMOR
+tags: [smithing, blacksmith, diamond, armor, chestplate]
+order: 131
+displayItem: "minecraft:diamond"
+customTexture: item/diamond_breastplate
+filters:
+  baseItem: "minecraft:diamond"
+  customNameContains: Chestplate Set
+requiredClass: "blacksmith:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Diamond Chestplate Set
+    pattern: [S S, SSS, SSS]
+    key:
+      S:
+        item: diamond_plate_stack
+    outputs:
+      - item: diamond_chestplate_set
+---
+
+Combine with Gold Chestplate and Diamond Chestplate Blueprint at a smithing table to create a Diamond Chestplate.

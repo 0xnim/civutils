@@ -1,0 +1,25 @@
+---
+id: netherite_leggings_set
+name: Netherite Leggings Set
+summary: Pre-smithed netherite leggings piece
+category: ARMOR
+tags: [smithing, blacksmith, netherite, armor, leggings]
+order: 142
+displayItem: "minecraft:netherite_ingot"
+customTexture: item/netherite_greaves
+filters:
+  baseItem: "minecraft:netherite_ingot"
+  customNameContains: Leggings Set
+requiredClass: "blacksmith:5"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Netherite Leggings Set
+    pattern: [SSS, S S, S S]
+    key:
+      S:
+        item: netherite_plate_stack
+    outputs:
+      - item: netherite_leggings_set
+---
+
+Combine with Diamond Leggings and Netherite Upgrade Template at a smithing table to create Netherite Leggings.

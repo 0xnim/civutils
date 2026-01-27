@@ -1,0 +1,25 @@
+---
+id: diamond_pickaxe_head
+name: Diamond Pickaxe Head
+summary: Metal component for diamond pickaxe
+category: TOOLS
+tags: [smithing, blacksmith, diamond, tools, pickaxe]
+order: 90
+displayItem: "minecraft:diamond"
+customTexture: item/diamond_pickaxe_head
+filters:
+  baseItem: "minecraft:diamond"
+  customNameContains: Pickaxe Head
+requiredClass: "blacksmith:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Diamond Pickaxe Head
+    pattern: [SSS]
+    key:
+      S:
+        item: diamond_plate_stack
+    outputs:
+      - item: diamond_pickaxe_head
+---
+
+Combine with a Tool Handle and Diamond Pickaxe Blueprint at a smithing table to create a Diamond Pickaxe.

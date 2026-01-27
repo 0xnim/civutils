@@ -11,6 +11,7 @@ import xyz.nim.civutils.core.model.Model
 import xyz.nim.civutils.data.handbook.*
 import xyz.nim.civutils.utils.ItemMatcher
 import xyz.nim.civutils.utils.MarkdownParser
+import xyz.nim.civutils.utils.MdxParser
 import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Path
@@ -111,6 +112,70 @@ object HandbookModel : Model() {
     }
 
     private fun loadItemsDatabase() {
+        // Try loading from MDX files first (new format)
+        if (loadItemsFromMdx()) {
+            return
+        }
+
+        // Fall back to items.json (legacy format)
+        loadItemsFromJson()
+    }
+
+    /**
+     * Load items from MDX files using items-manifest.json.
+     * Returns true if successful, false if manifest not found.
+     */
+    private fun loadItemsFromMdx(): Boolean {
+        try {
+            val manifestStream = javaClass.classLoader
+                .getResourceAsStream("$HANDBOOK_RESOURCE_PATH/items-manifest.json") ?: return false
+
+            data class CategoryEntry(val folder: String, val files: List<String>)
+            data class Manifest(val version: Int, val categories: List<CategoryEntry>)
+
+            val manifest = gson.fromJson(InputStreamReader(manifestStream), Manifest::class.java)
+
+            val items = mutableListOf<ItemDefinition>()
+
+            for (category in manifest.categories) {
+                for (file in category.files) {
+                    val mdxPath = "$HANDBOOK_RESOURCE_PATH/items/${category.folder}/$file"
+                    val mdxStream = javaClass.classLoader.getResourceAsStream(mdxPath)
+                    if (mdxStream == null) {
+                        CivutilsMod.logger.warn("MDX file not found: $mdxPath")
+                        continue
+                    }
+
+                    val content = mdxStream.bufferedReader().readText()
+                    val item = MdxParser.parseItemMdx(content)
+                    if (item != null) {
+                        items.add(item)
+                    } else {
+                        CivutilsMod.logger.warn("Failed to parse MDX file: $mdxPath")
+                    }
+                }
+            }
+
+            itemsIndex = ItemsIndex(
+                version = manifest.version,
+                items = items
+            )
+            CivutilsMod.logger.info("Loaded ${items.size} items from MDX files")
+
+            // Load item definitions into ItemMatcher for NBT matching
+            registerCustomItems()
+            return true
+
+        } catch (e: Exception) {
+            CivutilsMod.logger.error("Failed to load items from MDX files", e)
+            return false
+        }
+    }
+
+    /**
+     * Load items from legacy items.json format.
+     */
+    private fun loadItemsFromJson() {
         try {
             val itemsStream = javaClass.classLoader
                 .getResourceAsStream("$HANDBOOK_RESOURCE_PATH/items.json")
@@ -120,27 +185,33 @@ object HandbookModel : Model() {
                     InputStreamReader(itemsStream),
                     ItemsIndex::class.java
                 )
-                CivutilsMod.logger.info("Loaded ${itemsIndex?.items?.size ?: 0} items from database")
+                CivutilsMod.logger.info("Loaded ${itemsIndex?.items?.size ?: 0} items from items.json (legacy)")
 
-                // Load item definitions into ItemMatcher for NBT matching
-                itemsIndex?.getCustomItems()?.let { customItems ->
-                    val definitions = customItems.mapNotNull { item ->
-                        item.filters?.let { filters ->
-                            CustomItemDefinition(item.id, item.id, filters)
-                        }
-                    }
-                    if (definitions.isNotEmpty()) {
-                        ItemMatcher.loadDefinitions(definitions)
-                        CivutilsMod.logger.info("Loaded ${definitions.size} item filters from items.json")
-                    }
-                }
+                registerCustomItems()
             } else {
-                CivutilsMod.logger.debug("No items.json found")
+                CivutilsMod.logger.debug("No items database found")
                 itemsIndex = ItemsIndex()
             }
         } catch (e: Exception) {
             CivutilsMod.logger.error("Failed to load items database", e)
             itemsIndex = ItemsIndex()
+        }
+    }
+
+    /**
+     * Register custom items with ItemMatcher for NBT-based matching.
+     */
+    private fun registerCustomItems() {
+        itemsIndex?.getCustomItems()?.let { customItems ->
+            val definitions = customItems.mapNotNull { item ->
+                item.filters?.let { filters ->
+                    CustomItemDefinition(item.id, item.id, filters)
+                }
+            }
+            if (definitions.isNotEmpty()) {
+                ItemMatcher.loadDefinitions(definitions)
+                CivutilsMod.logger.info("Loaded ${definitions.size} custom item filters")
+            }
         }
     }
 

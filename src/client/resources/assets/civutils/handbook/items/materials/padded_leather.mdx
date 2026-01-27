@@ -1,0 +1,26 @@
+---
+id: padded_leather
+name: Padded Leather
+summary: Base material for leather armor and tool handles
+category: MATERIALS
+tags: [smithing, materials, leather]
+order: 20
+displayItem: "minecraft:leather"
+customTexture: item/padded_leather
+filters:
+  baseItem: "minecraft:leather"
+  customNameContains: Padded
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Padded Leather
+    pattern: ["LL ", "WW ", "   "]
+    key:
+      L:
+        item: "minecraft:leather"
+      W:
+        item: "minecraft:white_wool"
+    outputs:
+      - item: padded_leather
+---
+
+Padded Leather is used instead of regular leather for crafting leather armor. It's also a component in Tool Handles.

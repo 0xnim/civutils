@@ -1,0 +1,25 @@
+---
+id: gold_leggings_set
+name: Gold Leggings Set
+summary: Pre-smithed gold leggings piece
+category: ARMOR
+tags: [smithing, blacksmith, gold, armor, leggings]
+order: 122
+displayItem: "minecraft:gold_ingot"
+customTexture: item/gold_greaves
+filters:
+  baseItem: "minecraft:gold_ingot"
+  customNameContains: Leggings Set
+requiredClass: "blacksmith:3"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Gold Leggings Set
+    pattern: [SSS, S S, S S]
+    key:
+      S:
+        item: gold_plate_stack
+    outputs:
+      - item: gold_leggings_set
+---
+
+Combine with Iron Leggings and Gold Leggings Blueprint at a smithing table to create Gold Leggings.

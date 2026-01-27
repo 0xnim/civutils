@@ -1,0 +1,25 @@
+---
+id: copper_hoe_head
+name: Copper Hoe Head
+summary: Metal component for copper hoe
+category: TOOLS
+tags: [smithing, blacksmith, copper, tools, hoe]
+order: 64
+displayItem: "minecraft:copper_ingot"
+customTexture: item/copper_hoe_head
+filters:
+  baseItem: "minecraft:copper_ingot"
+  customNameContains: Hoe Head
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Copper Hoe Head
+    pattern: [SS]
+    key:
+      S:
+        item: copper_plate_stack
+    outputs:
+      - item: copper_hoe_head
+---
+
+Combine with a Tool Handle at a smithing table to create a Copper Hoe.

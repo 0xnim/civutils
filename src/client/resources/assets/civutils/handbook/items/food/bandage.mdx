@@ -1,0 +1,31 @@
+---
+id: bandage
+name: Bandage
+summary: Primary healing item used by Healers
+category: FOOD
+tags: [healing, healer, revival]
+order: 2
+displayItem: "minecraft:paper"
+filters:
+  baseItem: "minecraft:paper"
+  customNameContains: Bandage
+requiredClass: "healer:1"
+metadata:
+  craftHungerCost: "2"
+  useHungerCost: "5"
+  healingXpByLevel: 15/23/32/41/50
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Bandage
+    pattern: [PPP, PPP, PPC]
+    key:
+      P:
+        item: "minecraft:paper"
+      C:
+        item: "minecraft:sugar_cane"
+    outputs:
+      - item: bandage
+        count: 1
+---
+
+Bandages are the primary healing item in CivLabs. Healers use them to heal themselves, heal other players, and revive downed players through a minigame. Healing amount scales with Healer level.

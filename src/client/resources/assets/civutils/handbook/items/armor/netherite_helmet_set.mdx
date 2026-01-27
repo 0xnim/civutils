@@ -1,0 +1,25 @@
+---
+id: netherite_helmet_set
+name: Netherite Helmet Set
+summary: Pre-smithed netherite helmet piece
+category: ARMOR
+tags: [smithing, blacksmith, netherite, armor, helmet]
+order: 140
+displayItem: "minecraft:netherite_ingot"
+customTexture: item/netherite_helm
+filters:
+  baseItem: "minecraft:netherite_ingot"
+  customNameContains: Helmet Set
+requiredClass: "blacksmith:5"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Netherite Helmet Set
+    pattern: [SSS, S S]
+    key:
+      S:
+        item: netherite_plate_stack
+    outputs:
+      - item: netherite_helmet_set
+---
+
+Combine with Diamond Helmet and Netherite Upgrade Template at a smithing table to create a Netherite Helmet.

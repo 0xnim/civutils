@@ -59,9 +59,52 @@ dependencies {
 
     // Kotlin reflection for config and event systems
     implementation(kotlin("reflect"))
+
+    // YAML parsing for MDX frontmatter
+    implementation("org.yaml:snakeyaml:2.2")
+}
+
+// Generate items-manifest.json from MDX files in handbook/items/
+val generateItemManifest = tasks.register("generateItemManifest") {
+    val itemsDir = file("src/client/resources/assets/civutils/handbook/items")
+    val manifestFile = file("src/client/resources/assets/civutils/handbook/items-manifest.json")
+
+    inputs.dir(itemsDir)
+    outputs.file(manifestFile)
+
+    doLast {
+        if (!itemsDir.exists()) {
+            logger.warn("Items directory does not exist, skipping manifest generation")
+            return@doLast
+        }
+
+        val categories = itemsDir.listFiles()
+            ?.filter { it.isDirectory }
+            ?.sortedBy { it.name }
+            ?.map { categoryDir ->
+                val files = categoryDir.listFiles()
+                    ?.filter { it.extension == "mdx" }
+                    ?.map { it.name }
+                    ?.sorted()
+                    ?: emptyList()
+                mapOf("folder" to categoryDir.name, "files" to files)
+            }
+            ?.filter { (it["files"] as List<*>).isNotEmpty() }
+            ?: emptyList()
+
+        val manifest = mapOf(
+            "version" to 2,
+            "categories" to categories
+        )
+
+        val json = groovy.json.JsonBuilder(manifest).toPrettyString()
+        manifestFile.writeText(json + "\n")
+        logger.lifecycle("Generated items-manifest.json with ${categories.size} categories")
+    }
 }
 
 tasks.processResources {
+    dependsOn(generateItemManifest)
     inputs.property("version", project.version)
     inputs.property("minecraft_version", project.property("minecraft_version"))
     inputs.property("loader_version", project.property("loader_version"))
@@ -75,6 +118,14 @@ tasks.processResources {
             "kotlin_loader_version" to project.property("kotlin_loader_version")!!
         )
     }
+}
+
+tasks.named("processClientResources") {
+    dependsOn(generateItemManifest)
+}
+
+tasks.named("sourcesJar") {
+    dependsOn(generateItemManifest)
 }
 
 tasks.withType<JavaCompile>().configureEach {

@@ -1,0 +1,25 @@
+---
+id: diamond_boots_set
+name: Diamond Boots Set
+summary: Pre-smithed diamond boots piece
+category: ARMOR
+tags: [smithing, blacksmith, diamond, armor, boots]
+order: 133
+displayItem: "minecraft:diamond"
+customTexture: item/diamond_sabaton
+filters:
+  baseItem: "minecraft:diamond"
+  customNameContains: Boots Set
+requiredClass: "blacksmith:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Diamond Boots Set
+    pattern: [S S, S S]
+    key:
+      S:
+        item: diamond_plate_stack
+    outputs:
+      - item: diamond_boots_set
+---
+
+Combine with Gold Boots and Diamond Boots Blueprint at a smithing table to create Diamond Boots.

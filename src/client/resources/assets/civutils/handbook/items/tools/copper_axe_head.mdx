@@ -1,0 +1,25 @@
+---
+id: copper_axe_head
+name: Copper Axe Head
+summary: Metal component for copper axe
+category: TOOLS
+tags: [smithing, blacksmith, copper, tools, axe]
+order: 61
+displayItem: "minecraft:copper_ingot"
+customTexture: item/copper_axe_head
+filters:
+  baseItem: "minecraft:copper_ingot"
+  customNameContains: Axe Head
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Copper Axe Head
+    pattern: [SS, "S "]
+    key:
+      S:
+        item: copper_plate_stack
+    outputs:
+      - item: copper_axe_head
+---
+
+Combine with a Tool Handle at a smithing table to create a Copper Axe.

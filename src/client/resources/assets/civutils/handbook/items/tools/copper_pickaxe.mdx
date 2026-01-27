@@ -1,0 +1,24 @@
+---
+id: copper_pickaxe
+name: Copper Pickaxe
+summary: Entry-level smithed pickaxe
+category: TOOLS
+tags: [tools, blacksmith, copper, pickaxe]
+order: 210
+displayItem: "minecraft:iron_pickaxe"
+filters:
+  baseItem: "minecraft:iron_pickaxe"
+  customNameContains: Copper
+requiredClass: "blacksmith:1"
+recipes:
+  - type: SMITHING
+    name: Copper Pickaxe
+    base:
+      item: tool_handle
+    addition:
+      item: copper_pickaxe_head
+    outputs:
+      - item: copper_pickaxe
+---
+
+Copper tools are the first tier that require smithing. Combine a Copper Pickaxe Head with a Tool Handle at a smithing table.

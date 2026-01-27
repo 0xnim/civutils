@@ -1,0 +1,25 @@
+---
+id: diamond_shovel_head
+name: Diamond Shovel Head
+summary: Metal component for diamond shovel
+category: TOOLS
+tags: [smithing, blacksmith, diamond, tools, shovel]
+order: 93
+displayItem: "minecraft:diamond"
+customTexture: item/diamond_shovel_head
+filters:
+  baseItem: "minecraft:diamond"
+  customNameContains: Shovel Head
+requiredClass: "blacksmith:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Diamond Shovel Head
+    pattern: [S]
+    key:
+      S:
+        item: diamond_plate_stack
+    outputs:
+      - item: diamond_shovel_head
+---
+
+Combine with a Tool Handle and Diamond Shovel Blueprint at a smithing table to create a Diamond Shovel.

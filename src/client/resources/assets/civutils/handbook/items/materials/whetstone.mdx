@@ -1,0 +1,27 @@
+---
+id: whetstone
+name: Whetstone
+summary: Restore decayed stats on tools and armor
+category: MATERIALS
+tags: [smithing, blacksmith, repair]
+order: 24
+displayItem: "minecraft:flint"
+customTexture: item/whetstone
+filters:
+  baseItem: "minecraft:flint"
+  customNameContains: Whetstone
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Whetstone
+    pattern: [GGG, CCC, "   "]
+    key:
+      G:
+        item: "minecraft:granite"
+      C:
+        item: "minecraft:cobblestone"
+    outputs:
+      - item: whetstone
+---
+
+Whetstones are used by Blacksmiths to maintain tools and armor, restoring stats that have decayed over use.

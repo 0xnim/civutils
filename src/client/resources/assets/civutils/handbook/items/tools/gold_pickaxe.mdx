@@ -1,0 +1,23 @@
+---
+id: gold_pickaxe
+name: Gold Pickaxe
+summary: Fast but fragile pickaxe requiring blueprint
+category: TOOLS
+tags: [tools, blacksmith, gold, pickaxe]
+order: 230
+displayItem: "minecraft:golden_pickaxe"
+requiredClass: "blacksmith:3"
+recipes:
+  - type: SMITHING
+    name: Gold Pickaxe
+    template:
+      item: blueprint
+    base:
+      item: tool_handle
+    addition:
+      item: gold_pickaxe_head
+    outputs:
+      - item: "minecraft:golden_pickaxe"
+---
+
+Gold tools require a blueprint to craft. Combine a Tool Handle and Gold Pickaxe Head with a Gold Pickaxe Blueprint at a smithing table.

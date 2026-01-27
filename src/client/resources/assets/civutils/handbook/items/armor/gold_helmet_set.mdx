@@ -1,0 +1,25 @@
+---
+id: gold_helmet_set
+name: Gold Helmet Set
+summary: Pre-smithed gold helmet piece
+category: ARMOR
+tags: [smithing, blacksmith, gold, armor, helmet]
+order: 120
+displayItem: "minecraft:gold_ingot"
+customTexture: item/gold_helm
+filters:
+  baseItem: "minecraft:gold_ingot"
+  customNameContains: Helmet Set
+requiredClass: "blacksmith:3"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Gold Helmet Set
+    pattern: [SSS, S S]
+    key:
+      S:
+        item: gold_plate_stack
+    outputs:
+      - item: gold_helmet_set
+---
+
+Combine with Iron Helmet and Gold Helmet Blueprint at a smithing table to create a Gold Helmet.

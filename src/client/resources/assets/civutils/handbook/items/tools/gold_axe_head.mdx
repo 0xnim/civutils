@@ -1,0 +1,25 @@
+---
+id: gold_axe_head
+name: Gold Axe Head
+summary: Metal component for gold axe
+category: TOOLS
+tags: [smithing, blacksmith, gold, tools, axe]
+order: 81
+displayItem: "minecraft:gold_ingot"
+customTexture: item/gold_axe_head
+filters:
+  baseItem: "minecraft:gold_ingot"
+  customNameContains: Axe Head
+requiredClass: "blacksmith:3"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Gold Axe Head
+    pattern: [SS, "S "]
+    key:
+      S:
+        item: gold_plate_stack
+    outputs:
+      - item: gold_axe_head
+---
+
+Combine with a Tool Handle and Gold Axe Blueprint at a smithing table to create a Gold Axe.

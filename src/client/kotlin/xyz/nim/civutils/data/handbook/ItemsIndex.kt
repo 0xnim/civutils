@@ -4,6 +4,9 @@ package xyz.nim.civutils.data.handbook
  * Types of relationships between items based on recipe analysis.
  */
 enum class ItemRelationType(val displayName: String) {
+    /** This item drops from another item (e.g., diamond drops from diamond ore) */
+    DROPS_FROM("Drops From"),
+
     /** This item smelts/cooks into another item */
     SMELTS_INTO("Smelts Into"),
 
@@ -91,16 +94,18 @@ data class ItemsIndex(
      * Returns a list of pairs: (ItemDefinition, Recipe) for each matching recipe.
      */
     fun getRecipesUsingItem(itemId: String): List<Pair<ItemDefinition, Recipe>> {
+        // Build set of all IDs that should match (handbook ID, displayItem, baseItem)
+        val matchIds = buildMatchIdsForItem(itemId)
         val results = mutableListOf<Pair<ItemDefinition, Recipe>>()
 
         for (item in items) {
             val recipes = item.recipes ?: continue
             for (recipe in recipes) {
                 val inputs = recipe.getAllInputs()
-                // Check if any input matches the item ID (exact match or alternatives)
+                // Check if any input matches any of our target IDs
                 val usesItem = inputs.any { slot ->
-                    slot.item == itemId ||
-                    slot.alternatives?.contains(itemId) == true
+                    slot.item in matchIds ||
+                    slot.alternatives?.any { it in matchIds } == true
                 }
                 if (usesItem) {
                     results.add(item to recipe)
@@ -120,17 +125,32 @@ data class ItemsIndex(
 
     /**
      * Get items that use the given item as an ingredient, grouped by relationship type.
+     * Also includes "drops from" relationships computed from the drops field.
      * Returns relationship groups in display order.
      */
     fun getItemRelationships(itemId: String): List<ItemRelationGroup> {
+        // Build set of all IDs that should match (handbook ID, displayItem, baseItem)
+        val matchIds = buildMatchIdsForItem(itemId)
         val relationMap = mutableMapOf<ItemRelationType, MutableSet<ItemDefinition>>()
 
         for (item in items) {
+            // Check drops field for "drops from" relationships
+            val drops = item.drops
+            if (drops != null) {
+                val dropsThisItem = drops.any { slot ->
+                    slot.item in matchIds || slot.alternatives?.any { it in matchIds } == true
+                }
+                if (dropsThisItem) {
+                    relationMap.getOrPut(ItemRelationType.DROPS_FROM) { mutableSetOf() }.add(item)
+                }
+            }
+
+            // Check recipes for other relationships
             val recipes = item.recipes ?: continue
             for (recipe in recipes) {
                 val inputs = recipe.getAllInputs()
                 val usesItem = inputs.any { slot ->
-                    slot.item == itemId || slot.alternatives?.contains(itemId) == true
+                    slot.item in matchIds || slot.alternatives?.any { it in matchIds } == true
                 }
                 if (!usesItem) continue
 
@@ -158,5 +178,19 @@ data class ItemsIndex(
         return ItemRelationType.entries
             .filter { it in relationMap }
             .map { type -> ItemRelationGroup(type, relationMap[type]!!.sortedBy { it.order }) }
+    }
+
+    /**
+     * Build a set of all item IDs that should match for a given handbook item.
+     * Includes the handbook ID itself, plus displayItem and filters.baseItem if present.
+     */
+    private fun buildMatchIdsForItem(itemId: String): Set<String> {
+        val matchIds = mutableSetOf(itemId)
+        val itemDef = getItem(itemId)
+        if (itemDef != null) {
+            itemDef.displayItem?.let { matchIds.add(it) }
+            itemDef.filters?.baseItem?.let { matchIds.add(it) }
+        }
+        return matchIds
     }
 }

@@ -26,6 +26,10 @@ Only Farmers (level 2+) can breed animals. Breeding doesn't always succeed, but 
 
 **Important:** Breeding cost and cooldown scale with the number of animals in a pen. Build many small pens (2 animals each) for efficiency.
 
+**Grass Feeding:** Cows, sheep, pigs, and chickens can eat grass (turning it to rooted dirt), which can trigger breeding without player action. Till or bonemeal rooted dirt to restore grass.
+
+See [Animal Husbandry](animal-husbandry) for full details on taming and breeding mechanics.
+
 ### Smokers
 Farmers can use smokers to create [smoked food](food-expiration), which lasts longer before expiring.
 
@@ -123,4 +127,4 @@ Many small pens (2 animals each) is more efficient than large pens. Keep grass f
 
 ---
 
-> **See Also:** [Food Expiration](food-expiration), [Healer](healer)
+> **See Also:** [Food Expiration](food-expiration), [Animal Husbandry](animal-husbandry), [Healer](healer)

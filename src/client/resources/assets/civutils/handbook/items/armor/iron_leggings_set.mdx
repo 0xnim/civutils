@@ -1,0 +1,25 @@
+---
+id: iron_leggings_set
+name: Iron Leggings Set
+summary: Pre-smithed iron leggings piece
+category: ARMOR
+tags: [smithing, blacksmith, iron, armor, leggings]
+order: 112
+displayItem: "minecraft:iron_ingot"
+customTexture: item/iron_greaves
+filters:
+  baseItem: "minecraft:iron_ingot"
+  customNameContains: Leggings Set
+requiredClass: "blacksmith:2"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Iron Leggings Set
+    pattern: [SSS, S S, S S]
+    key:
+      S:
+        item: iron_plate_stack
+    outputs:
+      - item: iron_leggings_set
+---
+
+Combine with Chainmail Leggings and Iron Leggings Blueprint at a smithing table to create Iron Leggings.

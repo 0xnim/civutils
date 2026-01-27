@@ -1,0 +1,29 @@
+---
+id: blaze_rod
+name: Blaze Rod
+summary: Craftable brewing ingredient for Master Healers
+category: BREWING
+tags: [brewing, healer, potions]
+order: 10
+displayItem: "minecraft:blaze_rod"
+requiredClass: "healer:4"
+metadata:
+  crafterXp: 45 Healer XP
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Blaze Rod
+    pattern: [WCG, PPP, "   "]
+    key:
+      W:
+        item: "minecraft:warped_nylium"
+      C:
+        item: "minecraft:crimson_nylium"
+      G:
+        item: "minecraft:gold_ingot"
+      P:
+        item: "minecraft:gunpowder"
+    outputs:
+      - item: "minecraft:blaze_rod"
+---
+
+Blaze Rods can be crafted by Master (level 4) Healers, enabling potion brewing without needing to find a Nether Fortress.

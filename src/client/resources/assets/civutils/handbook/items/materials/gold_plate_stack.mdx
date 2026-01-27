@@ -1,0 +1,25 @@
+---
+id: gold_plate_stack
+name: Gold Plate Stack
+summary: Combined gold plates for crafting equipment
+category: MATERIALS
+tags: [smithing, blacksmith, gold, plates]
+order: 42
+displayItem: "minecraft:gold_ingot"
+customTexture: item/gold_armor_plateset
+filters:
+  baseItem: "minecraft:gold_ingot"
+  customNameContains: Plate Stack
+requiredClass: "blacksmith:3"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Gold Plate Stack
+    pattern: [P, P, P]
+    key:
+      P:
+        item: gold_plate
+    outputs:
+      - item: gold_plate_stack
+---
+
+Gold Plate Stacks are used to craft Tool Heads and Plate Sets for gold tier equipment.

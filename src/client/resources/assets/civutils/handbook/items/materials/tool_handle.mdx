@@ -1,0 +1,29 @@
+---
+id: tool_handle
+name: Tool Handle
+summary: Required component for copper+ tier tools
+category: MATERIALS
+tags: [smithing, blacksmith, tools]
+order: 21
+displayItem: "minecraft:stick"
+customTexture: item/tool_handle
+filters:
+  baseItem: "minecraft:stick"
+  customNameContains: Handle
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Tool Handle
+    pattern: [" P ", STS, " P "]
+    key:
+      P:
+        item: padded_leather
+      S:
+        item: "minecraft:string"
+      T:
+        item: "minecraft:stick"
+    outputs:
+      - item: tool_handle
+---
+
+Tool Handles are combined with Tool Heads at a smithing table to create copper tier and above tools.

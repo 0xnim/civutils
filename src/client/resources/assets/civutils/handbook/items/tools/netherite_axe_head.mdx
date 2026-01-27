@@ -1,0 +1,25 @@
+---
+id: netherite_axe_head
+name: Netherite Axe Head
+summary: Metal component for netherite axe
+category: TOOLS
+tags: [smithing, blacksmith, netherite, tools, axe]
+order: 101
+displayItem: "minecraft:netherite_ingot"
+customTexture: item/netherite_axe_head
+filters:
+  baseItem: "minecraft:netherite_ingot"
+  customNameContains: Axe Head
+requiredClass: "blacksmith:5"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Netherite Axe Head
+    pattern: [SS, "S "]
+    key:
+      S:
+        item: netherite_plate_stack
+    outputs:
+      - item: netherite_axe_head
+---
+
+Combine with a Tool Handle and Netherite Axe Blueprint at a smithing table to create a Netherite Axe.

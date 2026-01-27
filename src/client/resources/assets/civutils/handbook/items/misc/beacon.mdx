@@ -1,0 +1,27 @@
+---
+id: beacon
+name: Beacon
+summary: Craftable beacon with territory control
+category: MISC
+tags: [beacon, utility, territory]
+order: 162
+displayItem: "minecraft:beacon"
+requiredClass: "librarian:5"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Beacon
+    pattern: [GCG, "AA ", "BB "]
+    key:
+      G:
+        item: "minecraft:glass"
+      C:
+        item: "minecraft:compass"
+      A:
+        item: "minecraft:golden_apple"
+      B:
+        item: "minecraft:copper_block"
+    outputs:
+      - item: "minecraft:beacon"
+---
+
+Beacons in CivLabs have custom mechanics. They provide buffs to whitelisted players and debuffs to others. Requires fuel (coal/charcoal or metal ingots) to stay active. See the Beacons page for full details.

@@ -1,0 +1,25 @@
+---
+id: diamond_shears
+name: Diamond Shears
+summary: Highest durability shears
+category: TOOLS
+tags: [tools, shears, blacksmith, diamond]
+order: 55
+displayItem: "minecraft:shears"
+customTexture: item/diamond_shear
+filters:
+  baseItem: "minecraft:shears"
+  customNameContains: Diamond
+requiredClass: "blacksmith:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Diamond Shears
+    pattern: [" D", "D "]
+    key:
+      D:
+        item: "minecraft:diamond"
+    outputs:
+      - item: diamond_shears
+---
+
+Diamond Shears have the highest durability of all shears.

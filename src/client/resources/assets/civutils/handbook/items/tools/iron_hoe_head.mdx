@@ -1,0 +1,25 @@
+---
+id: iron_hoe_head
+name: Iron Hoe Head
+summary: Metal component for iron hoe
+category: TOOLS
+tags: [smithing, blacksmith, iron, tools, hoe]
+order: 74
+displayItem: "minecraft:iron_ingot"
+customTexture: item/iron_hoe_head
+filters:
+  baseItem: "minecraft:iron_ingot"
+  customNameContains: Hoe Head
+requiredClass: "blacksmith:2"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Iron Hoe Head
+    pattern: [SS]
+    key:
+      S:
+        item: iron_plate_stack
+    outputs:
+      - item: iron_hoe_head
+---
+
+Combine with a Tool Handle and Iron Hoe Blueprint at a smithing table to create an Iron Hoe.
