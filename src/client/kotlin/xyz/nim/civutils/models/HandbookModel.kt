@@ -9,6 +9,7 @@ import xyz.nim.civutils.core.event.ClientTickEvent
 import xyz.nim.civutils.core.event.Subscribe
 import xyz.nim.civutils.core.model.Model
 import xyz.nim.civutils.data.handbook.*
+import xyz.nim.civutils.utils.ItemMatcher
 import xyz.nim.civutils.utils.MarkdownParser
 import java.io.InputStreamReader
 import java.nio.file.Files
@@ -36,6 +37,10 @@ object HandbookModel : Model() {
     private var serverIndex: HandbookIndex? = null
     private var mergedIndex: HandbookIndex? = null
 
+    // Items database
+    private var itemsIndex: ItemsIndex? = null
+    private val itemCache = mutableMapOf<String, ItemDefinition>()
+
     private val pageCache = mutableMapOf<String, HandbookPage>()
     private var currentServerHash: String? = null
 
@@ -51,6 +56,7 @@ object HandbookModel : Model() {
         serverIndex = null
         mergedIndex = null
         pageCache.clear()
+        itemCache.clear()
         contentIndex.clear()
         indexBuilt = false
         currentServerHash = null
@@ -95,6 +101,66 @@ object HandbookModel : Model() {
         } catch (e: Exception) {
             CivutilsMod.logger.error("Failed to load bundled handbook", e)
             bundledIndex = HandbookIndex()
+        }
+
+        // Load custom item definitions (legacy)
+        loadCustomItems()
+
+        // Load structured items database
+        loadItemsDatabase()
+    }
+
+    private fun loadItemsDatabase() {
+        try {
+            val itemsStream = javaClass.classLoader
+                .getResourceAsStream("$HANDBOOK_RESOURCE_PATH/items.json")
+
+            if (itemsStream != null) {
+                itemsIndex = gson.fromJson(
+                    InputStreamReader(itemsStream),
+                    ItemsIndex::class.java
+                )
+                CivutilsMod.logger.info("Loaded ${itemsIndex?.items?.size ?: 0} items from database")
+
+                // Load item definitions into ItemMatcher for NBT matching
+                itemsIndex?.getCustomItems()?.let { customItems ->
+                    val definitions = customItems.mapNotNull { item ->
+                        item.filters?.let { filters ->
+                            CustomItemDefinition(item.id, item.id, filters)
+                        }
+                    }
+                    if (definitions.isNotEmpty()) {
+                        ItemMatcher.loadDefinitions(definitions)
+                        CivutilsMod.logger.info("Loaded ${definitions.size} item filters from items.json")
+                    }
+                }
+            } else {
+                CivutilsMod.logger.debug("No items.json found")
+                itemsIndex = ItemsIndex()
+            }
+        } catch (e: Exception) {
+            CivutilsMod.logger.error("Failed to load items database", e)
+            itemsIndex = ItemsIndex()
+        }
+    }
+
+    private fun loadCustomItems() {
+        try {
+            val itemsStream = javaClass.classLoader
+                .getResourceAsStream("$HANDBOOK_RESOURCE_PATH/custom-items.json")
+
+            if (itemsStream != null) {
+                val customItemsIndex = gson.fromJson(
+                    InputStreamReader(itemsStream),
+                    CustomItemsIndex::class.java
+                )
+                ItemMatcher.loadDefinitions(customItemsIndex.items)
+                CivutilsMod.logger.info("Loaded ${customItemsIndex.items.size} custom item definitions")
+            } else {
+                CivutilsMod.logger.debug("No custom-items.json found")
+            }
+        } catch (e: Exception) {
+            CivutilsMod.logger.error("Failed to load custom items", e)
         }
     }
 
@@ -363,5 +429,80 @@ object HandbookModel : Model() {
         return hashBytes.take(8).joinToString("") { "%02x".format(it) }
     }
 
-    fun hasContent(): Boolean = getPages().isNotEmpty()
+    fun hasContent(): Boolean = getPages().isNotEmpty() || hasItems()
+
+    // === Items Database Access ===
+
+    /**
+     * Get an item by ID from the items database.
+     */
+    fun getItem(itemId: String): ItemDefinition? {
+        itemCache[itemId]?.let { return it }
+        val item = itemsIndex?.getItem(itemId)
+        if (item != null) {
+            itemCache[itemId] = item
+        }
+        return item
+    }
+
+    /**
+     * Get all items in a category.
+     */
+    fun getItemsByCategory(category: ItemCategory): List<ItemDefinition> {
+        return itemsIndex?.getItemsByCategory(category) ?: emptyList()
+    }
+
+    /**
+     * Get all active item categories.
+     */
+    fun getItemCategories(): List<ItemCategory> {
+        return itemsIndex?.getActiveCategories() ?: emptyList()
+    }
+
+    /**
+     * Search items by name, summary, or tags.
+     */
+    fun searchItems(query: String): List<ItemDefinition> {
+        return itemsIndex?.searchItems(query) ?: emptyList()
+    }
+
+    /**
+     * Get all items from the database.
+     */
+    fun getAllItems(): List<ItemDefinition> {
+        return itemsIndex?.items ?: emptyList()
+    }
+
+    /**
+     * Check if items database has content.
+     */
+    fun hasItems(): Boolean = (itemsIndex?.items?.size ?: 0) > 0
+
+    /**
+     * Find all items whose recipes use the given item ID as an ingredient.
+     * Returns a list of pairs: (ItemDefinition, Recipe) for each matching recipe.
+     */
+    fun getRecipesUsingItem(itemId: String): List<Pair<ItemDefinition, Recipe>> {
+        return itemsIndex?.getRecipesUsingItem(itemId) ?: emptyList()
+    }
+
+    /**
+     * Get items that use the given item as an ingredient, grouped by relationship type.
+     */
+    fun getItemRelationships(itemId: String): List<ItemRelationGroup> {
+        return itemsIndex?.getItemRelationships(itemId) ?: emptyList()
+    }
+
+    /**
+     * Resolve an item ID to display item.
+     * For custom items (no namespace), looks up in items database.
+     */
+    fun resolveItemDisplayId(itemId: String): String {
+        // If already has namespace, return as-is
+        if (itemId.contains(":")) return itemId
+
+        // Look up in items database
+        val item = getItem(itemId)
+        return item?.renderItemId ?: "minecraft:barrier"
+    }
 }

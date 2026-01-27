@@ -4,6 +4,7 @@
   "package": "xyz.nim.civutils.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "AbstractContainerScreenAccessor",
     "InGameHudMixin",
     "MinecraftClientMixin",
     "ClientPlayNetworkHandlerMixin",

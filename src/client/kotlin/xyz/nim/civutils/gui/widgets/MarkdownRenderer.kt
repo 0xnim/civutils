@@ -3,6 +3,7 @@ package xyz.nim.civutils.gui.widgets
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import xyz.nim.civutils.data.handbook.*
+import xyz.nim.civutils.utils.ItemMatcher
 import xyz.nim.lib.ui.NlibTheme
 import xyz.nim.civutils.gui.widgets.ItemSlotWidget.SlotSize
 
@@ -159,8 +160,8 @@ class MarkdownRenderer {
                     currentY += lineHeight
                 }
 
-                // Create and render item slot (vertically centered with text)
-                val slot = ItemSlotWidget(span.itemId, span.itemCount, SlotSize.SMALL)
+                // Create item slot (uses createItemSlot for proper database lookup and navigation)
+                val slot = createItemSlot(span.itemId, span.itemCount, SlotSize.SMALL)
                 val slotY = currentY + (font.lineHeight - slotSize) / 2
                 slot.render(guiGraphics, currentX, slotY, mouseX, mouseY, renderBackground = true)
                 itemSlotManager.addSlot(slot)
@@ -414,6 +415,11 @@ class MarkdownRenderer {
         mouseX: Int = 0,
         mouseY: Int = 0
     ): Int {
+        // Use shaped rendering for shaped recipes with a valid shape
+        if (element.type == MarkdownRecipeType.SHAPED && element.shape != null && element.shapeKey.isNotEmpty()) {
+            return renderShapedRecipe(guiGraphics, element, x, y, width, font, mouseX, mouseY)
+        }
+
         var currentY = y
         val padding = 6
         val slotSize = SlotSize.NORMAL.pixels // 18px for recipe items
@@ -439,7 +445,7 @@ class MarkdownRenderer {
         // Input items
         var itemX = x + padding
         for (input in element.inputs) {
-            val slot = ItemSlotWidget(input.itemId, input.count, SlotSize.NORMAL)
+            val slot = createItemSlot(input.itemId, input.count, SlotSize.NORMAL)
             slot.render(guiGraphics, itemX, currentY, mouseX, mouseY, renderBackground = true)
             itemSlotManager.addSlot(slot)
             itemSlotManager.recordBounds(slot)
@@ -453,7 +459,7 @@ class MarkdownRenderer {
 
         // Output items
         for (output in element.outputs) {
-            val slot = ItemSlotWidget(output.itemId, output.count, SlotSize.NORMAL)
+            val slot = createItemSlot(output.itemId, output.count, SlotSize.NORMAL)
             slot.render(guiGraphics, itemX, currentY, mouseX, mouseY, renderBackground = true)
             itemSlotManager.addSlot(slot)
             itemSlotManager.recordBounds(slot)
@@ -461,6 +467,104 @@ class MarkdownRenderer {
         }
 
         currentY += slotSize + 4
+
+        // Metadata (time, fuel, etc.)
+        for ((key, value) in element.metadata) {
+            val metaText = when (key) {
+                "time" -> "\u23F1 $value"  // Timer icon
+                "fuel" -> "\uD83D\uDD25 $value"  // Fire icon (may not render)
+                else -> "$key: $value"
+            }
+            guiGraphics.drawString(font, metaText, x + padding, currentY, NlibTheme.TEXT_SECONDARY, false)
+            currentY += font.lineHeight + 2
+        }
+
+        return totalHeight
+    }
+
+    /**
+     * Render a shaped crafting recipe with a 3x3 grid.
+     */
+    private fun renderShapedRecipe(
+        guiGraphics: GuiGraphics,
+        element: RecipeElement,
+        x: Int,
+        y: Int,
+        width: Int,
+        font: Font,
+        mouseX: Int = 0,
+        mouseY: Int = 0
+    ): Int {
+        var currentY = y
+        val padding = 6
+        val slotSize = SlotSize.NORMAL.pixels // 18px
+        val slotGap = 2
+
+        // Calculate total height
+        val headerHeight = if (element.name != null) font.lineHeight + 4 else 0
+        val gridHeight = 3 * slotSize + 2 * slotGap // 3 rows with gaps
+        val metadataHeight = element.metadata.size * (font.lineHeight + 2)
+        val totalHeight = headerHeight + gridHeight + metadataHeight + padding * 2 + 4
+
+        // Background box
+        guiGraphics.fill(x, y, x + width, y + totalHeight, 0x40000000)
+        guiGraphics.renderOutline(x, y, width, totalHeight, 0x60FFFFFF)
+
+        currentY += padding
+
+        // Recipe name header
+        if (element.name != null) {
+            guiGraphics.drawString(font, "\u00A7l${element.name}\u00A7r", x + padding, currentY, NlibTheme.ACCENT, true)
+            currentY += font.lineHeight + 4
+        }
+
+        val gridStartX = x + padding
+        val gridStartY = currentY
+
+        // Render 3x3 crafting grid
+        val shape = element.shape!!
+        for (row in 0 until 3) {
+            val rowPattern = shape.getOrElse(row) { "   " }
+            for (col in 0 until 3) {
+                val slotX = gridStartX + col * (slotSize + slotGap)
+                val slotY = gridStartY + row * (slotSize + slotGap)
+
+                // Draw slot background
+                guiGraphics.fill(slotX, slotY, slotX + slotSize, slotY + slotSize, 0x40000000)
+                guiGraphics.renderOutline(slotX, slotY, slotSize, slotSize, 0x40FFFFFF)
+
+                // Get item for this position
+                val char = rowPattern.getOrElse(col) { ' ' }
+                if (char != ' ' && char != '_') {
+                    val itemSpec = element.shapeKey[char]
+                    if (itemSpec != null) {
+                        val slot = createItemSlot(itemSpec.itemId, itemSpec.count, SlotSize.NORMAL)
+                        slot.render(guiGraphics, slotX, slotY, mouseX, mouseY, renderBackground = false)
+                        itemSlotManager.addSlot(slot)
+                        itemSlotManager.recordBounds(slot)
+                    }
+                }
+            }
+        }
+
+        // Arrow after grid
+        val gridEndX = gridStartX + 3 * (slotSize + slotGap)
+        val arrowX = gridEndX + 8
+        val arrowY = gridStartY + gridHeight / 2 - font.lineHeight / 2
+        guiGraphics.drawString(font, "\u2192", arrowX, arrowY, NlibTheme.TEXT_PRIMARY, false)
+
+        // Output items
+        var itemX = arrowX + font.width("\u2192") + 12
+        val outputY = gridStartY + gridHeight / 2 - slotSize / 2
+        for (output in element.outputs) {
+            val slot = createItemSlot(output.itemId, output.count, SlotSize.NORMAL)
+            slot.render(guiGraphics, itemX, outputY, mouseX, mouseY, renderBackground = true)
+            itemSlotManager.addSlot(slot)
+            itemSlotManager.recordBounds(slot)
+            itemX += slotSize + 4
+        }
+
+        currentY = gridStartY + gridHeight + 4
 
         // Metadata (time, fuel, etc.)
         for ((key, value) in element.metadata) {
@@ -540,6 +644,43 @@ class MarkdownRenderer {
      */
     fun isHoveringItem(mouseX: Int, mouseY: Int): Boolean {
         return itemSlotManager.getItemAt(mouseX, mouseY) != null
+    }
+
+    /**
+     * Register an item region manually (for external item rendering like "Used In" sections).
+     */
+    fun registerItemRegion(x: Int, y: Int, width: Int, height: Int, itemId: String) {
+        itemSlotManager.registerRegion(x, y, width, height, itemId)
+    }
+
+    /**
+     * Create an ItemSlotWidget from an item ID.
+     * Supports both vanilla IDs (minecraft:iron_ingot) and custom item IDs (iron_plate).
+     * Preserves the original ID for click-through navigation.
+     */
+    private fun createItemSlot(itemId: String, count: Int, size: SlotSize): ItemSlotWidget {
+        // Check if this is a custom item ID (doesn't contain ':')
+        if (!itemId.contains(':')) {
+            // First check the new items database
+            val itemDef = xyz.nim.civutils.models.HandbookModel.getItem(itemId)
+            if (itemDef != null) {
+                return ItemSlotWidget.fromItemDefinition(itemDef, count, size)
+            }
+
+            // Fall back to old custom items system
+            val customDef = ItemMatcher.getDefinition(itemId)
+            if (customDef != null) {
+                return ItemSlotWidget(
+                    itemId = customDef.filters.baseItem ?: "",
+                    count = count,
+                    size = size,
+                    customItemDef = customDef,
+                    navigationId = itemId  // Keep original ID for navigation
+                )
+            }
+        }
+        // Fall back to vanilla item
+        return ItemSlotWidget(itemId, count, size)
     }
 
     companion object {

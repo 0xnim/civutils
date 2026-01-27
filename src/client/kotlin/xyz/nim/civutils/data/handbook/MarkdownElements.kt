@@ -180,29 +180,42 @@ data class ItemSpec(
 /**
  * Types of recipes that can be displayed.
  */
-enum class RecipeType {
+enum class MarkdownRecipeType {
     CUSTOM,     // Custom factory/machine recipes
-    CRAFTING,   // 3x3 crafting grid (optional)
-    SMELTING    // Furnace-style smelting (optional)
+    CRAFTING,   // 3x3 crafting grid (shapeless)
+    SHAPED,     // 3x3 crafting grid with specific shape
+    SMELTING    // Furnace-style smelting
 }
 
 /**
  * Recipe element for displaying crafting/processing recipes.
+ *
+ * For shaped recipes, the `shape` field contains a 3x3 grid pattern using characters
+ * that map to items via the `shapeKey` field. Empty slots use space or underscore.
+ * Example: shape = listOf("III", "   ", "   ") with shapeKey = mapOf('I' to ItemSpec("minecraft:iron_ingot"))
  */
 data class RecipeElement(
-    val type: RecipeType,
+    val type: MarkdownRecipeType,
     val name: String? = null,
     val inputs: List<ItemSpec>,
     val outputs: List<ItemSpec>,
-    val metadata: Map<String, String> = emptyMap()
+    val metadata: Map<String, String> = emptyMap(),
+    /** 3x3 grid pattern for shaped recipes (list of 3 strings, each 3 characters) */
+    val shape: List<String>? = null,
+    /** Maps pattern characters to item specs */
+    val shapeKey: Map<Char, ItemSpec> = emptyMap()
 ) : MarkdownElement() {
-    override val baseHeight: Int = 60 // Base height for recipe box
+    override val baseHeight: Int = if (type == MarkdownRecipeType.SHAPED && shape != null) 80 else 60
 
     override fun calculateHeight(width: Int, font: Font): Int {
         // Header line if name exists
         val headerHeight = if (name != null) font.lineHeight + 8 else 0
-        // Input/output row with item slots (18px each + padding)
-        val itemRowHeight = 26
+        // For shaped recipes, we show a 3x3 grid (3 rows of 18px slots + spacing)
+        val itemRowHeight = if (type == MarkdownRecipeType.SHAPED && shape != null) {
+            3 * 18 + 8 // 3 rows of slots plus spacing
+        } else {
+            26 // Single row
+        }
         // Metadata lines
         val metadataHeight = metadata.size * (font.lineHeight + 2)
         // Padding

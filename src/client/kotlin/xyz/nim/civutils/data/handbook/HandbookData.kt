@@ -22,11 +22,13 @@ data class HandbookPageMeta(
     val order: Int = 0,
     val summary: String = "",
     val related: List<String> = emptyList(),
-    /** If set, this page represents an item and will show the item icon in the header */
-    val itemId: String? = null
+    /** If set, this page represents a vanilla item and will show the item icon in the header */
+    val itemId: String? = null,
+    /** If set, references a CustomItemDefinition.id for custom server items */
+    val customItemId: String? = null
 ) {
-    /** Check if this page represents an item */
-    val isItemPage: Boolean get() = itemId != null
+    /** Check if this page represents an item (either vanilla or custom) */
+    val isItemPage: Boolean get() = itemId != null || customItemId != null
 }
 
 /**

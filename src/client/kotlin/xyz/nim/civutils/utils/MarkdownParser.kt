@@ -177,19 +177,53 @@ class MarkdownParser {
      *   outputs:
      *     - minecraft:iron_ingot|64
      *   time: 30m
+     *
+     * For shaped recipes:
+     *   type: shaped
+     *   name: Iron Plate
+     *   shape:
+     *     III
+     *     ___
+     *     ___
+     *   key:
+     *     I: minecraft:iron_ingot
+     *   output: minecraft:iron_ingot
      */
     private fun parseRecipeBlock(lines: List<String>): RecipeElement? {
-        var type = RecipeType.CUSTOM
+        var type = MarkdownRecipeType.CUSTOM
         var name: String? = null
         val inputs = mutableListOf<ItemSpec>()
         val outputs = mutableListOf<ItemSpec>()
         val metadata = mutableMapOf<String, String>()
+        val shape = mutableListOf<String>()
+        val shapeKey = mutableMapOf<Char, ItemSpec>()
 
         var currentList: MutableList<ItemSpec>? = null
+        var parsingShape = false
+        var parsingKey = false
 
         for (line in lines) {
             val trimmed = line.trim()
             if (trimmed.isEmpty()) continue
+
+            // Shape pattern lines (after "shape:")
+            if (parsingShape && !trimmed.contains(':')) {
+                // Shape pattern line - preserve exactly 3 characters, padding with spaces
+                val patternLine = trimmed.take(3).padEnd(3, ' ')
+                shape.add(patternLine)
+                if (shape.size >= 3) parsingShape = false
+                continue
+            }
+
+            // Key mapping lines (after "key:")
+            if (parsingKey && trimmed.length >= 2 && trimmed[1] == ':') {
+                val keyChar = trimmed[0]
+                val itemSpec = parseItemSpec(trimmed.substring(2).trim())
+                if (itemSpec != null) {
+                    shapeKey[keyChar] = itemSpec
+                }
+                continue
+            }
 
             // List item (under inputs: or outputs:)
             if (trimmed.startsWith("-") && currentList != null) {
@@ -207,17 +241,29 @@ class MarkdownParser {
                 val key = trimmed.substring(0, colonIndex).trim().lowercase()
                 val value = trimmed.substring(colonIndex + 1).trim()
 
+                parsingShape = false
+                parsingKey = false
+
                 when (key) {
                     "type" -> {
                         type = when (value.lowercase()) {
-                            "crafting" -> RecipeType.CRAFTING
-                            "smelting" -> RecipeType.SMELTING
-                            else -> RecipeType.CUSTOM
+                            "crafting" -> MarkdownRecipeType.CRAFTING
+                            "shaped" -> MarkdownRecipeType.SHAPED
+                            "smelting" -> MarkdownRecipeType.SMELTING
+                            else -> MarkdownRecipeType.CUSTOM
                         }
                         currentList = null
                     }
                     "name" -> {
                         name = value
+                        currentList = null
+                    }
+                    "shape" -> {
+                        parsingShape = true
+                        currentList = null
+                    }
+                    "key" -> {
+                        parsingKey = true
                         currentList = null
                     }
                     "inputs", "input" -> {
@@ -245,10 +291,29 @@ class MarkdownParser {
             }
         }
 
-        // Must have at least inputs or outputs
-        if (inputs.isEmpty() && outputs.isEmpty()) return null
+        // For shaped recipes, convert shape+key to inputs
+        if (type == MarkdownRecipeType.SHAPED && shape.isNotEmpty() && shapeKey.isNotEmpty()) {
+            for (row in shape) {
+                for (char in row) {
+                    if (char != ' ' && char != '_') {
+                        shapeKey[char]?.let { inputs.add(it) }
+                    }
+                }
+            }
+        }
 
-        return RecipeElement(type, name, inputs, outputs, metadata)
+        // Must have at least inputs or outputs (or a shape for shaped recipes)
+        if (inputs.isEmpty() && outputs.isEmpty() && shape.isEmpty()) return null
+
+        return RecipeElement(
+            type = type,
+            name = name,
+            inputs = inputs,
+            outputs = outputs,
+            metadata = metadata,
+            shape = if (shape.isNotEmpty()) shape else null,
+            shapeKey = shapeKey
+        )
     }
 
     /**
