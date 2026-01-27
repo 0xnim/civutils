@@ -176,8 +176,8 @@ data class BlockQuoteElement(
 }
 
 data class TableElement(
-    val headers: List<String>,
-    val rows: List<List<String>>
+    val headers: List<List<TextSpan>>,
+    val rows: List<List<List<TextSpan>>>
 ) : MarkdownElement() {
     override val baseHeight: Int = (rows.size + 1) * 16 + 8
 

@@ -135,12 +135,12 @@ class MarkdownParser {
     private fun parseTable(lines: List<String>): TableElement? {
         if (lines.size < 2) return null
 
-        // Parse cells from a table row
-        fun parseCells(line: String): List<String> {
+        // Parse cells from a table row, with inline markdown support
+        fun parseCells(line: String): List<List<TextSpan>> {
             return line.trim()
                 .removeSurrounding("|")
                 .split("|")
-                .map { it.trim() }
+                .map { parseInlineText(it.trim()) }
         }
 
         val headers = parseCells(lines[0])

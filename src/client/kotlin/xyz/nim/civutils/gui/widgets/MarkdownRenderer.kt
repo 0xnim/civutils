@@ -358,10 +358,12 @@ class MarkdownRenderer {
         // Draw header background
         guiGraphics.fill(x, currentY, x + width, currentY + rowHeight, 0x40FFFFFF)
 
-        // Draw headers
-        for ((colIndex, header) in element.headers.withIndex()) {
+        // Draw headers (make all spans bold)
+        for ((colIndex, headerSpans) in element.headers.withIndex()) {
             val colX = x + colIndex * colWidth + 4
-            guiGraphics.drawString(font, "\u00A7l$header\u00A7r", colX, currentY + 3, NlibTheme.TEXT_PRIMARY, true)
+            val maxCellWidth = colWidth - 8
+            val boldSpans = headerSpans.map { it.copy(bold = true) }
+            renderSpans(guiGraphics, boldSpans, colX, currentY + 3, maxCellWidth, font)
         }
         currentY += rowHeight
 
@@ -375,21 +377,11 @@ class MarkdownRenderer {
                 guiGraphics.fill(x, currentY, x + width, currentY + rowHeight, 0x20FFFFFF)
             }
 
-            for ((colIndex, cell) in row.withIndex()) {
+            for ((colIndex, cellSpans) in row.withIndex()) {
                 if (colIndex < numColumns) {
                     val colX = x + colIndex * colWidth + 4
-                    // Truncate if too long
                     val maxCellWidth = colWidth - 8
-                    val displayText = if (font.width(cell) > maxCellWidth) {
-                        var truncated = cell
-                        while (font.width("$truncated...") > maxCellWidth && truncated.isNotEmpty()) {
-                            truncated = truncated.dropLast(1)
-                        }
-                        "$truncated..."
-                    } else {
-                        cell
-                    }
-                    guiGraphics.drawString(font, displayText, colX, currentY + 3, NlibTheme.TEXT_PRIMARY, false)
+                    renderSpans(guiGraphics, cellSpans, colX, currentY + 3, maxCellWidth, font)
                 }
             }
             currentY += rowHeight
