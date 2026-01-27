@@ -167,7 +167,7 @@ object MdxParser {
             item = data["item"] as? String,
             count = (data["count"] as? Number)?.toInt() ?: 1,
             alternatives = (data["alternatives"] as? List<*>)?.filterIsInstance<String>(),
-            tag = data["tag"] as? String
+            tags = (data["tags"] as? List<*>)?.filterIsInstance<String>()
         )
     }
 }

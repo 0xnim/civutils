@@ -538,6 +538,27 @@ object HandbookModel : Model() {
     }
 
     /**
+     * Get all items that have the given tag.
+     */
+    fun getItemsByTag(tag: String): List<ItemDefinition> {
+        return itemsIndex?.getItemsByTag(tag) ?: emptyList()
+    }
+
+    /**
+     * Get all items that have any of the given tags (union, deduplicated, sorted by order).
+     */
+    fun getItemsByTags(tags: List<String>): List<ItemDefinition> {
+        return itemsIndex?.getItemsByTags(tags) ?: emptyList()
+    }
+
+    /**
+     * Get items unlocked at a specific class level (e.g., "blacksmith", 2).
+     */
+    fun getItemsByClassLevel(className: String, level: Int): List<ItemDefinition> {
+        return itemsIndex?.getItemsByClassLevel(className, level) ?: emptyList()
+    }
+
+    /**
      * Get all items from the database.
      */
     fun getAllItems(): List<ItemDefinition> {

@@ -41,29 +41,34 @@ At level 5, you can leash downed players using leads. Leashed players cannot mov
 ## Unlocks by Level
 
 ### Apprentice (1)
-- Awakened saving throw (Absorption 2)
-- Dog taming
-- +1 permanent heart (11 total)
-- 50% mob damage reduction
-- Pat Down ability
-- Mob Radar on locator bar
-- Force Feed
+
+<Unlocks class="guardsman" level="1" />
+
+**Other:** Awakened saving throw (Absorption 2), Dog taming, +1 permanent heart (11 total), 50% mob damage reduction, Pat Down ability, Mob Radar, Force Feed
 
 ### Journeyman (2)
-- Awakened (Absorption 3)
-- +1 permanent heart (12 total)
+
+<Unlocks class="guardsman" level="2" />
+
+**Other:** Awakened (Absorption 3), +1 permanent heart (12 total)
 
 ### Expert (3)
-- +1 permanent heart (13 total)
+
+<Unlocks class="guardsman" level="3" />
+
+**Other:** +1 permanent heart (13 total)
 
 ### Master (4)
-- Crafting leads
-- +1 permanent heart (14 total)
+
+<Unlocks class="guardsman" level="4" />
+
+**Other:** Crafting leads, +1 permanent heart (14 total)
 
 ### Grandmaster (5)
-- Player leashing
-- Speed 2
-- Strength bonus
+
+<Unlocks class="guardsman" level="5" />
+
+**Other:** Player leashing, Speed 2, Strength bonus
 
 ## Gaining XP
 

@@ -40,10 +40,33 @@ data class ParagraphElement(
 
     override fun calculateHeight(width: Int, font: Font): Int {
         val lineHeight = font.lineHeight + 2
+        val inlineItemSize = 14 // SlotSize.SMALL
         var currentX = 0
         var lines = 1
 
         for (span in spans) {
+            // Handle inline items (icon only)
+            if (span.isItem && span.itemId != null && span.text.isEmpty()) {
+                if (currentX + inlineItemSize > width && currentX > 0) {
+                    currentX = 0
+                    lines++
+                }
+                currentX += inlineItemSize + 2
+                continue
+            }
+
+            // Handle item links (icon + text)
+            if (span.isItem && span.itemId != null && span.text.isNotEmpty()) {
+                val textWidth = font.width(span.text)
+                val totalWidth = inlineItemSize + 2 + textWidth
+                if (currentX + totalWidth > width && currentX > 0) {
+                    currentX = 0
+                    lines++
+                }
+                currentX += totalWidth + 4
+                continue
+            }
+
             val tokens = span.text.split(Regex("(?<= )|(?= )")).filter { it.isNotEmpty() }
             for (token in tokens) {
                 // Calculate width WITH formatting - bold/italic text is wider
@@ -86,6 +109,7 @@ data class ListElement(
 
     override fun calculateHeight(width: Int, font: Font): Int {
         val lineHeight = font.lineHeight + 2
+        val inlineItemSize = 14 // SlotSize.SMALL
         var totalHeight = 0
 
         for (item in items) {
@@ -95,6 +119,28 @@ data class ListElement(
             var itemLines = 1
 
             for (span in item.spans) {
+                // Handle inline items (icon only)
+                if (span.isItem && span.itemId != null && span.text.isEmpty()) {
+                    if (currentX + inlineItemSize > availableWidth && currentX > 0) {
+                        currentX = 0
+                        itemLines++
+                    }
+                    currentX += inlineItemSize + 2
+                    continue
+                }
+
+                // Handle item links (icon + text)
+                if (span.isItem && span.itemId != null && span.text.isNotEmpty()) {
+                    val textWidth = font.width(span.text)
+                    val totalWidth = inlineItemSize + 2 + textWidth
+                    if (currentX + totalWidth > availableWidth && currentX > 0) {
+                        currentX = 0
+                        itemLines++
+                    }
+                    currentX += totalWidth + 4
+                    continue
+                }
+
                 val tokens = span.text.split(Regex("(?<= )|(?= )")).filter { it.isNotEmpty() }
                 for (token in tokens) {
                     // Calculate width WITH formatting - bold/italic text is wider
@@ -149,11 +195,34 @@ data class BlockQuoteElement(
 
     override fun calculateHeight(width: Int, font: Font): Int {
         val lineHeight = font.lineHeight + 2
+        val inlineItemSize = 14 // SlotSize.SMALL
         val availableWidth = width - 10 // Account for left border padding
         var currentX = 0
         var lines = 1
 
         for (span in spans) {
+            // Handle inline items (icon only)
+            if (span.isItem && span.itemId != null && span.text.isEmpty()) {
+                if (currentX + inlineItemSize > availableWidth && currentX > 0) {
+                    currentX = 0
+                    lines++
+                }
+                currentX += inlineItemSize + 2
+                continue
+            }
+
+            // Handle item links (icon + text)
+            if (span.isItem && span.itemId != null && span.text.isNotEmpty()) {
+                val textWidth = font.width(span.text)
+                val totalWidth = inlineItemSize + 2 + textWidth
+                if (currentX + totalWidth > availableWidth && currentX > 0) {
+                    currentX = 0
+                    lines++
+                }
+                currentX += totalWidth + 4
+                continue
+            }
+
             val tokens = span.text.split(Regex("(?<= )|(?= )")).filter { it.isNotEmpty() }
             for (token in tokens) {
                 // Calculate width WITH formatting - bold/italic text is wider
@@ -240,5 +309,28 @@ data class RecipeElement(
         val padding = 12
 
         return headerHeight + itemRowHeight + metadataHeight + padding
+    }
+}
+
+/**
+ * Displays a grid of items unlocked at a specific class level.
+ * Items are automatically populated from the items database based on requiredClass field.
+ */
+data class ClassUnlocksElement(
+    val className: String,
+    val level: Int
+) : MarkdownElement() {
+    override val baseHeight: Int = 0 // Calculated dynamically based on item count
+
+    override fun calculateHeight(width: Int, font: Font): Int {
+        // Query actual item count from database
+        val items = xyz.nim.civutils.models.HandbookModel.getItemsByClassLevel(className, level)
+        if (items.isEmpty()) return 0
+
+        val slotSize = 18
+        val gap = 4
+        val slotsPerRow = maxOf(1, (width + gap) / (slotSize + gap))
+        val rows = (items.size + slotsPerRow - 1) / slotsPerRow
+        return rows * (slotSize + gap)
     }
 }

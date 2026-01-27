@@ -118,7 +118,11 @@ object ItemMatcher {
         val itemId = BuiltInRegistries.ITEM.getKey(stack.item).toString()
 
         // Check items database for displayItem match
-        val itemMatch = HandbookModel.getAllItems().find { it.displayItem == itemId }
+        // Skip items with NBT filters - those should only be matched by their filters above,
+        // not by displayItem (which is used for rendering, not identification)
+        val itemMatch = HandbookModel.getAllItems().find {
+            it.displayItem == itemId && !it.isCustomItem
+        }
         if (itemMatch != null) return itemMatch.id
 
         // Check legacy page itemId match

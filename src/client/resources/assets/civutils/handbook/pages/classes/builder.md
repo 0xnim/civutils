@@ -27,40 +27,34 @@ Builders can create and control [iron and snow golems](golemancy) to defend play
 ## Unlocks by Level
 
 ### Apprentice (1)
-- Light Reinforcement
-- Stonecutter and Loom usage
-- **Haste I**
-- Stone, Smooth Stone, Stone Bricks variants
-- Andesite, Diorite, Granite variants
-- Deepslate variants
-- Sandstone variants
-- Terracotta variants
+
+<Unlocks class="builder" level="1" />
+
+**Other:** Light Reinforcement, Stonecutter and Loom usage, **Haste I**, Stone/Smooth Stone/Stone Bricks, Andesite/Diorite/Granite, Deepslate, Sandstone, Terracotta variants
 
 ### Journeyman (2)
-- Heavy Reinforcement
-- **Haste II**
-- Bricks, Mud Bricks variants
-- Stained Glass and Panes
-- Lever, Redstone Torch, Trip Wire Hooks
+
+<Unlocks class="builder" level="2" />
+
+**Other:** Heavy Reinforcement, **Haste II**, Bricks/Mud Bricks, Stained Glass and Panes, Lever/Redstone Torch/Trip Wire Hooks
 
 ### Expert (3)
-- Scaffolding, Concrete Powder
-- Tuff Bricks, Nether Bricks, Blackstone, Gilded Blackstone, Basalt
-- Daylight Detector
-- Redstone Repeater and Comparator
-- Dropper, Hopper (crafting and usage)
+
+<Unlocks class="builder" level="3" />
+
+**Other:** Scaffolding, Concrete Powder, Tuff Bricks/Nether Bricks/Blackstone/Basalt, Daylight Detector, Redstone Repeater/Comparator, Dropper/Hopper
 
 ### Master (4)
-- **Haste III**
-- Prismarine Bricks, End Stone Bricks
-- Red Nether Brick, Quartz
-- Glazed Terracotta
-- Pistons, Redstone Lamp, Note Block
-- Dispenser, Observer, Calibrated Skulk Sensor
-- Auto Crafter interaction
+
+<Unlocks class="builder" level="4" />
+
+**Other:** **Haste III**, Prismarine Bricks/End Stone Bricks/Quartz, Glazed Terracotta, Pistons/Redstone Lamp/Note Block, Dispenser/Observer, Auto Crafter
 
 ### Grandmaster (5)
-- **Haste IV**
+
+<Unlocks class="builder" level="5" />
+
+**Other:** **Haste IV**
 
 ## Gaining XP
 

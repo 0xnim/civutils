@@ -1155,6 +1155,9 @@ class HandbookScreen(
 
         override val contentId: String get() = item.id
 
+        // Cached item slot for rendering in the list
+        private val itemSlot = ItemSlotWidget.fromItemDefinition(item, 1, ItemSlotWidget.SlotSize.SMALL)
+
         override fun renderContent(
             guiGraphics: GuiGraphics,
             mouseX: Int,
@@ -1170,19 +1173,26 @@ class HandbookScreen(
             val selected = (pageList?.selected === this) || (currentId == item.id)
             renderBackground(guiGraphics, x, y, entryWidth, entryHeight, hovered, selected)
 
-            // Title with item icon indicator
-            guiGraphics.drawString(font, "▪ ${item.name}", x + 8, y + 4, Colors.TEXT, true)
+            // Render item icon
+            val slotSize = ItemSlotWidget.SlotSize.SMALL.pixels
+            val iconX = x + 6
+            val iconY = y + (entryHeight - slotSize) / 2
+            itemSlot.render(guiGraphics, iconX, iconY, mouseX, mouseY, renderBackground = false)
+
+            // Title after item icon
+            val textX = iconX + slotSize + 4
+            guiGraphics.drawString(font, item.name, textX, y + 4, Colors.TEXT, true)
 
             // Summary in second line
             val summary = item.summary
             if (!summary.isNullOrEmpty()) {
-                val maxLen = (entryWidth - 16) / 4
+                val maxLen = (entryWidth - textX + x - 8) / 4
                 val displayText = if (summary.length > maxLen) {
                     summary.take(maxLen - 3) + "..."
                 } else {
                     summary
                 }
-                guiGraphics.drawString(font, displayText, x + 8, y + 16, Colors.TEXT_SECONDARY, false)
+                guiGraphics.drawString(font, displayText, textX, y + 16, Colors.TEXT_SECONDARY, false)
             }
         }
     }

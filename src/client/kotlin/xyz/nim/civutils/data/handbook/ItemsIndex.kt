@@ -47,6 +47,25 @@ data class ItemsIndex(
     /** Optional category display order overrides */
     val categoryOrder: List<ItemCategory>? = null
 ) {
+    /** Lazy-built index mapping tags to items that have those tags */
+    private val tagIndex: Map<String, List<ItemDefinition>> by lazy {
+        val index = mutableMapOf<String, MutableList<ItemDefinition>>()
+        items.forEach { item ->
+            item.tags?.forEach { tag ->
+                index.getOrPut(tag.lowercase()) { mutableListOf() }.add(item)
+            }
+        }
+        index.mapValues { it.value.sortedBy { item -> item.order } }
+    }
+
+    /** Get all items that have the given tag */
+    fun getItemsByTag(tag: String): List<ItemDefinition> = tagIndex[tag.lowercase()] ?: emptyList()
+
+    /** Get all items that have any of the given tags (union, deduplicated, sorted by order) */
+    fun getItemsByTags(tags: List<String>): List<ItemDefinition> {
+        return tags.flatMap { getItemsByTag(it) }.distinctBy { it.id }.sortedBy { it.order }
+    }
+
     /** Get items by category */
     fun getItemsByCategory(category: ItemCategory): List<ItemDefinition> {
         return items.filter { it.category == category }.sortedBy { it.order }
@@ -121,6 +140,12 @@ data class ItemsIndex(
         val order = categoryOrder ?: ItemCategory.entries
         val activeCategories = items.map { it.category }.toSet()
         return order.filter { it in activeCategories }
+    }
+
+    /** Get items unlocked at a specific class level (e.g., "blacksmith", 2) */
+    fun getItemsByClassLevel(className: String, level: Int): List<ItemDefinition> {
+        val requiredClass = "$className:$level"
+        return items.filter { it.requiredClass == requiredClass }.sortedBy { it.order }
     }
 
     /**

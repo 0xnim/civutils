@@ -2,9 +2,11 @@ package xyz.nim.civutils.gui.widgets
 
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
+import xyz.nim.civutils.data.handbook.ItemDefinition
 import xyz.nim.civutils.data.handbook.Recipe
 import xyz.nim.civutils.data.handbook.RecipeSlot
 import xyz.nim.civutils.data.handbook.RecipeType
+import xyz.nim.civutils.models.HandbookModel
 import xyz.nim.lib.ui.NlibTheme
 import kotlin.math.max
 
@@ -24,11 +26,15 @@ class RecipeRenderer {
     // Track rendered item slots for tooltip/click handling
     private val itemSlots = mutableListOf<ItemSlotWidget>()
 
+    // Track cycling item slots for tooltip/click handling
+    private val cyclingSlots = mutableListOf<CyclingItemSlotWidget>()
+
     /**
      * Clear tracked item slots. Call this at the start of rendering an item page.
      */
     fun clearSlots() {
         itemSlots.clear()
+        cyclingSlots.clear()
     }
 
     /**
@@ -67,6 +73,9 @@ class RecipeRenderer {
         for (slot in itemSlots) {
             slot.renderTooltip(guiGraphics, mouseX, mouseY)
         }
+        for (slot in cyclingSlots) {
+            slot.renderTooltip(guiGraphics, mouseX, mouseY)
+        }
     }
 
     /**
@@ -74,6 +83,11 @@ class RecipeRenderer {
      */
     fun getItemAt(mouseX: Int, mouseY: Int): String? {
         for (slot in itemSlots) {
+            if (slot.isHovered(mouseX, mouseY)) {
+                return slot.getItemId()
+            }
+        }
+        for (slot in cyclingSlots) {
             if (slot.isHovered(mouseX, mouseY)) {
                 return slot.getItemId()
             }
@@ -527,12 +541,35 @@ class RecipeRenderer {
             return
         }
 
-        // Create and render item slot widget
+        // Resolve all possible items from tags and alternatives
+        val possibleItems = resolvePossibleItems(slot)
+
+        if (possibleItems.size > 1) {
+            // Multiple items -> use cycling widget
+            val cyclingWidget = CyclingItemSlotWidget(
+                items = possibleItems,
+                count = slot.count,
+                size = ItemSlotWidget.SlotSize.NORMAL
+            )
+            cyclingWidget.render(guiGraphics, x, y, mouseX, mouseY, renderBackground = true)
+            cyclingSlots.add(cyclingWidget)
+            return
+        }
+
+        // Single item from tags/alternatives -> use regular widget with that item
+        if (possibleItems.size == 1) {
+            val widget = ItemSlotWidget.fromItemDefinition(possibleItems[0], slot.count, ItemSlotWidget.SlotSize.NORMAL)
+            widget.render(guiGraphics, x, y, mouseX, mouseY, renderBackground = true)
+            itemSlots.add(widget)
+            return
+        }
+
+        // Fall back to primary item field
         val itemId = slot.item ?: return // Safety check
 
         // Check if this is a custom item from the database (no colon = custom ID)
         val widget = if (!itemId.contains(":")) {
-            val itemDef = xyz.nim.civutils.models.HandbookModel.getItem(itemId)
+            val itemDef = HandbookModel.getItem(itemId)
             if (itemDef != null) {
                 // fromItemDefinition already sets navigationId = item.id
                 ItemSlotWidget.fromItemDefinition(itemDef, slot.count, ItemSlotWidget.SlotSize.NORMAL)
@@ -559,9 +596,42 @@ class RecipeRenderer {
     }
 
     /**
+     * Resolve all possible items from a recipe slot.
+     * Checks tags first, then alternatives, then falls back to the primary item.
+     * Returns ItemDefinitions for custom items that can be looked up.
+     */
+    private fun resolvePossibleItems(slot: RecipeSlot): List<ItemDefinition> {
+        val items = mutableListOf<ItemDefinition>()
+
+        // First, resolve items from tags
+        slot.tags?.let { tags ->
+            items.addAll(HandbookModel.getItemsByTags(tags))
+        }
+
+        // Then add alternatives
+        slot.alternatives?.forEach { altId ->
+            HandbookModel.getItem(altId)?.let { items.add(it) }
+        }
+
+        // If we have items from tags or alternatives, use those
+        if (items.isNotEmpty()) {
+            return items.distinctBy { it.id }
+        }
+
+        // Otherwise, try to resolve the primary item
+        slot.item?.let { itemId ->
+            if (!itemId.contains(":")) {
+                HandbookModel.getItem(itemId)?.let { items.add(it) }
+            }
+        }
+
+        return items.distinctBy { it.id }
+    }
+
+    /**
      * Resolve an item ID - if it's a custom item ID (no colon), look up the display item.
      */
     private fun resolveItemId(itemId: String): String {
-        return xyz.nim.civutils.models.HandbookModel.resolveItemDisplayId(itemId)
+        return HandbookModel.resolveItemDisplayId(itemId)
     }
 }

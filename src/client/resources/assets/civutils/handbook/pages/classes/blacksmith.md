@@ -10,7 +10,7 @@ The Blacksmith's main role is to craft upgraded tools and armor for players. Any
 ## Primary Abilities
 
 ### Tool & Armor Crafting
-Blacksmiths unlock the ability to craft progressively better equipment as they level up. See the [Smithing System](smithing) for the new crafting process.
+Blacksmiths unlock the ability to craft progressively better equipment as they level up. Key materials include [Tool Handles](item:tool_handle), [Plates](item:iron_plate), and [Blueprints](item:blueprint). See the [Smithing System](smithing) for the full crafting process.
 
 ### Signature Armor Trims
 Every Blacksmith has a unique armor trim pattern and color assigned based on their name. When they craft armor, there's a chance their signature trim appears, along with a tag showing who made it.
@@ -19,36 +19,37 @@ Every Blacksmith has a unique armor trim pattern and color assigned based on the
 Blacksmith-crafted items can have extra stats like bonus damage on critical hits or reduced armor weight. Check item tooltips for these modifiers.
 
 ### Repairing
-At level 3+, Blacksmiths can repair durability on tools and armor by holding the item and shift right-clicking on an anvil. This costs Minecraft XP and hunger but restores durability.
+At level 3+, Blacksmiths can repair durability on tools and armor by holding the item and shift right-clicking on an anvil. This costs Minecraft XP and hunger but restores durability. Use a [Whetstone](item:whetstone) to restore stat decay.
 
 ## Unlocks by Level
 
 ### Apprentice (1)
-- Stone Tools and Leather Armor
-- Copper Tools and Armor
-- Blast Furnaces, Buckets, Brushes, Spyglasses
-- Lightning Rods, Copper Blocks
+
+<Unlocks class="blacksmith" level="1" />
+
+**Other:** Blast Furnaces, Buckets, Brushes, Spyglasses, Lightning Rods, Copper Blocks
 
 ### Journeyman (2)
-- Iron tools and armor
-- Crossbows, Rails, Minecarts
-- Anvil, Cauldron, Lanterns
-- Iron Doors and Trapdoors
+
+<Unlocks class="blacksmith" level="2" />
+
+**Other:** Crossbows, Rails, Minecarts, Anvil, Cauldron, Lanterns, Iron Doors and Trapdoors
 
 ### Expert (3)
-- Gold tools and armor
-- Placing Lava Buckets
-- Using Anvil and Smithing Table
-- Powered Rails, Flint & Steel
-- Repairing items
+
+<Unlocks class="blacksmith" level="3" />
+
+**Other:** Placing Lava Buckets, Using Anvil and Smithing Table, Powered Rails, Flint & Steel, Repairing items
 
 ### Master (4)
-- Diamond tools and armor
+
+<Unlocks class="blacksmith" level="4" />
 
 ### Grandmaster (5)
-- Netherite tools and armor
-- Smithing Tables, Maces, Crafters
-- Netherite trims
+
+<Unlocks class="blacksmith" level="5" />
+
+**Other:** Smithing Tables, Maces, Crafters, Netherite trims
 
 ## Gaining XP
 

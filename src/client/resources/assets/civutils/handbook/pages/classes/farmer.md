@@ -36,28 +36,34 @@ Farmers can use smokers to create [smoked food](food-expiration), which lasts lo
 ## Unlocks by Level
 
 ### Apprentice (1)
-- 10% harvest success
-- Crafting bread, cookies
-- Crafting beetroot soup, mushroom soup
-- Composters
-- Using Smokers
+
+<Unlocks class="farmer" level="1" />
+
+**Other:** 10% harvest success, Crafting bread/cookies/beetroot soup/mushroom soup, Composters, Using Smokers
 
 ### Journeyman (2)
-- 20% harvest success
-- Crafting pumpkin pie
-- Animal breeding and taming (except dogs)
-- Safe sweet berry harvesting
+
+<Unlocks class="farmer" level="2" />
+
+**Other:** 20% harvest success, Crafting pumpkin pie, Animal breeding and taming (except dogs), Safe sweet berry harvesting
 
 ### Expert (3)
-- 40% harvest success
-- Crafting leads
+
+<Unlocks class="farmer" level="3" />
+
+**Other:** 40% harvest success, Crafting leads
 
 ### Master (4)
-- 70% harvest success
-- Crafting golden carrots
+
+<Unlocks class="farmer" level="4" />
+
+**Other:** 70% harvest success, Crafting golden carrots
 
 ### Grandmaster (5)
-- 90% harvest success
+
+<Unlocks class="farmer" level="5" />
+
+**Other:** 90% harvest success
 
 ## Gaining XP
 

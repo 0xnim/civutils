@@ -52,6 +52,15 @@ class MarkdownParser {
                     i++
                 }
 
+                // Class unlocks component: <Unlocks class="blacksmith" level="1" />
+                trimmed.startsWith("<Unlocks ") -> {
+                    val unlocks = parseUnlocksComponent(trimmed)
+                    if (unlocks != null) {
+                        elements.add(unlocks)
+                    }
+                    i++
+                }
+
                 trimmed.startsWith("```") -> {
                     val language = trimmed.removePrefix("```").trim()
                     val codeLines = mutableListOf<String>()
@@ -317,6 +326,21 @@ class MarkdownParser {
     }
 
     /**
+     * Parse an Unlocks component like <Unlocks class="blacksmith" level="1" />.
+     */
+    private fun parseUnlocksComponent(line: String): ClassUnlocksElement? {
+        // Extract class attribute
+        val classMatch = Regex("""class\s*=\s*["']([^"']+)["']""").find(line)
+        val className = classMatch?.groupValues?.get(1) ?: return null
+
+        // Extract level attribute
+        val levelMatch = Regex("""level\s*=\s*["']?(\d+)["']?""").find(line)
+        val level = levelMatch?.groupValues?.get(1)?.toIntOrNull() ?: return null
+
+        return ClassUnlocksElement(className, level)
+    }
+
+    /**
      * Parse an item specification like "minecraft:iron_ore|64" or "minecraft:iron_ore".
      */
     private fun parseItemSpec(spec: String): ItemSpec? {
@@ -346,6 +370,12 @@ class MarkdownParser {
                     val countStr = m.groupValues[2].removePrefix("|")
                     val count = countStr.toIntOrNull() ?: 1
                     listOf(TextSpan("", itemId = itemId, itemCount = count))
+                },
+                // Item links: [Display Text](item:item_id) - shows icon + text, clickable
+                Regex("^\\[([^\\]]+)\\]\\(item:([^)]+)\\)") to { m: MatchResult ->
+                    val displayText = m.groupValues[1]
+                    val itemId = m.groupValues[2]
+                    listOf(TextSpan(displayText, link = itemId, itemId = itemId, itemCount = 1))
                 },
                 // Links with inner formatting: [**bold**](url), [*italic*](url), [***bold italic***](url)
                 Regex("^\\[\\*\\*\\*(.+?)\\*\\*\\*\\]\\(([^)]+)\\)") to { m: MatchResult ->

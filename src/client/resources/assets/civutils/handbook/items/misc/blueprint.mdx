@@ -23,12 +23,13 @@ recipes:
       B:
         item: "minecraft:blue_dye"
       X:
-        item: "minecraft:barrier"
-        alternatives: [iron_pickaxe_head, iron_helmet_set]
+        tags: [pickaxe_head, axe_head, shovel_head, hoe_head, sword_head, helmet_set, chestplate_set, leggings_set, boots_set]
     outputs:
       - item: blueprint
     metadata:
       note: X = the tool head or plate set for the desired blueprint (NOT consumed)
 ---
 
-Blueprints are created by Librarians and required by Blacksmiths to craft iron tier and above equipment. Each item type requires its own specific blueprint. The tool head or plate set used in the recipe is NOT consumed.
+Blueprints are created by Librarians and required by Blacksmiths to craft iron tier and above equipment. Each item type requires its own specific blueprint. The tool head (like [Iron Pickaxe Head](item:iron_pickaxe_head)) or plate set (like [Iron Helmet Set](item:iron_helmet_set)) used in the recipe is **NOT consumed**.
+
+See the [Smithing System](smithing) guide for full details on the crafting process.

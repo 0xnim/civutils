@@ -10,16 +10,16 @@ In CivLabs, tools and armor have a completely overhauled crafting process. This 
 ## Armor Crafting
 
 ### Leather Armor
-Uses **Padded Leather** instead of regular leather.
+Uses [Padded Leather](item:padded_leather) instead of regular leather.
 
 **Padded Leather Recipe:**
 - 2 Leather + 2 Wool (2x2 grid)
 
 ### Chainmail Armor
-Now craftable by Blacksmiths using **Chainmail Armor Plates**.
+Now craftable by Blacksmiths using [Chainmail Plates](item:chainmail_plate).
 
 **Chainmail Plate Recipe:**
-- Iron Nuggets + Padded Leather
+- Iron Nuggets + [Padded Leather](item:padded_leather)
 
 Use chainmail plates in normal armor shapes.
 
@@ -28,17 +28,17 @@ Use chainmail plates in normal armor shapes.
 All iron, gold, diamond, and netherite armor follows this process:
 
 #### Step 1: Create Plates
-Smelt ingots into plates.
+Craft ingots into plates (e.g. [Iron Plate](item:iron_plate)).
 
 #### Step 2: Create Plate Stacks
-Combine plates into plate stacks.
+Combine plates into plate stacks (e.g. [Iron Plate Stack](item:iron_plate_stack)).
 
 #### Step 3: Create Plate Sets
-Craft plate stacks in armor shapes to create plate sets.
+Craft plate stacks in armor shapes to create plate sets (e.g. [Iron Helmet Set](item:iron_helmet_set)).
 
 #### Step 4: Smithing
 Use a Smithing Table to combine:
-- **Plate Set** + **Lower Tier Armor** + **Blueprint**
+- **Plate Set** + **Lower Tier Armor** + [Blueprint](item:blueprint)
 
 **Armor Progression:**
 Leather → Chainmail → Iron → Gold → Diamond → Netherite
@@ -50,24 +50,25 @@ Each tier requires the previous tier as a base.
 Copper+ tools use a different process:
 
 ### Step 1: Create Tool Handle
-- 2 Padded Leather (top/bottom center) + 1 Stick (center) + 2 String (sides)
+Craft a [Tool Handle](item:tool_handle) using:
+- 2 [Padded Leather](item:padded_leather) (top/bottom center) + 1 Stick (center) + 2 String (sides)
 
 ### Step 2: Create Tool Head
 Use plate stacks in tool shapes:
-- 1 plate stack = Shovel head
-- 2 horizontal = Hoe head
-- 2 vertical = Sword head
-- 3 in pickaxe/axe shape = Those heads
+- 1 plate stack = Shovel head (e.g. [Iron Shovel Head](item:iron_shovel_head))
+- 2 horizontal = Hoe head (e.g. [Iron Hoe Head](item:iron_hoe_head))
+- 2 vertical = Sword head (e.g. [Iron Sword Head](item:iron_sword_head))
+- 3 in pickaxe/axe shape = Those heads (e.g. [Iron Pickaxe Head](item:iron_pickaxe_head))
 
 ### Step 3: Smithing
 Combine in Smithing Table:
-- **Tool Head** + **Tool Handle** + **Blueprint** (iron+)
+- **Tool Head** + [Tool Handle](item:tool_handle) + [Blueprint](item:blueprint) (iron+)
 
 ## Blueprints
 
 **Required for Iron+ equipment**
 
-Blueprints are created by [Librarians](librarian):
+[Blueprints](item:blueprint) are created by [Librarians](librarian):
 
 **Recipe:**
 - 3 Paper + Blue Dye + Plate Set/Tool Head
@@ -87,29 +88,29 @@ Blacksmiths use blueprints to **learn** the recipe, keeping it until death.
 ## Material Requirements
 
 Making iron armor requires:
-1. **Padded Leather** (2 leather + 2 wool)
-2. **Chainmail Armor** (as base)
-3. **Iron Plates** (from iron ingots)
-4. **Iron Plate Stacks**
-5. **Iron Plate Sets**
-6. **Iron Blueprint** (from Librarian)
+1. [Padded Leather](item:padded_leather) (2 leather + 2 wool)
+2. [Chainmail Armor](item:chainmail_chestplate) (as base)
+3. [Iron Plates](item:iron_plate) (from iron ingots)
+4. [Iron Plate Stacks](item:iron_plate_stack)
+5. [Iron Plate Sets](item:iron_helmet_set) (helmet, chestplate, etc.)
+6. [Blueprint](item:blueprint) (from Librarian)
 7. **Smithing Table** (Blacksmith Level 3)
 
 ## Tiered Shears
 
 Different material shears are craftable:
-- Wood (uses sticks, anyone can craft)
-- Stone, Copper, Iron, Gold, Diamond
+- [Wooden Shears](item:wooden_shears) (uses sticks, anyone can craft)
+- [Stone Shears](item:stone_shears), [Copper Shears](item:copper_shears), [Iron Shears](item:iron_shears), [Gold Shears](item:gold_shears), [Diamond Shears](item:diamond_shears)
 
 Use the standard shear shape with respective materials.
 
 ## Whetstone
 
-A special tool Blacksmiths use to maintain equipment:
+The [Whetstone](item:whetstone) is a special tool Blacksmiths use to maintain equipment:
 - Restores attribute decay on tools/armor
 - Stats decay with durability use
 - Whetstone temporarily restores full stats
 
 ---
 
-> **See Also:** [Blacksmith](blacksmith), [Librarian](librarian), [Smithing Materials](smithing-materials)
+> **See Also:** [Blacksmith](blacksmith), [Librarian](librarian)

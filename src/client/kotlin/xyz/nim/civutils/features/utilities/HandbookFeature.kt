@@ -1,7 +1,9 @@
 package xyz.nim.civutils.features.utilities
 
+import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import org.lwjgl.glfw.GLFW
 import xyz.nim.civutils.core.config.value
 import xyz.nim.civutils.core.event.ClientTickEvent
 import xyz.nim.civutils.core.event.Subscribe
@@ -34,17 +36,29 @@ class HandbookFeature : Feature() {
 
     private val mc: Minecraft get() = Minecraft.getInstance()
 
+    // Track previous key state for edge detection (key-down event)
+    private var wasHandbookKeyDown = false
+
     @Subscribe
     fun onTick(event: ClientTickEvent) {
         val screen = mc.screen
 
         // Handle H key in inventory screens
+        // Note: consumeClick() doesn't work when a screen is open because Minecraft
+        // routes key events to the screen's input handling instead of the keybind system.
+        // We need to check the key state directly with edge detection.
         if (screen is AbstractContainerScreen<*>) {
-            if (KeybindManager.openHandbook.consumeClick()) {
+            val isKeyDown = isHandbookKeyDown()
+            if (isKeyDown && !wasHandbookKeyDown) {
+                // Key just pressed (rising edge)
                 handleInventoryHandbookKey(screen)
-                return
             }
+            wasHandbookKeyDown = isKeyDown
+            return
         }
+
+        // Reset key state tracking when not in a container screen
+        wasHandbookKeyDown = false
 
         // Only handle keybind when no screen is open
         if (screen != null) return
@@ -55,6 +69,15 @@ class HandbookFeature : Feature() {
                 mc.setScreen(HandbookScreen())
             }
         }
+    }
+
+    /**
+     * Check if the handbook keybind key is currently pressed.
+     * Note: KeyMapping.isDown doesn't work when screens are open, so we check the key directly.
+     * TODO: Add accessor mixin for KeyMapping.key to support custom keybindings in screens.
+     */
+    private fun isHandbookKeyDown(): Boolean {
+        return InputConstants.isKeyDown(mc.window.window, GLFW.GLFW_KEY_H)
     }
 
     /**

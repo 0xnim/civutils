@@ -89,6 +89,7 @@ class MarkdownRenderer {
             is HorizontalRuleElement -> renderHorizontalRule(guiGraphics, x, y, width)
             is TableElement -> renderTable(guiGraphics, element, x, y, width, font)
             is RecipeElement -> renderRecipe(guiGraphics, element, x, y, width, font)
+            is ClassUnlocksElement -> renderClassUnlocks(guiGraphics, element, x, y, width, font)
         }
     }
 
@@ -151,8 +152,8 @@ class MarkdownRenderer {
         val lineHeight = font.lineHeight + 2
 
         for (span in spans) {
-            // Handle inline item references
-            if (span.isItem && span.itemId != null) {
+            // Handle inline item references (icon only, no text)
+            if (span.isItem && span.itemId != null && span.text.isEmpty()) {
                 val slotSize = SlotSize.SMALL.pixels // 14px for inline items
 
                 // Wrap if needed
@@ -169,6 +170,62 @@ class MarkdownRenderer {
                 itemSlotManager.recordBounds(slot)
 
                 currentX += slotSize + 2 // Small gap after item
+                continue
+            }
+
+            // Handle item links (icon + text, both clickable)
+            if (span.isItem && span.itemId != null && span.text.isNotEmpty()) {
+                val slotSize = SlotSize.SMALL.pixels // 14px for inline items
+                val isHovered = span.link != null && hoveredLink?.target == span.link
+
+                // Calculate total width (icon + gap + text)
+                val textWidth = font.width(span.text)
+                val totalWidth = slotSize + 2 + textWidth
+
+                // Wrap if needed
+                if (currentX + totalWidth > startX + maxWidth && currentX > startX) {
+                    currentX = startX
+                    currentY += lineHeight
+                }
+
+                // Render item icon
+                val slot = createItemSlot(span.itemId, span.itemCount, SlotSize.SMALL)
+                val slotY = currentY + (font.lineHeight - slotSize) / 2
+                slot.render(guiGraphics, currentX, slotY, mouseX, mouseY, renderBackground = true)
+                itemSlotManager.addSlot(slot)
+                itemSlotManager.recordBounds(slot)
+
+                val iconEndX = currentX + slotSize + 2
+
+                // Render text after icon
+                val textColor = if (isHovered) LINK_HOVER_COLOR else NlibTheme.ACCENT
+                guiGraphics.drawString(font, span.text, iconEndX, currentY, textColor, true)
+
+                // Draw underline for hovered item links
+                if (isHovered) {
+                    guiGraphics.fill(
+                        iconEndX,
+                        currentY + font.lineHeight,
+                        iconEndX + textWidth,
+                        currentY + font.lineHeight + 1,
+                        LINK_HOVER_COLOR
+                    )
+                }
+
+                // Track link region for both icon and text
+                if (span.link != null) {
+                    linkRegions.add(
+                        LinkRegion(
+                            currentX,
+                            currentY,
+                            totalWidth,
+                            maxOf(slotSize, font.lineHeight),
+                            span.link
+                        )
+                    )
+                }
+
+                currentX += totalWidth + 4 // Gap after item link
                 continue
             }
 
@@ -582,6 +639,54 @@ class MarkdownRenderer {
     ): Int {
         guiGraphics.fill(x, y + 5, x + width, y + 6, NlibTheme.TEXT_SECONDARY)
         return 12
+    }
+
+    private fun renderClassUnlocks(
+        guiGraphics: GuiGraphics,
+        element: ClassUnlocksElement,
+        x: Int,
+        y: Int,
+        width: Int,
+        font: Font,
+        mouseX: Int = 0,
+        mouseY: Int = 0
+    ): Int {
+        val items = xyz.nim.civutils.models.HandbookModel.getItemsByClassLevel(element.className, element.level)
+
+        if (items.isEmpty()) {
+            // Render nothing if no items - allows adding component to all classes
+            return 0
+        }
+
+        val slotSize = SlotSize.NORMAL.pixels // 18px
+        val gap = 4
+        val slotsPerRow = maxOf(1, (width + gap) / (slotSize + gap))
+
+        var currentX = x
+        var currentY = y
+        var itemsInRow = 0
+
+        for (item in items) {
+            // Wrap to next row if needed
+            if (itemsInRow >= slotsPerRow) {
+                currentX = x
+                currentY += slotSize + gap
+                itemsInRow = 0
+            }
+
+            // Create and render the item slot
+            val slot = ItemSlotWidget.fromItemDefinition(item, 1, SlotSize.NORMAL)
+            slot.render(guiGraphics, currentX, currentY, mouseX, mouseY, renderBackground = true)
+            itemSlotManager.addSlot(slot)
+            itemSlotManager.recordBounds(slot)
+
+            currentX += slotSize + gap
+            itemsInRow++
+        }
+
+        // Calculate total height
+        val rows = (items.size + slotsPerRow - 1) / slotsPerRow
+        return rows * (slotSize + gap)
     }
 
     /**

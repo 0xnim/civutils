@@ -26,33 +26,34 @@ Miners gain permanent Haste effects:
 ## Unlocks by Level
 
 ### Apprentice (1)
-- Mining Copper
-- Mining Deepslate
-- Mining Deepslate Coal
-- Haste II
+
+<Unlocks class="miner" level="1" />
+
+**Ores:** Copper, Deepslate, Deepslate Coal | **Haste II**
 
 ### Journeyman (2)
-- Mining Iron
-- Mining Deepslate Copper
-- Mining Calcite
-- Haste III
+
+<Unlocks class="miner" level="2" />
+
+**Ores:** Iron, Deepslate Copper, Calcite | **Haste III**
 
 ### Expert (3)
-- Mining Gold, Lapis Lazuli, Redstone
-- Mining Deepslate Iron, Nether Quartz, Nether Gold
-- Crafting TNT
-- Haste IV
+
+<Unlocks class="miner" level="3" />
+
+**Ores:** Gold, Lapis Lazuli, Redstone, Deepslate Iron, Nether Quartz, Nether Gold | **Crafting TNT** | **Haste IV**
 
 ### Master (4)
-- Mining Diamond
-- Mining Deepslate Gold, Lapis, Redstone
-- Mining Obsidian
-- Haste V
+
+<Unlocks class="miner" level="4" />
+
+**Ores:** Diamond, Deepslate Gold/Lapis/Redstone, Obsidian | **Haste V**
 
 ### Grandmaster (5)
-- Mining Netherite
-- Mining Deepslate Diamond
-- Haste VI
+
+<Unlocks class="miner" level="5" />
+
+**Ores:** Netherite, Deepslate Diamond | **Haste VI**
 
 ## Gaining XP
 

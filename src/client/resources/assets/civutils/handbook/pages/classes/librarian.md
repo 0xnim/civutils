@@ -38,35 +38,34 @@ Level 5 Librarians can craft Netherite Templates:
 ## Unlocks by Level
 
 ### Apprentice (1)
-- Bookshelves, Chiseled Bookshelves
-- Book and Quill, Lectern
-- Maps and Compass
-- **Speed I**
+
+<Unlocks class="librarian" level="1" />
+
+**Other:** Bookshelves, Chiseled Bookshelves, Book and Quill, Lectern, Maps and Compass, **Speed I**
 
 ### Journeyman (2)
-- Cartography Table
-- Copied Books
-- Iron Gear Blueprints
-- **Speed II**
-- One-color Banners
-- Loom crafting
-- Item Blessing
+
+<Unlocks class="librarian" level="2" />
+
+**Other:** Cartography Table, Copied Books, Iron Gear Blueprints, **Speed II**, One-color Banners, Loom crafting, Item Blessing
 
 ### Expert (3)
-- Enchanting Table (crafting only)
-- Ender Chests
-- EXP Transfer Books
-- Gold Gear Blueprints
+
+<Unlocks class="librarian" level="3" />
+
+**Other:** Enchanting Table (crafting only), Ender Chests, EXP Transfer Books, Gold Gear Blueprints
 
 ### Master (4)
-- **Speed III**
-- Enchanting Table usage
-- Diamond Gear Blueprints
+
+<Unlocks class="librarian" level="4" />
+
+**Other:** **Speed III**, Enchanting Table usage, Diamond Gear Blueprints
 
 ### Grandmaster (5)
-- Netherite Smithing Template
-- Beacon crafting
-- Netherite Gear Blueprints
+
+<Unlocks class="librarian" level="5" />
+
+**Other:** Beacon crafting, Netherite Gear Blueprints
 
 ## Gaining XP
 

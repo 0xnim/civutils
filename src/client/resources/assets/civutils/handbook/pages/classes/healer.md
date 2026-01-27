@@ -51,23 +51,34 @@ High-level Healers can craft brewing ingredients:
 ## Unlocks by Level
 
 ### Apprentice (1)
-- Crafting and using Bandages
+
+<Unlocks class="healer" level="1" />
+
+**Other:** Crafting and using Bandages
 
 ### Journeyman (2)
-- Blessing food
-- Crafting Suspicious Stew
+
+<Unlocks class="healer" level="2" />
+
+**Other:** Blessing food, Crafting Suspicious Stew
 
 ### Expert (3)
-- Crafting Golden Apples
-- Picking up downed players
-- Force feeding players
+
+<Unlocks class="healer" level="3" />
+
+**Other:** Crafting Golden Apples, Picking up downed players, Force feeding players
 
 ### Master (4)
-- Blaze Rod recipe
-- Crafting and using Brewing Stands
+
+<Unlocks class="healer" level="4" />
+
+**Other:** Crafting and using Brewing Stands
 
 ### Grandmaster (5)
-- Nether Wart recipe
+
+<Unlocks class="healer" level="5" />
+
+**Other:** (see Nether Wart above)
 
 ## Gaining XP
 

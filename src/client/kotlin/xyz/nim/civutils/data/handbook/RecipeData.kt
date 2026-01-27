@@ -162,8 +162,8 @@ data class RecipeSlot(
     /** Alternative items that can fill this slot (for flexible recipes) */
     val alternatives: List<String>? = null,
 
-    /** Item tag for tag-based recipes (e.g., "minecraft:logs") */
-    val tag: String? = null
+    /** Item tags for tag-based recipes (e.g., ["pickaxe_head", "axe_head"]) */
+    val tags: List<String>? = null
 ) {
     companion object {
         /** Empty slot marker */
@@ -181,8 +181,8 @@ data class RecipeSlot(
         }
     }
 
-    /** Check if this slot is empty */
-    val isEmpty: Boolean get() = item.isNullOrBlank() || count <= 0
+    /** Check if this slot is empty (no item, alternatives, or tags) */
+    val isEmpty: Boolean get() = item.isNullOrBlank() && alternatives.isNullOrEmpty() && tags.isNullOrEmpty()
 
     /** Check if this is a custom item (no minecraft: prefix) */
     val isCustomItem: Boolean get() = !item.isNullOrBlank() && !item.contains(":")
