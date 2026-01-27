@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.Properties
 
 plugins {
     kotlin("jvm") version "2.2.21"
@@ -7,7 +8,23 @@ plugins {
     id("maven-publish")
 }
 
-version = project.property("mod_version") as String
+// Load version-specific properties from versions/<mc_target>.properties
+// Override with -Pmc=X on command line, or set mc_target in gradle.properties
+val mcTarget = project.findProperty("mc")?.toString()
+    ?: project.findProperty("mc_target")?.toString()
+    ?: "1.21.11"
+val versionProps = Properties().apply {
+    file("versions/$mcTarget.properties").inputStream().use { load(it) }
+}
+
+// Make version properties available
+val minecraftVersion: String = versionProps.getProperty("minecraft_version")
+val minecraftVersionRange: String = versionProps.getProperty("minecraft_version_range")
+val fabricVersion: String = versionProps.getProperty("fabric_version")
+val nlibVersion: String = versionProps.getProperty("nlib_version")
+val modVersion: String = versionProps.getProperty("mod_version")
+
+version = modVersion
 group = project.property("maven_group") as String
 
 base {
@@ -45,17 +62,17 @@ repositories {
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
-    minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
+    // To change the versions see versions/*.properties files
+    minecraft("com.mojang:minecraft:$minecraftVersion")
     mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("kotlin_loader_version")}")
 
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:$fabricVersion")
 
     // NLib UI library
-    modImplementation("xyz.nim:nlib:0.1.0+1.21.11")
-    include("xyz.nim:nlib:0.1.0+1.21.11")
+    modImplementation("xyz.nim:nlib:$nlibVersion")
+    include("xyz.nim:nlib:$nlibVersion")
 
     // Kotlin reflection for config and event systems
     implementation(kotlin("reflect"))
@@ -106,14 +123,15 @@ val generateItemManifest = tasks.register("generateItemManifest") {
 tasks.processResources {
     dependsOn(generateItemManifest)
     inputs.property("version", project.version)
-    inputs.property("minecraft_version", project.property("minecraft_version"))
+    inputs.property("minecraft_version", minecraftVersion)
+    inputs.property("minecraft_version_range", minecraftVersionRange)
     inputs.property("loader_version", project.property("loader_version"))
     filteringCharset = "UTF-8"
 
     filesMatching("fabric.mod.json") {
         expand(
             "version" to project.version,
-            "minecraft_version" to project.property("minecraft_version")!!,
+            "minecraft_version_range" to minecraftVersionRange,
             "loader_version" to project.property("loader_version")!!,
             "kotlin_loader_version" to project.property("kotlin_loader_version")!!
         )
