@@ -2,6 +2,7 @@ package xyz.nim.civutils.features.utilities
 
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import org.lwjgl.glfw.GLFW
 import xyz.nim.civutils.core.config.value
@@ -48,6 +49,11 @@ class HandbookFeature : Feature() {
         // routes key events to the screen's input handling instead of the keybind system.
         // We need to check the key state directly with edge detection.
         if (screen is AbstractContainerScreen<*>) {
+            // Don't trigger if a text field has focus (e.g., creative menu search)
+            if (screen.focused is EditBox) {
+                wasHandbookKeyDown = isHandbookKeyDown()
+                return
+            }
             val isKeyDown = isHandbookKeyDown()
             if (isKeyDown && !wasHandbookKeyDown) {
                 // Key just pressed (rising edge)
