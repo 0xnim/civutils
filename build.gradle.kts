@@ -82,6 +82,41 @@ dependencies {
     include("org.yaml:snakeyaml:2.2")
 }
 
+// Generate pages-manifest.json from MDX files in handbook/pages/
+val generatePageManifest = tasks.register("generatePageManifest") {
+    val pagesDir = file("src/client/resources/assets/civutils/handbook/pages")
+    val manifestFile = file("src/client/resources/assets/civutils/handbook/pages-manifest.json")
+
+    inputs.dir(pagesDir)
+    outputs.file(manifestFile)
+
+    doLast {
+        if (!pagesDir.exists()) {
+            logger.warn("Pages directory does not exist, skipping manifest generation")
+            return@doLast
+        }
+
+        fun collectMdxFiles(dir: File, prefix: String = ""): List<String> {
+            val files = mutableListOf<String>()
+            dir.listFiles()?.sortedBy { it.name }?.forEach { file ->
+                val relativePath = if (prefix.isEmpty()) file.name else "$prefix/${file.name}"
+                when {
+                    file.isDirectory -> files.addAll(collectMdxFiles(file, relativePath))
+                    file.extension == "mdx" -> files.add("pages/$relativePath")
+                }
+            }
+            return files
+        }
+
+        val allFiles = collectMdxFiles(pagesDir)
+        val manifest = mapOf("files" to allFiles)
+
+        val json = groovy.json.JsonBuilder(manifest).toPrettyString()
+        manifestFile.writeText(json + "\n")
+        logger.lifecycle("Generated pages-manifest.json with ${allFiles.size} pages")
+    }
+}
+
 // Generate items-manifest.json from MDX files in handbook/items/
 val generateItemManifest = tasks.register("generateItemManifest") {
     val itemsDir = file("src/client/resources/assets/civutils/handbook/items")
@@ -122,7 +157,7 @@ val generateItemManifest = tasks.register("generateItemManifest") {
 }
 
 tasks.processResources {
-    dependsOn(generateItemManifest)
+    dependsOn(generateItemManifest, generatePageManifest)
     inputs.property("version", project.version)
     inputs.property("minecraft_version", minecraftVersion)
     inputs.property("minecraft_version_range", minecraftVersionRange)
@@ -140,11 +175,11 @@ tasks.processResources {
 }
 
 tasks.named("processClientResources") {
-    dependsOn(generateItemManifest)
+    dependsOn(generateItemManifest, generatePageManifest)
 }
 
 tasks.named("sourcesJar") {
-    dependsOn(generateItemManifest)
+    dependsOn(generateItemManifest, generatePageManifest)
 }
 
 tasks.withType<JavaCompile>().configureEach {

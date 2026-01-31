@@ -1,0 +1,25 @@
+---
+id: copper_breastplate
+name: Copper Breastplate
+summary: Entry-tier metal chestplate upgraded from leather
+category: ARMOR
+tags: [armor, blacksmith, copper, breastplate]
+order: 251
+displayItem: "minecraft:leather_chestplate"
+customTexture: item/copper_breastplate
+filters:
+  baseItem: "minecraft:leather_chestplate"
+  customNameContains: Copper
+requiredClass: "blacksmith:1"
+recipes:
+  - type: SMITHING
+    name: Copper Breastplate
+    base:
+      item: "minecraft:leather_chestplate"
+    addition:
+      item: copper_breastplate_set
+    outputs:
+      - item: copper_breastplate
+---
+
+Copper armor is crafted by upgrading leather armor at a smithing table with the appropriate plate set. Copper can be upgraded to iron.

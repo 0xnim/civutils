@@ -1,0 +1,25 @@
+---
+id: copper_breastplate_set
+name: Copper Breastplate Set
+summary: Pre-smithed copper breastplate piece
+category: ARMOR
+tags: [smithing, blacksmith, copper, armor, breastplate, breastplate_set]
+order: 101
+displayItem: "minecraft:copper_ingot"
+customTexture: item/copper_breastplate
+filters:
+  baseItem: "minecraft:copper_ingot"
+  customNameContains: Breastplate Set
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Copper Breastplate Set
+    pattern: [P P, PPP, PPP]
+    key:
+      P:
+        item: copper_plate
+    outputs:
+      - item: copper_breastplate_set
+---
+
+Combine with Leather Chestplate at a smithing table to create a Copper Breastplate.

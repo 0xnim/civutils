@@ -1,6 +1,9 @@
 ---
 title: Smithing System
 summary: The overhauled crafting system for tools and armor
+category: mechanics
+order: 2
+tags: ["smithing", "blacksmith", "armor", "tools"]
 ---
 
 # Smithing System
@@ -13,19 +16,30 @@ In CivLabs, tools and armor have a completely overhauled crafting process. This 
 Uses [Padded Leather](item:padded_leather) instead of regular leather.
 
 **Padded Leather Recipe:**
-- 2 Leather + 2 Wool (2x2 grid)
+- 1 Leather + 1 Wool
+
+### Copper Armor
+Copper is unique - it uses plates directly (no plate stacks).
+
+1. Craft [Copper Plates](item:copper_plate) from copper ingots
+2. Craft plates into armor shapes
+3. Apply to leather armor at Smithing Table
+
+Copper armor upgrades to iron.
 
 ### Chainmail Armor
-Now craftable by Blacksmiths using [Chainmail Plates](item:chainmail_plate).
+Craftable by Blacksmiths using [Chainmail Plates](item:chainmail_plate).
 
 **Chainmail Plate Recipe:**
 - Iron Nuggets + [Padded Leather](item:padded_leather)
 
 Use chainmail plates in normal armor shapes.
 
+**Note:** Chainmail is a dead end - it cannot be upgraded to higher tiers.
+
 ### Plated Armor (Iron+)
 
-All iron, gold, diamond, and netherite armor follows this process:
+Iron, diamond, and netherite armor follows this process (gold uses the same process but is a dead end):
 
 #### Step 1: Create Plates
 Craft ingots into plates (e.g. [Iron Plate](item:iron_plate)).
@@ -41,20 +55,29 @@ Use a Smithing Table to combine:
 - **Plate Set** + **Lower Tier Armor** + [Blueprint](item:blueprint)
 
 **Armor Progression:**
-Leather → Chainmail → Iron → Gold → Diamond → Netherite
+```
+Leather → Copper → Iron → Diamond → Netherite
+        ↘ Chainmail (dead end)
+        ↘ Gold (dead end)
+```
 
-Each tier requires the previous tier as a base.
+Each tier requires the previous tier as a base. Chainmail and Gold are side paths that cannot be upgraded.
 
 ## Tool Crafting
-
-Copper+ tools use a different process:
 
 ### Step 1: Create Tool Handle
 Craft a [Tool Handle](item:tool_handle) using:
 - 2 [Padded Leather](item:padded_leather) (top/bottom center) + 1 Stick (center) + 2 String (sides)
 
 ### Step 2: Create Tool Head
-Use plate stacks in tool shapes:
+
+**Copper Tools** - Use plates directly in tool shapes:
+- 1 plate = Shovel head
+- 2 horizontal = Hoe head
+- 2 vertical = Sword head
+- 3 in pickaxe/axe shape = Those heads
+
+**Iron+ Tools** - Use plate stacks in tool shapes:
 - 1 plate stack = Shovel head (e.g. [Iron Shovel Head](item:iron_shovel_head))
 - 2 horizontal = Hoe head (e.g. [Iron Hoe Head](item:iron_hoe_head))
 - 2 vertical = Sword head (e.g. [Iron Sword Head](item:iron_sword_head))
@@ -62,7 +85,7 @@ Use plate stacks in tool shapes:
 
 ### Step 3: Smithing
 Combine in Smithing Table:
-- **Tool Head** + [Tool Handle](item:tool_handle) + [Blueprint](item:blueprint) (iron+)
+- **Tool Head** + [Tool Handle](item:tool_handle) + [Blueprint](item:blueprint) (iron+ only)
 
 ## Blueprints
 
@@ -87,14 +110,18 @@ Blacksmiths use blueprints to **learn** the recipe, keeping it until death.
 
 ## Material Requirements
 
-Making iron armor requires:
-1. [Padded Leather](item:padded_leather) (2 leather + 2 wool)
-2. [Chainmail Armor](item:chainmail_chestplate) (as base)
-3. [Iron Plates](item:iron_plate) (from iron ingots)
-4. [Iron Plate Stacks](item:iron_plate_stack)
-5. [Iron Plate Sets](item:iron_helmet_set) (helmet, chestplate, etc.)
-6. [Blueprint](item:blueprint) (from Librarian)
-7. **Smithing Table** (Blacksmith Level 3)
+**Making copper armor requires:**
+1. [Padded Leather](item:padded_leather) (1 leather + 1 wool)
+2. Leather Armor (as base)
+3. [Copper Plates](item:copper_plate) (from copper ingots)
+
+**Making iron armor requires:**
+1. Copper Armor (as base)
+2. [Iron Plates](item:iron_plate) (from iron ingots)
+3. [Iron Plate Stacks](item:iron_plate_stack)
+4. [Iron Plate Sets](item:iron_helmet_set) (helmet, chestplate, etc.)
+5. [Blueprint](item:blueprint) (from Librarian)
+6. **Smithing Table** (Blacksmith Level 3)
 
 ## Tiered Shears
 

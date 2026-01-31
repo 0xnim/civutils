@@ -86,19 +86,27 @@ object HandbookModel : Model() {
 
     private fun loadBundledContent() {
         try {
+            // Load index.json for categories and default page only
             val indexStream = javaClass.classLoader
                 .getResourceAsStream("$HANDBOOK_RESOURCE_PATH/$INDEX_FILE")
 
-            if (indexStream != null) {
-                bundledIndex = gson.fromJson(
-                    InputStreamReader(indexStream),
-                    HandbookIndex::class.java
-                )
-                CivutilsMod.logger.info("Loaded bundled handbook: ${bundledIndex?.pages?.size ?: 0} pages")
+            val baseIndex = if (indexStream != null) {
+                gson.fromJson(InputStreamReader(indexStream), HandbookIndex::class.java)
             } else {
-                CivutilsMod.logger.info("No bundled handbook found")
-                bundledIndex = HandbookIndex()
+                HandbookIndex()
             }
+
+            // Scan for .mdx page files and build pages list from frontmatter
+            val pages = loadPagesFromMdx()
+
+            bundledIndex = HandbookIndex(
+                version = baseIndex.version,
+                defaultPage = baseIndex.defaultPage,
+                categories = baseIndex.categories,
+                pages = pages.sortedWith(compareBy({ it.category }, { it.order }))
+            )
+
+            CivutilsMod.logger.info("Loaded bundled handbook: ${bundledIndex?.pages?.size ?: 0} pages from MDX files")
         } catch (e: Exception) {
             CivutilsMod.logger.error("Failed to load bundled handbook", e)
             bundledIndex = HandbookIndex()
@@ -109,6 +117,54 @@ object HandbookModel : Model() {
 
         // Load structured items database
         loadItemsDatabase()
+    }
+
+    /**
+     * Scan for .mdx page files and parse their frontmatter to build the pages list.
+     */
+    private fun loadPagesFromMdx(): List<HandbookPageMeta> {
+        val pages = mutableListOf<HandbookPageMeta>()
+
+        try {
+            // Load pages manifest which lists all page files
+            val manifestStream = javaClass.classLoader
+                .getResourceAsStream("$HANDBOOK_RESOURCE_PATH/pages-manifest.json")
+
+            if (manifestStream != null) {
+                data class PagesManifest(val files: List<String>)
+                val manifest = gson.fromJson(InputStreamReader(manifestStream), PagesManifest::class.java)
+
+                for (filePath in manifest.files) {
+                    val fullPath = "$HANDBOOK_RESOURCE_PATH/$filePath"
+                    val stream = javaClass.classLoader.getResourceAsStream(fullPath)
+                    if (stream == null) {
+                        CivutilsMod.logger.warn("Page file not found: $fullPath")
+                        continue
+                    }
+
+                    val content = stream.bufferedReader().readText()
+                    val pageMeta = MdxParser.parsePageMdx(content, filePath)
+                    if (pageMeta != null) {
+                        pages.add(pageMeta)
+                    } else {
+                        CivutilsMod.logger.warn("Failed to parse page MDX: $fullPath")
+                    }
+                }
+            } else {
+                CivutilsMod.logger.debug("No pages-manifest.json found, falling back to index.json pages")
+                // Fall back to index.json pages if no manifest
+                val indexStream = javaClass.classLoader
+                    .getResourceAsStream("$HANDBOOK_RESOURCE_PATH/$INDEX_FILE")
+                if (indexStream != null) {
+                    val index = gson.fromJson(InputStreamReader(indexStream), HandbookIndex::class.java)
+                    return index.pages
+                }
+            }
+        } catch (e: Exception) {
+            CivutilsMod.logger.error("Failed to load pages from MDX", e)
+        }
+
+        return pages
     }
 
     private fun loadItemsDatabase() {

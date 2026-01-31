@@ -1,0 +1,25 @@
+---
+id: copper_greaves_set
+name: Copper Greaves Set
+summary: Pre-smithed copper greaves piece
+category: ARMOR
+tags: [smithing, blacksmith, copper, armor, greaves, greaves_set]
+order: 102
+displayItem: "minecraft:copper_ingot"
+customTexture: item/copper_greaves
+filters:
+  baseItem: "minecraft:copper_ingot"
+  customNameContains: Greaves Set
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Copper Greaves Set
+    pattern: [PPP, P P, P P]
+    key:
+      P:
+        item: copper_plate
+    outputs:
+      - item: copper_greaves_set
+---
+
+Combine with Leather Leggings at a smithing table to create Copper Greaves.

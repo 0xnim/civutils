@@ -1,0 +1,25 @@
+---
+id: copper_helm
+name: Copper Helm
+summary: Entry-tier metal helmet upgraded from leather
+category: ARMOR
+tags: [armor, blacksmith, copper, helm]
+order: 250
+displayItem: "minecraft:leather_helmet"
+customTexture: item/copper_helm
+filters:
+  baseItem: "minecraft:leather_helmet"
+  customNameContains: Copper
+requiredClass: "blacksmith:1"
+recipes:
+  - type: SMITHING
+    name: Copper Helm
+    base:
+      item: "minecraft:leather_helmet"
+    addition:
+      item: copper_helm_set
+    outputs:
+      - item: copper_helm
+---
+
+Copper armor is crafted by upgrading leather armor at a smithing table with the appropriate plate set. Copper can be upgraded to iron.

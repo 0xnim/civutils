@@ -1,0 +1,25 @@
+---
+id: copper_sabatons_set
+name: Copper Sabatons Set
+summary: Pre-smithed copper sabatons piece
+category: ARMOR
+tags: [smithing, blacksmith, copper, armor, sabatons, sabatons_set]
+order: 103
+displayItem: "minecraft:copper_ingot"
+customTexture: item/copper_sabaton
+filters:
+  baseItem: "minecraft:copper_ingot"
+  customNameContains: Sabatons Set
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Copper Sabatons Set
+    pattern: [P P, P P]
+    key:
+      P:
+        item: copper_plate
+    outputs:
+      - item: copper_sabatons_set
+---
+
+Combine with Leather Boots at a smithing table to create Copper Sabatons.

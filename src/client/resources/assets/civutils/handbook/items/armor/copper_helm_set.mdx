@@ -1,0 +1,25 @@
+---
+id: copper_helm_set
+name: Copper Helm Set
+summary: Pre-smithed copper helm piece
+category: ARMOR
+tags: [smithing, blacksmith, copper, armor, helm, helm_set]
+order: 100
+displayItem: "minecraft:copper_ingot"
+customTexture: item/copper_helm
+filters:
+  baseItem: "minecraft:copper_ingot"
+  customNameContains: Helm Set
+requiredClass: "blacksmith:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Copper Helm Set
+    pattern: [PPP, P P]
+    key:
+      P:
+        item: copper_plate
+    outputs:
+      - item: copper_helm_set
+---
+
+Combine with Leather Helmet at a smithing table to create a Copper Helm.

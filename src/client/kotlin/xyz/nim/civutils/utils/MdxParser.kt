@@ -20,6 +20,38 @@ object MdxParser {
     private val yaml = Yaml()
 
     /**
+     * Parse an MDX file content into HandbookPageMeta.
+     * The file path is used to derive the page ID (filename without extension).
+     * Returns null if the content is invalid or cannot be parsed.
+     */
+    fun parsePageMdx(content: String, filePath: String): HandbookPageMeta? {
+        val (frontmatter, _) = extractFrontmatter(content) ?: return null
+
+        return try {
+            val data = yaml.load<Map<String, Any>>(frontmatter) ?: return null
+
+            // Derive ID from filename (e.g., "pages/classes/farmer.mdx" -> "farmer")
+            val id = filePath.substringAfterLast("/").substringBeforeLast(".")
+
+            @Suppress("UNCHECKED_CAST")
+            HandbookPageMeta(
+                id = id,
+                title = data["title"] as? String ?: id,
+                file = filePath,
+                category = data["category"] as? String ?: "misc",
+                tags = (data["tags"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+                order = (data["order"] as? Number)?.toInt() ?: 0,
+                summary = data["summary"] as? String ?: "",
+                related = (data["related"] as? List<*>)?.filterIsInstance<String>() ?: emptyList(),
+                itemId = data["itemId"] as? String,
+                customItemId = data["customItemId"] as? String
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
      * Parse an MDX file content into an ItemDefinition.
      * Returns null if the content is invalid or cannot be parsed.
      */

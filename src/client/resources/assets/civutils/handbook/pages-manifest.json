@@ -1,0 +1,29 @@
+{
+    "files": [
+        "pages/classes/blacksmith.mdx",
+        "pages/classes/builder.mdx",
+        "pages/classes/class-basics.mdx",
+        "pages/classes/class-levels.mdx",
+        "pages/classes/classless-activities.mdx",
+        "pages/classes/farmer-guide.mdx",
+        "pages/classes/farmer.mdx",
+        "pages/classes/guardsman-guide.mdx",
+        "pages/classes/guardsman.mdx",
+        "pages/classes/healer.mdx",
+        "pages/classes/librarian-guide.mdx",
+        "pages/classes/librarian.mdx",
+        "pages/classes/miner-guide.mdx",
+        "pages/classes/miner.mdx",
+        "pages/commands.mdx",
+        "pages/event-5-changes.mdx",
+        "pages/getting-started.mdx",
+        "pages/mechanics/animal-husbandry.mdx",
+        "pages/mechanics/beacons.mdx",
+        "pages/mechanics/emerald-infusion.mdx",
+        "pages/mechanics/food-expiration.mdx",
+        "pages/mechanics/golemancy.mdx",
+        "pages/mechanics/interdimensional-travel.mdx",
+        "pages/mechanics/reinforcements.mdx",
+        "pages/mechanics/smithing.mdx"
+    ]
+}
