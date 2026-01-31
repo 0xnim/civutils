@@ -144,9 +144,11 @@ class HandbookScreen(
         forwardButton?.active = HandbookModel.canGoForward()
         addRenderableWidget(forwardButton!!)
 
-        // Search box (with space for clear button)
+        // Search box - spans full width from nav buttons to right margin
         val clearButtonWidth = 20
-        searchBox = EditBox(font, leftPanelX + 58, 25, leftPanelWidth - 58 - clearButtonWidth - 2, 18, Component.literal(""))
+        val searchBoxX = leftPanelX + 58
+        val searchBoxEndX = width - layout.margin - clearButtonWidth - 2
+        searchBox = EditBox(font, searchBoxX, 25, searchBoxEndX - searchBoxX, 18, Component.literal(""))
         searchBox?.setHint(Component.literal("Search..."))
         searchBox?.setResponder { query ->
             searchQuery = query
@@ -162,7 +164,7 @@ class HandbookScreen(
             refreshPageList()
             updateClearButtonVisibility()
         }
-            .bounds(leftPanelX + leftPanelWidth - clearButtonWidth, 25, clearButtonWidth, 18)
+            .bounds(width - layout.margin - clearButtonWidth, 25, clearButtonWidth, 18)
             .build()
         clearSearchButton?.active = false
         clearSearchButton?.visible = false
