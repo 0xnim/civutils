@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-CivUtils is a Minecraft Fabric client-side mod (1.21.8) written in Kotlin, providing quality-of-life utilities for Civ multiplayer servers. It uses Fabric Loom for building and depends on the NLib UI library (from mavenLocal).
+CivUtils is a Minecraft Fabric client-side mod written in Kotlin, providing quality-of-life utilities for Civ multiplayer servers. It uses Fabric Loom for building and depends on the NLib UI library (from mavenLocal).
 
 ## Build Commands
 
@@ -12,6 +12,14 @@ CivUtils is a Minecraft Fabric client-side mod (1.21.8) written in Kotlin, provi
 ./gradlew build              # Build the mod (outputs to build/libs/)
 ./gradlew runClient          # Run Minecraft with the mod loaded
 ./gradlew classes            # Compile without full build
+./gradlew generateItemManifest  # Regenerate handbook items manifest
+```
+
+**Multi-version builds:** The mod supports multiple Minecraft versions. Version-specific properties are in `versions/` directory. Build for a specific version with:
+```bash
+./gradlew build -Pmc=1.21.6   # Build for MC 1.21.6
+./gradlew build -Pmc=1.21.9   # Build for MC 1.21.9
+./gradlew build -Pmc=1.21.11  # Build for MC 1.21.11 (default)
 ```
 
 **Note:** NLib must be installed to mavenLocal first (`./gradlew publishToMavenLocal` in the nlib repo).

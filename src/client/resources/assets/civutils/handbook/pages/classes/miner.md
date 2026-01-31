@@ -41,7 +41,7 @@ Miners gain permanent Haste effects:
 
 <Unlocks class="miner" level="3" />
 
-**Ores:** Gold, Lapis Lazuli, Redstone, Deepslate Iron, Nether Quartz, Nether Gold | **Crafting TNT** | **Haste IV**
+**Ores:** Gold, Lapis Lazuli, Redstone, Emerald, Deepslate Iron, Nether Quartz, Nether Gold | **Crafting TNT** | **Haste IV**
 
 ### Master (4)
 
@@ -75,7 +75,7 @@ Miners gain permanent Haste effects:
 | Deepslate Gold | 25 | Master (4) |
 | Diamond | 30 | Master (4) |
 | Deepslate Diamond | 35 | Grandmaster (5) |
-| Emerald | 50 | Expert (3) |
+| Emerald | 15 | Expert (3) |
 | Ancient Debris | 100 | Grandmaster (5) |
 | Amethyst Cluster (1-4) | 2/5/10/20 | Novice (0) |
 

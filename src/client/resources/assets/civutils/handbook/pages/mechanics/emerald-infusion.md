@@ -17,12 +17,12 @@ The Emerald Infusion system allows players to transfer Class XP (CXP) between ea
 
 ### Infusion Amounts
 
-| Item | CXP Stored | CXP Lost |
-|------|------------|----------|
-| Emerald | 100 CXP | Some loss |
-| Emerald Block | 900 CXP | Some loss |
+| Item | CXP Stored | CXP Cost | Penalty |
+|------|------------|----------|---------|
+| Emerald | 100 | 133 | 33 (33%) |
+| Emerald Block | 900 | 1,125 | 225 (25%) |
 
-**Note:** Some CXP is lost in the transfer process.
+Emerald blocks are more efficient for large transfers due to the lower penalty percentage.
 
 ### Identifying Infused Emeralds
 
@@ -62,15 +62,15 @@ Help a player recover some progress after a death reset.
 
 ## Tips
 
-1. **Plan Transfers:** CXP loss means you shouldn't transfer casually
-2. **Use Blocks:** Emerald blocks are more efficient for large transfers
+1. **Plan Transfers:** The 25-33% CXP loss means you shouldn't transfer casually
+2. **Use Blocks:** Emerald blocks have a lower penalty (25%) than single emeralds (33%)
 3. **Same Class:** You can only bottle emeralds of the same class type
 4. **Stock Emeralds:** Keep some emeralds available for emergencies
 5. **Consider Death Reset:** Sometimes dying and releveling is more efficient than transfer
 
 ## Finding Emeralds
 
-Emeralds can be mined by [Miners](miner) at Expert (Level 3) or higher. They give 50 Miner XP when harvested.
+Emeralds can be mined by [Miners](miner) at Expert (Level 3) or higher. They give 15 Miner XP when harvested.
 
 ---
 
