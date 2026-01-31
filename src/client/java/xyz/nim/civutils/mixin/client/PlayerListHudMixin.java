@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xyz.nim.civutils.features.players.PlayerTagFeature;
+import xyz.nim.civutils.utils.GameProfileHelper;
 import xyz.nim.civutils.utils.PlayerTagStyler;
 
 /**
@@ -30,7 +31,7 @@ public abstract class PlayerListHudMixin {
             return;
         }
 
-        String playerName = entry.getProfile().name();
+        String playerName = GameProfileHelper.getName(entry.getProfile());
         if (playerName == null || playerName.isEmpty()) {
             return;
         }

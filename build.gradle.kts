@@ -40,6 +40,14 @@ java {
     withSourcesJar()
 }
 
+// Determine which version-specific source set to use based on MC version
+val mcMajorMinor = minecraftVersion.split(".").take(3).joinToString(".")
+val versionSourceDir = when {
+    mcMajorMinor.startsWith("1.21.6") || mcMajorMinor.startsWith("1.21.7") || mcMajorMinor.startsWith("1.21.8") ->
+        "src/client-1.21.6/kotlin"
+    else -> "src/client-1.21.9/kotlin"  // 1.21.9+ uses the new input API
+}
+
 loom {
     splitEnvironmentSourceSets()
 
@@ -47,6 +55,15 @@ loom {
         register("civutils") {
             sourceSet("main")
             sourceSet("client")
+        }
+    }
+}
+
+// Add version-specific source directory to client source set
+sourceSets {
+    named("client") {
+        kotlin {
+            srcDir(versionSourceDir)
         }
     }
 }

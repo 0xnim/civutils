@@ -34,29 +34,25 @@ object Colors {
 /**
  * A toggle button for boolean configs.
  */
-class ToggleButton(
+/**
+ * Creates a toggle button for boolean configs.
+ * Uses standard Button rendering for version compatibility.
+ */
+fun toggleButton(
     x: Int,
     y: Int,
     width: Int,
     height: Int,
-    private val config: BooleanConfig,
-    private val label: String
-) : Button(
-    x, y, width, height,
-    Component.literal(if (config.value) "§a$label: ON" else "§c$label: OFF"),
-    { button ->
+    config: BooleanConfig,
+    label: String
+): Button {
+    val getMessage = { Component.literal(if (config.value) "§a$label: ON" else "§c$label: OFF") }
+    return Button.builder(getMessage()) { button ->
         config.value = !config.value
-        button.message = Component.literal(if (config.value) "§a$label: ON" else "§c$label: OFF")
-    },
-    DEFAULT_NARRATION
-) {
-    override fun renderContents(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        val mc = Minecraft.getInstance()
-        // Draw text centered
-        val textX = x + width / 2 - mc.font.width(message) / 2
-        val textY = y + (height - 8) / 2
-        guiGraphics.drawString(mc.font, message, textX, textY, Colors.TEXT, true)
+        button.message = getMessage()
     }
+        .bounds(x, y, width, height)
+        .build()
 }
 
 /**

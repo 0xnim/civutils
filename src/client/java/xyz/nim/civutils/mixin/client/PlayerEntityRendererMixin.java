@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import xyz.nim.civutils.utils.GameProfileHelper;
 import xyz.nim.civutils.utils.PlayerTagStyler;
 
 /**
@@ -31,7 +32,7 @@ public abstract class PlayerEntityRendererMixin {
             return;
         }
 
-        String playerName = player.getGameProfile().name();
+        String playerName = GameProfileHelper.getName(player.getGameProfile());
         if (playerName == null || playerName.isEmpty()) {
             return;
         }

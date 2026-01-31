@@ -137,7 +137,7 @@ class ConfigScreen : CivutilsScreen(Component.literal("CivUtils Configuration"))
             Tab.FEATURES -> {
                 selectedFeature?.let { feature ->
                     // Enable/Disable toggle
-                    val toggle = ToggleButton(
+                    val toggle = toggleButton(
                         rightPanelX + 10, y, widgetWidth, 20,
                         feature.userEnabled, "Enabled"
                     )
@@ -165,7 +165,7 @@ class ConfigScreen : CivutilsScreen(Component.literal("CivUtils Configuration"))
                     if (!isAvailable) {
                         // We'll draw the notice text in renderOverlays instead
                         // Just add a disabled toggle for visual consistency
-                        val toggle = ToggleButton(
+                        val toggle = toggleButton(
                             rightPanelX + 10, y, widgetWidth, 20,
                             overlay.enabled, "Enabled"
                         )
@@ -176,7 +176,7 @@ class ConfigScreen : CivutilsScreen(Component.literal("CivUtils Configuration"))
                     }
 
                     // Enable/Disable toggle
-                    val toggle = ToggleButton(
+                    val toggle = toggleButton(
                         rightPanelX + 10, y, widgetWidth, 20,
                         overlay.enabled, "Enabled"
                     )
@@ -218,7 +218,7 @@ class ConfigScreen : CivutilsScreen(Component.literal("CivUtils Configuration"))
         }
 
         return when (config) {
-            is BooleanConfig -> ToggleButton(x, y, width, 20, config, name)
+            is BooleanConfig -> toggleButton(x, y, width, 20, config, name)
             is IntegerConfig -> IntSlider(x, y, width, 20, config, name)
             is ColorConfig -> ColorInput(x, y, width, 20, config.getValue()) { newColor ->
                 config.setValue(newColor)

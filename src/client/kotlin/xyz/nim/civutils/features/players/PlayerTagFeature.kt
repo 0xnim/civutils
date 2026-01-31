@@ -13,6 +13,7 @@ import xyz.nim.civutils.data.playertag.LocationSnapshot
 import xyz.nim.civutils.models.PlayerTagModel
 import xyz.nim.lib.config.ConfigOption
 import xyz.nim.lib.config.options.BooleanConfig
+import xyz.nim.lib.mc121.compat.McCompat
 
 /**
  * Feature for tagging and tracking players with custom attributes.
@@ -115,7 +116,7 @@ class PlayerTagFeature : Feature() {
                 x = entity.blockX,
                 y = entity.blockY,
                 z = entity.blockZ,
-                dimension = level.dimension().identifier().toString(),
+                dimension = McCompat.get().getResourceKeyId(level.dimension()),
                 serverAddress = ""
             )
 

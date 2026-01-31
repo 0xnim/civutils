@@ -1,9 +1,7 @@
 package xyz.nim.civutils.utils
 
-import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.Identifier
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Items
+import xyz.nim.lib.mc121.compat.McItems
 
 /**
  * Utility functions for parsing item IDs and creating ItemStacks.
@@ -16,11 +14,7 @@ object ItemUtils {
      * @return ItemStack or null if item not found
      */
     fun parseItemId(id: String): ItemStack? {
-        val resourceLocation = Identifier.tryParse(id) ?: return null
-        val optionalItem = BuiltInRegistries.ITEM.getOptional(resourceLocation)
-        if (optionalItem.isEmpty) return null
-        val item = optionalItem.get()
-        return if (item != Items.AIR) item.defaultInstance else null
+        return McItems.parseItemId(id)
     }
 
     /**
@@ -51,7 +45,6 @@ object ItemUtils {
      * Check if an item ID is valid (exists in registry).
      */
     fun isValidItemId(id: String): Boolean {
-        val resourceLocation = Identifier.tryParse(id) ?: return false
-        return BuiltInRegistries.ITEM.getOptional(resourceLocation).isPresent
+        return McItems.isValidItemId(id)
     }
 }

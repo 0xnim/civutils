@@ -3,9 +3,9 @@ package xyz.nim.civutils.core.keybind
 import com.mojang.blaze3d.platform.InputConstants
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
 import net.minecraft.client.KeyMapping
-import net.minecraft.resources.Identifier
 import org.lwjgl.glfw.GLFW
 import xyz.nim.civutils.core.CivutilsMod
+import xyz.nim.lib.mc121.compat.Mc121Keybind
 
 /**
  * Manages keybindings for the mod.
@@ -15,11 +15,9 @@ object KeybindManager {
 
     /**
      * Custom keybinding category for CivUtils.
-     * Registered once on first use.
+     * Uses string category for version compatibility.
      */
-    private val CATEGORY: KeyMapping.Category by lazy {
-        KeyMapping.Category.register(Identifier.fromNamespaceAndPath("civutils", "keybinds"))
-    }
+    private const val CATEGORY = "civutils.keybinds"
 
     /**
      * Keybind to open the config GUI.
@@ -108,14 +106,11 @@ object KeybindManager {
 
     /**
      * Register a single keybinding (keyboard).
+     * Uses NLib's Mc121Keybind for version-agnostic registration.
      */
     private fun registerKeybind(id: String, key: Int): KeyMapping {
-        val keybind = KeyMapping(
-            "civutils.keybind.$id",
-            InputConstants.Type.KEYSYM,
-            key,
-            CATEGORY
-        )
+        val nlibKeybind = Mc121Keybind("civutils.keybind.$id", CATEGORY, key)
+        val keybind = nlibKeybind.keyMapping
         KeyBindingHelper.registerKeyBinding(keybind)
         keybindings[id] = keybind
         return keybind
@@ -123,14 +118,11 @@ object KeybindManager {
 
     /**
      * Register a mouse button keybinding.
+     * Uses NLib's Mc121Keybind for version-agnostic registration.
      */
     private fun registerMouseKeybind(id: String, button: Int): KeyMapping {
-        val keybind = KeyMapping(
-            "civutils.keybind.$id",
-            InputConstants.Type.MOUSE,
-            button,
-            CATEGORY
-        )
+        val nlibKeybind = Mc121Keybind("civutils.keybind.$id", CATEGORY, button, InputConstants.Type.MOUSE)
+        val keybind = nlibKeybind.keyMapping
         KeyBindingHelper.registerKeyBinding(keybind)
         keybindings[id] = keybind
         return keybind
