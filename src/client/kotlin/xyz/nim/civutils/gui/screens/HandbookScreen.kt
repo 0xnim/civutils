@@ -217,6 +217,9 @@ class HandbookScreen(
         if (pageToLoad.isNotEmpty()) {
             loadPage(pageToLoad)
         }
+
+        // Auto-focus search box for immediate typing
+        searchBox?.let { setInitialFocus(it) }
     }
 
     private fun refreshPageList() {
@@ -463,6 +466,11 @@ class HandbookScreen(
 
     override fun tick() {
         super.tick()
+    }
+
+    override fun setFocused(focused: net.minecraft.client.gui.components.events.GuiEventListener?) {
+        // Always keep search box focused - there's nothing else to type in
+        super.setFocused(searchBox ?: focused)
     }
 
     override fun renderPanels(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
