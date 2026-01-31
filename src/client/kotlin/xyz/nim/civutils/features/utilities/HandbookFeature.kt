@@ -49,8 +49,10 @@ class HandbookFeature : Feature() {
         // routes key events to the screen's input handling instead of the keybind system.
         // We need to check the key state directly with edge detection.
         if (screen is AbstractContainerScreen<*>) {
-            // Don't trigger if a text field has focus (e.g., creative menu search)
-            if (screen.focused is EditBox) {
+            // Don't trigger if any text field can consume input (e.g., creative menu search)
+            // screen.focused isn't always reliable, so check children directly
+            val hasActiveTextBox = screen.children().any { it is EditBox && it.isFocused }
+            if (hasActiveTextBox) {
                 wasHandbookKeyDown = isHandbookKeyDown()
                 return
             }
