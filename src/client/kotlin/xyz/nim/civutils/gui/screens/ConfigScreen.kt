@@ -11,8 +11,8 @@ import xyz.nim.civutils.core.overlay.Overlay
 import xyz.nim.lib.config.ConfigOption
 import xyz.nim.lib.config.options.*
 import xyz.nim.lib.ui.NlibTheme
-import xyz.nim.lib.ui.components.ColorInput
-import xyz.nim.lib.ui.components.NlibListWidget
+import xyz.nim.lib.mc121.compat.ColorInput
+import xyz.nim.lib.mc121.compat.NlibListWidget
 import xyz.nim.civutils.gui.widgets.*
 
 /**

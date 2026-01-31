@@ -16,7 +16,7 @@ import xyz.nim.civutils.models.HandbookModel
 import xyz.nim.civutils.utils.ItemMatcher
 import xyz.nim.civutils.utils.MarkdownParser
 import xyz.nim.lib.ui.NlibTheme
-import xyz.nim.lib.ui.components.NlibListWidget
+import xyz.nim.lib.mc121.compat.NlibListWidget
 import kotlin.math.max
 
 /**

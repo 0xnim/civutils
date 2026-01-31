@@ -13,9 +13,9 @@ import xyz.nim.civutils.utils.PlayerHeadRenderer
 import xyz.nim.civutils.utils.PlayerTagStyler
 import xyz.nim.lib.ui.DropdownWidget
 import xyz.nim.lib.ui.NlibTheme
-import xyz.nim.lib.ui.components.ColorInput
+import xyz.nim.lib.mc121.compat.ColorInput
 import net.minecraft.client.input.MouseButtonEvent
-import xyz.nim.lib.ui.components.NlibListWidget
+import xyz.nim.lib.mc121.compat.NlibListWidget
 import xyz.nim.civutils.utils.renderOutline
 
 /**
