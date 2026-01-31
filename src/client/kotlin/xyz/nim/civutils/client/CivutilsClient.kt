@@ -177,6 +177,12 @@ class CivutilsClient : ClientModInitializer {
             client.setScreen(OverlayEditorScreen())
         }
 
+        // Toggle overlay visibility
+        if (KeybindManager.toggleOverlays.consumeClick()) {
+            val hidden = CivutilsMod.overlayManager.toggleOverlayVisibility()
+            CivutilsMod.logger.info("Overlays ${if (hidden) "hidden" else "visible"}")
+        }
+
         // Player tagging keybinds - require player under crosshair
         handlePlayerTagKeybinds(client)
     }

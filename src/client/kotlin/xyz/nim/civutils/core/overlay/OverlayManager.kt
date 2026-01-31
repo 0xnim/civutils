@@ -12,6 +12,22 @@ import xyz.nim.civutils.core.event.Subscribe
 class OverlayManager {
     private val overlays = mutableMapOf<String, Overlay>()
 
+    /**
+     * When true, all overlays are hidden (but still enabled).
+     * This is a temporary toggle, not persisted.
+     */
+    var overlaysHidden: Boolean = false
+        private set
+
+    /**
+     * Toggle overlay visibility on/off.
+     * Returns the new visibility state (true = hidden, false = visible).
+     */
+    fun toggleOverlayVisibility(): Boolean {
+        overlaysHidden = !overlaysHidden
+        return overlaysHidden
+    }
+
     init {
         // Register to receive tick and render events
         CivutilsMod.eventBus.register(this)
@@ -81,6 +97,8 @@ class OverlayManager {
      */
     @Subscribe
     fun onHudRender(event: HudRenderEvent) {
+        if (overlaysHidden) return
+
         for (overlay in overlays.values) {
             if (overlay.shouldRender()) {
                 try {

@@ -58,6 +58,12 @@ object KeybindManager {
         private set
 
     /**
+     * Keybind to toggle overlay visibility.
+     */
+    lateinit var toggleOverlays: KeyMapping
+        private set
+
+    /**
      * Register all keybindings. Called during initialization.
      */
     fun register() {
@@ -90,6 +96,11 @@ object KeybindManager {
         openHandbook = registerKeybind(
             id = "open_handbook",
             key = GLFW.GLFW_KEY_H
+        )
+
+        toggleOverlays = registerKeybind(
+            id = "toggle_overlays",
+            key = GLFW.GLFW_KEY_UNKNOWN // Unbound by default
         )
 
         CivutilsMod.logger.info("Registered ${keybindings.size} keybindings")
