@@ -17,8 +17,10 @@ data class ItemFilters(
     val loreContains: List<String> = emptyList(),
     /** Lore must exactly match these lines */
     val loreExact: List<String> = emptyList(),
-    /** Custom model data value must match */
-    val customModelData: Int? = null
+    /** Custom model data value must match (legacy integer format) */
+    val customModelData: Int? = null,
+    /** Custom model data string must match (1.21+ format, checks strings list) */
+    val customModelDataString: String? = null
 )
 
 /**

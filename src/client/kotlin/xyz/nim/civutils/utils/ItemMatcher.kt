@@ -88,7 +88,7 @@ object ItemMatcher {
             if (loreLines != filters.loreExact) return false
         }
 
-        // Check custom model data
+        // Check custom model data (legacy integer format)
         // In 1.21.4+, CustomModelData has floats, flags, strings, colors lists
         // The legacy integer value is typically stored as the first float
         if (filters.customModelData != null) {
@@ -96,6 +96,13 @@ object ItemMatcher {
             val floats = modelData?.floats() ?: emptyList()
             val modelValue = floats.firstOrNull()?.toInt()
             if (modelValue != filters.customModelData) return false
+        }
+
+        // Check custom model data string (1.21+ format)
+        if (filters.customModelDataString != null) {
+            val modelData = stack.get(DataComponents.CUSTOM_MODEL_DATA)
+            val strings = modelData?.strings() ?: emptyList()
+            if (!strings.contains(filters.customModelDataString)) return false
         }
 
         return true
