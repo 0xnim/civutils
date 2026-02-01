@@ -748,9 +748,19 @@ class MarkdownRenderer {
 
     /**
      * Register an item region manually (for external item rendering like "Used In" sections).
+     * Note: This only registers click regions. For tooltips, use addItemSlot() instead.
      */
     fun registerItemRegion(x: Int, y: Int, width: Int, height: Int, itemId: String) {
         itemSlotManager.registerRegion(x, y, width, height, itemId)
+    }
+
+    /**
+     * Add an ItemSlotWidget for tooltip rendering and click handling.
+     * Use this for externally rendered item slots (like relationship sections).
+     */
+    fun addItemSlot(slot: ItemSlotWidget) {
+        itemSlotManager.addSlot(slot)
+        itemSlotManager.recordBounds(slot)
     }
 
     /**

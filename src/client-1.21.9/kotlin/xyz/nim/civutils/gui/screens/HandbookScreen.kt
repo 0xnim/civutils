@@ -221,7 +221,12 @@ class HandbookScreen(
         }
 
         // Auto-focus search box for immediate typing
-        searchBox?.let { setInitialFocus(it) }
+        // Call both setInitialFocus and setFocused directly on the EditBox
+        // to ensure focus works reliably across different systems
+        searchBox?.let {
+            setInitialFocus(it)
+            it.setFocused(true)
+        }
     }
 
     private fun refreshPageList() {
@@ -630,7 +635,7 @@ class HandbookScreen(
                     if (sourceItem != null) {
                         val slot = ItemSlotWidget.fromItemDefinition(sourceItem, 1, ItemSlotWidget.SlotSize.NORMAL)
                         slot.render(guiGraphics, slotX, y, mouseX, mouseY, renderBackground = true)
-                        markdownRenderer.registerItemRegion(slotX, y, 18, 18, sourceItem.id)
+                        markdownRenderer.addItemSlot(slot)
                         slotX += 20
                     }
                 }
@@ -654,7 +659,7 @@ class HandbookScreen(
                 if (dropItem != null) {
                     val slot = ItemSlotWidget.fromItemDefinition(dropItem, 1, ItemSlotWidget.SlotSize.NORMAL)
                     slot.render(guiGraphics, slotX, y, mouseX, mouseY, renderBackground = true)
-                    markdownRenderer.registerItemRegion(slotX, y, 18, 18, dropItem.id)
+                    markdownRenderer.addItemSlot(slot)
                     slotX += 20
                     // Show count next to slot
                     guiGraphics.drawString(font, "×$dropCount", slotX, y + 4, NlibTheme.TEXT_SECONDARY, false)
@@ -723,7 +728,7 @@ class HandbookScreen(
                 if (usedInItem != null) {
                     val slot = ItemSlotWidget.fromItemDefinition(usedInItem, 1, ItemSlotWidget.SlotSize.NORMAL)
                     slot.render(guiGraphics, slotX, y, mouseX, mouseY, renderBackground = true)
-                    markdownRenderer.registerItemRegion(slotX, y, 18, 18, usedInId)
+                    markdownRenderer.addItemSlot(slot)
                     slotX += 20
                 }
             }
@@ -743,7 +748,7 @@ class HandbookScreen(
                 if (relatedItem != null) {
                     val slot = ItemSlotWidget.fromItemDefinition(relatedItem, 1, ItemSlotWidget.SlotSize.NORMAL)
                     slot.render(guiGraphics, slotX, y, mouseX, mouseY, renderBackground = true)
-                    markdownRenderer.registerItemRegion(slotX, y, 18, 18, relatedId)
+                    markdownRenderer.addItemSlot(slot)
                     slotX += 20
                 }
             }
@@ -769,7 +774,7 @@ class HandbookScreen(
 
                 val slot = ItemSlotWidget.fromItemDefinition(relatedItem, 1, ItemSlotWidget.SlotSize.NORMAL)
                 slot.render(guiGraphics, slotX, y, mouseX, mouseY, renderBackground = true)
-                markdownRenderer.registerItemRegion(slotX, y, 18, 18, relatedItem.id)
+                markdownRenderer.addItemSlot(slot)
                 slotX += 20
             }
             y += 24
