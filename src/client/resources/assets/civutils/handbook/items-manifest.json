@@ -123,9 +123,26 @@
                 "beacon.mdx",
                 "bell.mdx",
                 "blueprint.mdx",
+                "bolt_armor_trim.mdx",
                 "cat_spawn_egg.mdx",
+                "coast_armor_trim.mdx",
+                "dune_armor_trim.mdx",
+                "eye_armor_trim.mdx",
+                "flow_armor_trim.mdx",
+                "host_armor_trim.mdx",
                 "liquid_xp_bottle.mdx",
-                "netherite_template.mdx"
+                "netherite_template.mdx",
+                "raiser_armor_trim.mdx",
+                "sentry_armor_trim.mdx",
+                "shaper_armor_trim.mdx",
+                "silence_armor_trim.mdx",
+                "snout_armor_trim.mdx",
+                "spire_armor_trim.mdx",
+                "tide_armor_trim.mdx",
+                "vex_armor_trim.mdx",
+                "ward_armor_trim.mdx",
+                "wayfinder_armor_trim.mdx",
+                "wild_armor_trim.mdx"
             ]
         },
         {
