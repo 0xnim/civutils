@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.2
+
+### Added
+- **Bottle o' Enchanting Documentation** - Added entry for Librarian-created Bottle o' Enchanting with emerald infusion details
+- **Unified Search with Relevance Ranking** - Search results now rank pages and items together based on match quality (exact matches prioritized over partial, title/name over content)
+- **Vanilla Item Entries** - Added leather armor, brewing ingredients, food items, materials, and tools to handbook
+- **Armor Trim Smithing Templates** - All 17 armor trim templates added to handbook with documentation
+- **Ender Chest Documentation** - Access requirements (Grandmaster for all classes, Expert for Librarians)
+- **Path Block Tip** - Added tip about using shovel on path blocks to revert to dirt
+- **Clock Ingredient** - Added to beacon crafting recipe
+
+### Fixed
+- Fixed coast armor trim recipe (uses dead_bubble_coral_block)
+- Fixed handbook search focus reliability
+- Fixed item slot tooltips in relationship sections
+- Added customModelDataString filter for 1.21+ item matching (CivMC tools use string-based model data)
+
 ## 0.3.1
 
 ### Added
