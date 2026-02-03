@@ -1,0 +1,32 @@
+---
+id: bottle_o_enchanting
+name: Bottle o' Enchanting
+summary: Throwable XP bottle created by Librarians
+category: MISC
+tags: [xp, librarian, experience, bottle]
+order: 153
+displayItem: "minecraft:experience_bottle"
+filters:
+  baseItem: "minecraft:experience_bottle"
+  loreContains: Blessed by
+requiredClass: "librarian:3"
+metadata:
+  obtaining: Shift right-click a water bottle as a Librarian (Expert)
+  cost: 6 hunger, 4 Librarian XP
+recipes:
+  - type: CUSTOM
+    name: Librarian Blessing
+    ingredients:
+      - item: "minecraft:potion"
+        note: Water Bottle
+    outputs:
+      - item: "minecraft:experience_bottle"
+    metadata:
+      note: Shift right-click the water bottle while holding it
+---
+
+Bottle o' Enchanting is created by Librarians at Expert level (3) by shift right-clicking a water bottle. This consumes 6 hunger and 4 Librarian XP. When thrown, the bottle breaks and releases experience orbs that grant vanilla Minecraft XP (not Class XP).
+
+The bottle's lore displays who blessed it. This is useful for transferring Minecraft experience to other players who need it for enchanting or other level-based activities.
+
+**Note:** This is different from [Liquid XP Bottles](item:liquid_xp_bottle) which are drinkable and grant Class XP through the Emerald Infusion system.
