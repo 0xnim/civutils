@@ -233,17 +233,24 @@ class HandbookScreen(
         pageList?.clearEntries()
 
         if (searchQuery.isNotBlank()) {
-            // Search mode - search both pages and items
-            val pageResults = HandbookModel.searchPages(searchQuery)
-            searchResults = pageResults.associateBy { it.page.id }
-            for (result in pageResults) {
-                pageList?.addEntryToList(PageEntry(result.page, result))
-            }
+            // Unified search with relevance scoring - items and pages ranked together
+            val unifiedResults = HandbookModel.unifiedSearch(searchQuery)
 
-            // Also search items
-            val itemResults = HandbookModel.searchItems(searchQuery)
-            for (item in itemResults) {
-                pageList?.addEntryToList(ItemEntry(item))
+            // Build searchResults map for page match info display
+            searchResults = unifiedResults
+                .filterIsInstance<ScoredSearchResult.PageResult>()
+                .associate { it.page.id to SearchResult(it.page, it.matchTypes, it.matchSnippet) }
+
+            for (result in unifiedResults) {
+                when (result) {
+                    is ScoredSearchResult.PageResult -> {
+                        val searchResult = SearchResult(result.page, result.matchTypes, result.matchSnippet)
+                        pageList?.addEntryToList(PageEntry(result.page, searchResult))
+                    }
+                    is ScoredSearchResult.ItemResult -> {
+                        pageList?.addEntryToList(ItemEntry(result.item))
+                    }
+                }
             }
         } else {
             // Browse mode - show by category

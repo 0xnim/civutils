@@ -460,6 +460,116 @@ object HandbookModel : Model() {
     }
 
     /**
+     * Unified search across both pages and items with relevance-based scoring.
+     * Returns a single list sorted by relevance score (lower = more relevant).
+     *
+     * Scoring priority:
+     * - Exact item name match (0)
+     * - Exact page title match (1)
+     * - Item name starts with query (2)
+     * - Page title starts with query (3)
+     * - Item name contains query (4)
+     * - Page title contains query (5)
+     * - Item tag/summary match (6)
+     * - Page tag/summary match (7)
+     * - Page content-only match (8)
+     */
+    fun unifiedSearch(query: String): List<ScoredSearchResult> {
+        if (query.isBlank()) {
+            // Return all items and pages by order
+            val results = mutableListOf<ScoredSearchResult>()
+            for (page in getPages().sortedBy { it.order }) {
+                results.add(ScoredSearchResult.PageResult(page, emptySet(), null, page.order))
+            }
+            for (item in (itemsIndex?.items ?: emptyList()).sortedBy { it.order }) {
+                results.add(ScoredSearchResult.ItemResult(item, item.order))
+            }
+            return results.sortedBy { it.score }
+        }
+
+        buildSearchIndex()
+        val lowerQuery = query.lowercase()
+        val results = mutableListOf<ScoredSearchResult>()
+
+        // Score and add items
+        for (item in itemsIndex?.items ?: emptyList()) {
+            val lowerName = item.name.lowercase()
+            val score = when {
+                lowerName == lowerQuery -> SearchRelevance.ITEM_NAME_EXACT
+                lowerName.startsWith(lowerQuery) -> SearchRelevance.ITEM_NAME_STARTS_WITH
+                lowerName.contains(lowerQuery) -> SearchRelevance.ITEM_NAME_CONTAINS
+                item.summary?.lowercase()?.contains(lowerQuery) == true -> SearchRelevance.ITEM_TAG_OR_SUMMARY
+                item.tags?.any { it.lowercase().contains(lowerQuery) } == true -> SearchRelevance.ITEM_TAG_OR_SUMMARY
+                item.id.lowercase().contains(lowerQuery) -> SearchRelevance.ITEM_TAG_OR_SUMMARY
+                else -> null
+            }
+            if (score != null) {
+                results.add(ScoredSearchResult.ItemResult(item, score))
+            }
+        }
+
+        // Score and add pages
+        for (page in getPages()) {
+            val matchTypes = mutableSetOf<SearchMatchType>()
+            var snippet: String? = null
+            val lowerTitle = page.title.lowercase()
+
+            // Check title
+            val titleMatch = when {
+                lowerTitle == lowerQuery -> SearchRelevance.PAGE_TITLE_EXACT
+                lowerTitle.startsWith(lowerQuery) -> SearchRelevance.PAGE_TITLE_STARTS_WITH
+                lowerTitle.contains(lowerQuery) -> SearchRelevance.PAGE_TITLE_CONTAINS
+                else -> null
+            }
+            if (titleMatch != null) {
+                matchTypes.add(SearchMatchType.TITLE)
+            }
+
+            // Check tags
+            val tagMatch = page.tags.any { it.lowercase().contains(lowerQuery) }
+            if (tagMatch) {
+                matchTypes.add(SearchMatchType.TAG)
+            }
+
+            // Check summary
+            val summaryMatch = page.summary.lowercase().contains(lowerQuery)
+            if (summaryMatch) {
+                matchTypes.add(SearchMatchType.SUMMARY)
+            }
+
+            // Check content
+            val content = contentIndex[page.id]
+            val contentMatch = content?.contains(lowerQuery) == true
+            if (contentMatch) {
+                matchTypes.add(SearchMatchType.CONTENT)
+                snippet = extractSnippet(content!!, lowerQuery)
+            }
+
+            if (matchTypes.isNotEmpty()) {
+                // Determine best score for this page
+                val score = when {
+                    titleMatch != null -> titleMatch
+                    tagMatch || summaryMatch -> SearchRelevance.PAGE_TAG_OR_SUMMARY
+                    contentMatch -> SearchRelevance.PAGE_CONTENT_ONLY
+                    else -> SearchRelevance.PAGE_CONTENT_ONLY
+                }
+                results.add(ScoredSearchResult.PageResult(page, matchTypes, snippet, score))
+            }
+        }
+
+        // Sort by score (lower = better), then by name/title alphabetically
+        return results.sortedWith(
+            compareBy<ScoredSearchResult> { it.score }
+                .thenBy {
+                    when (it) {
+                        is ScoredSearchResult.ItemResult -> it.item.name.lowercase()
+                        is ScoredSearchResult.PageResult -> it.page.title.lowercase()
+                    }
+                }
+        )
+    }
+
+    /**
      * Extract a snippet around the search match for preview.
      */
     private fun extractSnippet(content: String, query: String): String {

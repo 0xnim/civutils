@@ -68,3 +68,39 @@ data class SearchResult(
     val matchTypes: Set<SearchMatchType>,
     val matchSnippet: String? = null
 )
+
+/**
+ * Unified search result that can represent either a page or an item,
+ * with a relevance score for sorting mixed results.
+ *
+ * Lower score = higher relevance (sorted ascending).
+ */
+sealed class ScoredSearchResult(open val score: Int) {
+    data class PageResult(
+        val page: HandbookPageMeta,
+        val matchTypes: Set<SearchMatchType>,
+        val matchSnippet: String?,
+        override val score: Int
+    ) : ScoredSearchResult(score)
+
+    data class ItemResult(
+        val item: ItemDefinition,
+        override val score: Int
+    ) : ScoredSearchResult(score)
+}
+
+/**
+ * Relevance score constants for unified search ranking.
+ * Lower values = higher priority in results.
+ */
+object SearchRelevance {
+    const val ITEM_NAME_EXACT = 0
+    const val PAGE_TITLE_EXACT = 1
+    const val ITEM_NAME_STARTS_WITH = 2
+    const val PAGE_TITLE_STARTS_WITH = 3
+    const val ITEM_NAME_CONTAINS = 4
+    const val PAGE_TITLE_CONTAINS = 5
+    const val ITEM_TAG_OR_SUMMARY = 6
+    const val PAGE_TAG_OR_SUMMARY = 7
+    const val PAGE_CONTENT_ONLY = 8
+}
