@@ -481,11 +481,6 @@ class HandbookScreen(
         super.tick()
     }
 
-    override fun setFocused(focused: net.minecraft.client.gui.components.events.GuiEventListener?) {
-        // Always keep search box focused - there's nothing else to type in
-        super.setFocused(searchBox ?: focused)
-    }
-
     override fun renderPanels(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         // Title
         guiGraphics.drawCenteredString(font, title, width / 2, 8, NlibTheme.TEXT_PRIMARY)

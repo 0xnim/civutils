@@ -118,6 +118,9 @@ data class ItemsIndex(
         val results = mutableListOf<Pair<ItemDefinition, Recipe>>()
 
         for (item in items) {
+            // Skip self-references (item using itself as ingredient)
+            if (item.id == itemId) continue
+
             val recipes = item.recipes ?: continue
             for (recipe in recipes) {
                 val inputs = recipe.getAllInputs()
@@ -159,6 +162,9 @@ data class ItemsIndex(
         val relationMap = mutableMapOf<ItemRelationType, MutableSet<ItemDefinition>>()
 
         for (item in items) {
+            // Skip self-references (item using itself as ingredient)
+            if (item.id == itemId) continue
+
             // Check drops field for "drops from" relationships
             val drops = item.drops
             if (drops != null) {
@@ -213,8 +219,21 @@ data class ItemsIndex(
         val matchIds = mutableSetOf(itemId)
         val itemDef = getItem(itemId)
         if (itemDef != null) {
-            itemDef.displayItem?.let { matchIds.add(it) }
-            itemDef.filters?.baseItem?.let { matchIds.add(it) }
+            // Only include displayItem/baseItem if this handbook entry IS the canonical
+            // entry for that vanilla item (e.g., iron_ingot for minecraft:iron_ingot),
+            // NOT if it just looks like it (e.g., iron_plate looking like minecraft:iron_ingot)
+            itemDef.displayItem?.let { displayItem ->
+                val vanillaId = displayItem.removePrefix("minecraft:")
+                if (itemId == vanillaId) {
+                    matchIds.add(displayItem)
+                }
+            }
+            itemDef.filters?.baseItem?.let { baseItem ->
+                val vanillaId = baseItem.removePrefix("minecraft:")
+                if (itemId == vanillaId) {
+                    matchIds.add(baseItem)
+                }
+            }
         }
         return matchIds
     }
