@@ -29,6 +29,7 @@ object Colors {
     val WARNING = NlibTheme.WARNING
     val ENABLED = NlibTheme.ENABLED
     val DISABLED = NlibTheme.DISABLED
+    val LINK_HOVER = 0xFFFFFF55.toInt() // Bright yellow for link hover
 }
 
 /**

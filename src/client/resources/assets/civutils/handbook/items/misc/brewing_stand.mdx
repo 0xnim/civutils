@@ -1,0 +1,26 @@
+---
+id: brewing_stand
+name: Brewing Stand
+summary: Block used for brewing potions
+category: MISC
+tags: [brewing, healer, station]
+order: 7020
+displayItem: "minecraft:brewing_stand"
+requiredClass: "healer:4"
+interactionRequirement: "healer:4"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Brewing Stand
+    pattern: ["_B_", "CCC"]
+    key:
+      B:
+        item: blaze_rod
+      C:
+        item: "minecraft:cobblestone"
+    outputs:
+      - item: "minecraft:brewing_stand"
+---
+
+The brewing stand is used to brew potions. Requires Healer level 4 to craft and interact with.
+
+Fuel with blaze powder to enable brewing. Add water bottles and brewing ingredients to create potions.

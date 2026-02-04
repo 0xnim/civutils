@@ -151,6 +151,18 @@ data class ItemsIndex(
         return items.filter { it.requiredClass == requiredClass }.sortedBy { it.order }
     }
 
+    /** Get items with interaction unlocked at a specific class level (e.g., "healer", 4) */
+    fun getItemsByInteractionClassLevel(className: String, level: Int): List<ItemDefinition> {
+        val interactionRequirement = "$className:$level"
+        return items.filter { it.interactionRequirement == interactionRequirement }.sortedBy { it.order }
+    }
+
+    /** Get items with mining unlocked at a specific class level (e.g., "miner", 3) */
+    fun getItemsByMiningClassLevel(className: String, level: Int): List<ItemDefinition> {
+        val miningRequirement = "$className:$level"
+        return items.filter { it.miningRequirement == miningRequirement }.sortedBy { it.order }
+    }
+
     /**
      * Get items that use the given item as an ingredient, grouped by relationship type.
      * Also includes "drops from" relationships computed from the drops field.

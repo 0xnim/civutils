@@ -725,6 +725,20 @@ object HandbookModel : Model() {
     }
 
     /**
+     * Get items with interaction unlocked at a specific class level (e.g., "healer", 4).
+     */
+    fun getItemsByInteractionClassLevel(className: String, level: Int): List<ItemDefinition> {
+        return itemsIndex?.getItemsByInteractionClassLevel(className, level) ?: emptyList()
+    }
+
+    /**
+     * Get items with mining unlocked at a specific class level (e.g., "miner", 3).
+     */
+    fun getItemsByMiningClassLevel(className: String, level: Int): List<ItemDefinition> {
+        return itemsIndex?.getItemsByMiningClassLevel(className, level) ?: emptyList()
+    }
+
+    /**
      * Get all items from the database.
      */
     fun getAllItems(): List<ItemDefinition> {

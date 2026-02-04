@@ -97,6 +97,10 @@ class HandbookScreen(
     // Header item slot for item pages
     private var headerItemSlot: ItemSlotWidget? = null
 
+    // Clickable class link regions (for requirement text)
+    private data class ClassLinkRegion(val x: Int, val y: Int, val width: Int, val height: Int, val classPage: String)
+    private val classLinkRegions = mutableListOf<ClassLinkRegion>()
+
     // Content area dimensions (for renderer)
     private var contentStartX = 0
     private var contentStartY = 0
@@ -414,6 +418,16 @@ class HandbookScreen(
             height += font.lineHeight + 4
         }
 
+        // Interaction requirement
+        if (item.interactionRequirement != null) {
+            height += font.lineHeight + 4
+        }
+
+        // Mining requirement
+        if (item.miningRequirement != null) {
+            height += font.lineHeight + 4
+        }
+
         // Metadata section
         val metadata = item.metadata
         if (!metadata.isNullOrEmpty()) {
@@ -596,8 +610,9 @@ class HandbookScreen(
     private fun renderItemContent(guiGraphics: GuiGraphics, item: ItemDefinition, mouseX: Int, mouseY: Int) {
         var y = contentStartY - contentScroll
 
-        // Clear recipe renderer slots at the start of each frame
+        // Clear renderers at the start of each frame
         recipeRenderer.clearSlots()
+        classLinkRegions.clear()
 
         // Summary
         val summary = item.summary
@@ -606,11 +621,19 @@ class HandbookScreen(
             y += font.lineHeight + 8
         }
 
-        // Required class
+        // Required class (clickable link to class page)
         item.requiredClassInfo?.let { (className, level) ->
-            val classText = "Requires: ${className.replaceFirstChar { it.uppercase() }} Lv. $level"
-            guiGraphics.drawString(font, classText, contentStartX, y, Colors.ACCENT, false)
-            y += font.lineHeight + 8
+            y = renderClassRequirement(guiGraphics, "Craft:", className, level, y, mouseX, mouseY)
+        }
+
+        // Interaction requirement (clickable link to class page)
+        item.interactionRequirementInfo?.let { (className, level) ->
+            y = renderClassRequirement(guiGraphics, "Interact:", className, level, y, mouseX, mouseY)
+        }
+
+        // Mining requirement (clickable link to class page)
+        item.miningRequirementInfo?.let { (className, level) ->
+            y = renderClassRequirement(guiGraphics, "Mine:", className, level, y, mouseX, mouseY)
         }
 
         // Metadata section (dropsFrom, dropsWhenBroken, etc.)
@@ -783,6 +806,48 @@ class HandbookScreen(
         }
     }
 
+    /**
+     * Render a class requirement as a clickable link.
+     * Format: "Label: ClassName Lv. N" where the class name is underlined and clickable.
+     */
+    private fun renderClassRequirement(
+        guiGraphics: GuiGraphics,
+        label: String,
+        className: String,
+        level: Int,
+        startY: Int,
+        mouseX: Int,
+        mouseY: Int
+    ): Int {
+        val displayName = className.replaceFirstChar { it.uppercase() }
+        val classText = "$displayName Lv. $level"
+
+        // Calculate positions
+        val labelWidth = font.width(label)
+        val classTextX = contentStartX + labelWidth + 4
+        val classTextWidth = font.width(classText)
+
+        // Check if hovering over the class text
+        val isHovering = mouseX >= classTextX && mouseX < classTextX + classTextWidth &&
+                mouseY >= startY && mouseY < startY + font.lineHeight
+
+        // Render label
+        guiGraphics.drawString(font, label, contentStartX, startY, NlibTheme.TEXT_SECONDARY, false)
+
+        // Render class name (underlined if hovering)
+        val classColor = if (isHovering) Colors.LINK_HOVER else Colors.ACCENT
+        guiGraphics.drawString(font, classText, classTextX, startY, classColor, false)
+
+        // Draw underline
+        val underlineY = startY + font.lineHeight
+        guiGraphics.fill(classTextX, underlineY, classTextX + classTextWidth, underlineY + 1, classColor)
+
+        // Register click region
+        classLinkRegions.add(ClassLinkRegion(classTextX, startY, classTextWidth, font.lineHeight, className))
+
+        return startY + font.lineHeight + 8
+    }
+
     private fun renderScrollbar(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         if (maxScroll <= 0) return
 
@@ -935,6 +1000,16 @@ class HandbookScreen(
                         ?: (if (content is PageContent.ItemPage) recipeRenderer.getItemAt(mouseX.toInt(), clickY) else null)
                     if (itemId != null) {
                         handleItemClick(itemId)
+                        return true
+                    }
+
+                    // Check for class link click (requirement text)
+                    val classLink = classLinkRegions.find { region ->
+                        mouseX.toInt() >= region.x && mouseX.toInt() < region.x + region.width &&
+                        clickY >= region.y && clickY < region.y + region.height
+                    }
+                    if (classLink != null) {
+                        loadPage(classLink.classPage)
                         return true
                     }
 

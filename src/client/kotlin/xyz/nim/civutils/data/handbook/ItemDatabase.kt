@@ -63,6 +63,12 @@ data class ItemDefinition(
     /** Required class and level to craft (e.g., "blacksmith:2") */
     val requiredClass: String? = null,
 
+    /** Required class and level to interact with this block (e.g., "healer:4") */
+    val interactionRequirement: String? = null,
+
+    /** Required class and level to mine this block (e.g., "miner:3") */
+    val miningRequirement: String? = null,
+
     /** Additional metadata for server-specific properties (nullable due to Gson) */
     val metadata: Map<String, String>? = null
 ) {
@@ -75,6 +81,22 @@ data class ItemDefinition(
     /** Parse required class into name and level */
     val requiredClassInfo: Pair<String, Int>?
         get() = requiredClass?.split(":")?.let { parts ->
+            if (parts.size == 2) {
+                parts[0] to (parts[1].toIntOrNull() ?: 0)
+            } else null
+        }
+
+    /** Parse interaction requirement into name and level */
+    val interactionRequirementInfo: Pair<String, Int>?
+        get() = interactionRequirement?.split(":")?.let { parts ->
+            if (parts.size == 2) {
+                parts[0] to (parts[1].toIntOrNull() ?: 0)
+            } else null
+        }
+
+    /** Parse mining requirement into name and level */
+    val miningRequirementInfo: Pair<String, Int>?
+        get() = miningRequirement?.split(":")?.let { parts ->
             if (parts.size == 2) {
                 parts[0] to (parts[1].toIntOrNull() ?: 0)
             } else null

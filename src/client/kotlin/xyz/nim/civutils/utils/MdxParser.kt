@@ -119,6 +119,8 @@ object MdxParser {
             usedIn = (data["usedIn"] as? List<*>)?.filterIsInstance<String>(),
             related = (data["related"] as? List<*>)?.filterIsInstance<String>(),
             requiredClass = data["requiredClass"] as? String,
+            interactionRequirement = data["interactionRequirement"] as? String,
+            miningRequirement = data["miningRequirement"] as? String,
             metadata = metadata
         )
     }

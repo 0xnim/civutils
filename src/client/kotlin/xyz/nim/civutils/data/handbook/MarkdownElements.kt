@@ -313,8 +313,8 @@ data class RecipeElement(
 }
 
 /**
- * Displays a grid of items unlocked at a specific class level.
- * Items are automatically populated from the items database based on requiredClass field.
+ * Displays all unlocks for a specific class level, grouped by type.
+ * Shows craftable items, mineable blocks, interaction unlocks, and other unlock types with headers.
  */
 data class ClassUnlocksElement(
     val className: String,
@@ -323,14 +323,40 @@ data class ClassUnlocksElement(
     override val baseHeight: Int = 0 // Calculated dynamically based on item count
 
     override fun calculateHeight(width: Int, font: Font): Int {
-        // Query actual item count from database
-        val items = xyz.nim.civutils.models.HandbookModel.getItemsByClassLevel(className, level)
-        if (items.isEmpty()) return 0
+        val craftItems = xyz.nim.civutils.models.HandbookModel.getItemsByClassLevel(className, level)
+        val mineItems = xyz.nim.civutils.models.HandbookModel.getItemsByMiningClassLevel(className, level)
+        val interactItems = xyz.nim.civutils.models.HandbookModel.getItemsByInteractionClassLevel(className, level)
+
+        if (craftItems.isEmpty() && mineItems.isEmpty() && interactItems.isEmpty()) return 0
 
         val slotSize = 18
         val gap = 4
+        val headerHeight = font.lineHeight + 4
         val slotsPerRow = maxOf(1, (width + gap) / (slotSize + gap))
-        val rows = (items.size + slotsPerRow - 1) / slotsPerRow
-        return rows * (slotSize + gap)
+
+        var totalHeight = 0
+
+        // Craftable items section
+        if (craftItems.isNotEmpty()) {
+            totalHeight += headerHeight
+            val rows = (craftItems.size + slotsPerRow - 1) / slotsPerRow
+            totalHeight += rows * (slotSize + gap)
+        }
+
+        // Mineable items section
+        if (mineItems.isNotEmpty()) {
+            totalHeight += headerHeight
+            val rows = (mineItems.size + slotsPerRow - 1) / slotsPerRow
+            totalHeight += rows * (slotSize + gap)
+        }
+
+        // Interaction items section
+        if (interactItems.isNotEmpty()) {
+            totalHeight += headerHeight
+            val rows = (interactItems.size + slotsPerRow - 1) / slotsPerRow
+            totalHeight += rows * (slotSize + gap)
+        }
+
+        return totalHeight
     }
 }

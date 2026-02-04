@@ -53,6 +53,7 @@ class MarkdownParser {
                 }
 
                 // Class unlocks component: <Unlocks class="blacksmith" level="1" />
+                // Shows all unlock types (craftable, interactions, etc.) for this class/level
                 trimmed.startsWith("<Unlocks ") -> {
                     val unlocks = parseUnlocksComponent(trimmed)
                     if (unlocks != null) {
@@ -327,6 +328,7 @@ class MarkdownParser {
 
     /**
      * Parse an Unlocks component like <Unlocks class="blacksmith" level="1" />.
+     * Shows all unlock types (craftable items, interactions, etc.) for this class/level.
      */
     private fun parseUnlocksComponent(line: String): ClassUnlocksElement? {
         // Extract class attribute

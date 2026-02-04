@@ -652,30 +652,79 @@ class MarkdownRenderer {
         mouseX: Int = 0,
         mouseY: Int = 0
     ): Int {
-        val items = xyz.nim.civutils.models.HandbookModel.getItemsByClassLevel(element.className, element.level)
+        val craftItems = xyz.nim.civutils.models.HandbookModel.getItemsByClassLevel(element.className, element.level)
+        val mineItems = xyz.nim.civutils.models.HandbookModel.getItemsByMiningClassLevel(element.className, element.level)
+        val interactItems = xyz.nim.civutils.models.HandbookModel.getItemsByInteractionClassLevel(element.className, element.level)
 
-        if (items.isEmpty()) {
-            // Render nothing if no items - allows adding component to all classes
+        if (craftItems.isEmpty() && mineItems.isEmpty() && interactItems.isEmpty()) {
             return 0
         }
 
         val slotSize = SlotSize.NORMAL.pixels // 18px
         val gap = 4
+        val headerHeight = font.lineHeight + 4
         val slotsPerRow = maxOf(1, (width + gap) / (slotSize + gap))
 
+        var currentY = y
+        var totalHeight = 0
+
+        // Render craftable items section
+        if (craftItems.isNotEmpty()) {
+            guiGraphics.drawString(font, "Craftable:", x, currentY, NlibTheme.TEXT_SECONDARY, false)
+            currentY += headerHeight
+            totalHeight += headerHeight
+
+            val sectionHeight = renderItemGrid(guiGraphics, craftItems, x, currentY, slotsPerRow, slotSize, gap, mouseX, mouseY)
+            currentY += sectionHeight
+            totalHeight += sectionHeight
+        }
+
+        // Render mineable items section
+        if (mineItems.isNotEmpty()) {
+            guiGraphics.drawString(font, "Mineable:", x, currentY, NlibTheme.TEXT_SECONDARY, false)
+            currentY += headerHeight
+            totalHeight += headerHeight
+
+            val sectionHeight = renderItemGrid(guiGraphics, mineItems, x, currentY, slotsPerRow, slotSize, gap, mouseX, mouseY)
+            currentY += sectionHeight
+            totalHeight += sectionHeight
+        }
+
+        // Render interaction items section
+        if (interactItems.isNotEmpty()) {
+            guiGraphics.drawString(font, "Interactions:", x, currentY, NlibTheme.TEXT_SECONDARY, false)
+            currentY += headerHeight
+            totalHeight += headerHeight
+
+            val sectionHeight = renderItemGrid(guiGraphics, interactItems, x, currentY, slotsPerRow, slotSize, gap, mouseX, mouseY)
+            totalHeight += sectionHeight
+        }
+
+        return totalHeight
+    }
+
+    private fun renderItemGrid(
+        guiGraphics: GuiGraphics,
+        items: List<ItemDefinition>,
+        x: Int,
+        y: Int,
+        slotsPerRow: Int,
+        slotSize: Int,
+        gap: Int,
+        mouseX: Int,
+        mouseY: Int
+    ): Int {
         var currentX = x
         var currentY = y
         var itemsInRow = 0
 
         for (item in items) {
-            // Wrap to next row if needed
             if (itemsInRow >= slotsPerRow) {
                 currentX = x
                 currentY += slotSize + gap
                 itemsInRow = 0
             }
 
-            // Create and render the item slot
             val slot = ItemSlotWidget.fromItemDefinition(item, 1, SlotSize.NORMAL)
             slot.render(guiGraphics, currentX, currentY, mouseX, mouseY, renderBackground = true)
             itemSlotManager.addSlot(slot)
@@ -685,7 +734,6 @@ class MarkdownRenderer {
             itemsInRow++
         }
 
-        // Calculate total height
         val rows = (items.size + slotsPerRow - 1) / slotsPerRow
         return rows * (slotSize + gap)
     }
