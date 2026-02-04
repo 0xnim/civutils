@@ -314,7 +314,7 @@ data class RecipeElement(
 
 /**
  * Displays all unlocks for a specific class level, grouped by type.
- * Shows craftable items, mineable blocks, interaction unlocks, and other unlock types with headers.
+ * Shows craftable items, mineable blocks, interaction unlocks, mechanics, and other unlock types with headers.
  */
 data class ClassUnlocksElement(
     val className: String,
@@ -326,8 +326,9 @@ data class ClassUnlocksElement(
         val craftItems = xyz.nim.civutils.models.HandbookModel.getItemsByClassLevel(className, level)
         val mineItems = xyz.nim.civutils.models.HandbookModel.getItemsByMiningClassLevel(className, level)
         val interactItems = xyz.nim.civutils.models.HandbookModel.getItemsByInteractionClassLevel(className, level)
+        val mechanics = xyz.nim.civutils.models.HandbookModel.getMechanicsByClassLevel(className, level)
 
-        if (craftItems.isEmpty() && mineItems.isEmpty() && interactItems.isEmpty()) return 0
+        if (craftItems.isEmpty() && mineItems.isEmpty() && interactItems.isEmpty() && mechanics.isEmpty()) return 0
 
         val slotSize = 18
         val gap = 4
@@ -355,6 +356,12 @@ data class ClassUnlocksElement(
             totalHeight += headerHeight
             val rows = (interactItems.size + slotsPerRow - 1) / slotsPerRow
             totalHeight += rows * (slotSize + gap)
+        }
+
+        // Mechanics section (text links, one line per mechanic)
+        if (mechanics.isNotEmpty()) {
+            totalHeight += headerHeight
+            totalHeight += mechanics.size * (font.lineHeight + 2)
         }
 
         return totalHeight

@@ -1,0 +1,23 @@
+---
+id: bookshelf
+name: Bookshelf
+summary: Decorative block that powers enchanting tables
+category: MISC
+tags: [librarian, decoration, enchanting]
+order: 7050
+displayItem: "minecraft:bookshelf"
+requiredClass: "librarian:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    pattern: ["PPP", "BBB", "PPP"]
+    key:
+      P:
+        item: "minecraft:oak_planks"
+        alternatives: ["minecraft:spruce_planks", "minecraft:birch_planks", "minecraft:jungle_planks", "minecraft:acacia_planks", "minecraft:dark_oak_planks"]
+      B:
+        item: "minecraft:book"
+    outputs:
+      - item: "minecraft:bookshelf"
+---
+
+Required around enchanting tables to enable higher-level enchantments. Requires Librarian level 1 to craft.

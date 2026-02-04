@@ -42,6 +42,9 @@ object HandbookModel : Model() {
     private var itemsIndex: ItemsIndex? = null
     private val itemCache = mutableMapOf<String, ItemDefinition>()
 
+    // Mechanics database
+    private var mechanicsIndex: MechanicsIndex? = null
+
     private val pageCache = mutableMapOf<String, HandbookPage>()
     private var currentServerHash: String? = null
 
@@ -117,6 +120,9 @@ object HandbookModel : Model() {
 
         // Load structured items database
         loadItemsDatabase()
+
+        // Load mechanics database
+        loadMechanicsDatabase()
     }
 
     /**
@@ -288,6 +294,27 @@ object HandbookModel : Model() {
             }
         } catch (e: Exception) {
             CivutilsMod.logger.error("Failed to load custom items", e)
+        }
+    }
+
+    private fun loadMechanicsDatabase() {
+        try {
+            val mechanicsStream = javaClass.classLoader
+                .getResourceAsStream("$HANDBOOK_RESOURCE_PATH/mechanics-index.json")
+
+            if (mechanicsStream != null) {
+                mechanicsIndex = gson.fromJson(
+                    InputStreamReader(mechanicsStream),
+                    MechanicsIndex::class.java
+                )
+                CivutilsMod.logger.info("Loaded ${mechanicsIndex?.mechanics?.size ?: 0} mechanics")
+            } else {
+                CivutilsMod.logger.debug("No mechanics-index.json found")
+                mechanicsIndex = MechanicsIndex()
+            }
+        } catch (e: Exception) {
+            CivutilsMod.logger.error("Failed to load mechanics database", e)
+            mechanicsIndex = MechanicsIndex()
         }
     }
 
@@ -776,5 +803,28 @@ object HandbookModel : Model() {
         // Look up in items database
         val item = getItem(itemId)
         return item?.renderItemId ?: "minecraft:barrier"
+    }
+
+    // === Mechanics Database Access ===
+
+    /**
+     * Get mechanics unlocked at a specific class level.
+     */
+    fun getMechanicsByClassLevel(className: String, level: Int): List<MechanicDefinition> {
+        return mechanicsIndex?.getMechanicsByClassLevel(className, level) ?: emptyList()
+    }
+
+    /**
+     * Get a mechanic by ID.
+     */
+    fun getMechanic(mechanicId: String): MechanicDefinition? {
+        return mechanicsIndex?.getMechanic(mechanicId)
+    }
+
+    /**
+     * Get all mechanics.
+     */
+    fun getAllMechanics(): List<MechanicDefinition> {
+        return mechanicsIndex?.mechanics ?: emptyList()
     }
 }

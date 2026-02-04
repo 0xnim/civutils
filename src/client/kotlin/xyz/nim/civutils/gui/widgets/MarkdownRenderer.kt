@@ -655,8 +655,9 @@ class MarkdownRenderer {
         val craftItems = xyz.nim.civutils.models.HandbookModel.getItemsByClassLevel(element.className, element.level)
         val mineItems = xyz.nim.civutils.models.HandbookModel.getItemsByMiningClassLevel(element.className, element.level)
         val interactItems = xyz.nim.civutils.models.HandbookModel.getItemsByInteractionClassLevel(element.className, element.level)
+        val mechanics = xyz.nim.civutils.models.HandbookModel.getMechanicsByClassLevel(element.className, element.level)
 
-        if (craftItems.isEmpty() && mineItems.isEmpty() && interactItems.isEmpty()) {
+        if (craftItems.isEmpty() && mineItems.isEmpty() && interactItems.isEmpty() && mechanics.isEmpty()) {
             return 0
         }
 
@@ -697,7 +698,68 @@ class MarkdownRenderer {
             totalHeight += headerHeight
 
             val sectionHeight = renderItemGrid(guiGraphics, interactItems, x, currentY, slotsPerRow, slotSize, gap, mouseX, mouseY)
+            currentY += sectionHeight
             totalHeight += sectionHeight
+        }
+
+        // Render mechanics section
+        if (mechanics.isNotEmpty()) {
+            guiGraphics.drawString(font, "Mechanics:", x, currentY, NlibTheme.TEXT_SECONDARY, false)
+            currentY += headerHeight
+            totalHeight += headerHeight
+
+            val lineHeight = font.lineHeight + 2
+            for (mechanic in mechanics) {
+                // Find the class-specific description for this unlock
+                val unlock = mechanic.classUnlocks.find {
+                    it.className == element.className && it.level == element.level
+                }
+                val description = unlock?.description?.let { " ($it)" } ?: ""
+
+                // Check if this mechanic link is hovered
+                val linkTarget = mechanic.pageId ?: mechanic.id
+                val isHovered = hoveredLink?.target == linkTarget
+                val linkColor = if (isHovered) LINK_HOVER_COLOR else NlibTheme.ACCENT
+
+                // Render mechanic name as a clickable link
+                val text = "• ${mechanic.name}$description"
+                guiGraphics.drawString(font, "• ", x, currentY, NlibTheme.TEXT_PRIMARY, false)
+                val bulletWidth = font.width("• ")
+
+                val nameText = mechanic.name
+                guiGraphics.drawString(font, nameText, x + bulletWidth, currentY, linkColor, true)
+                val nameWidth = font.width(nameText)
+
+                // Draw underline for hovered links
+                if (isHovered) {
+                    guiGraphics.fill(
+                        x + bulletWidth,
+                        currentY + font.lineHeight,
+                        x + bulletWidth + nameWidth,
+                        currentY + font.lineHeight + 1,
+                        LINK_HOVER_COLOR
+                    )
+                }
+
+                // Track link region for the mechanic name
+                linkRegions.add(
+                    LinkRegion(
+                        x + bulletWidth,
+                        currentY,
+                        nameWidth,
+                        font.lineHeight,
+                        linkTarget
+                    )
+                )
+
+                // Render description after the link
+                if (description.isNotEmpty()) {
+                    guiGraphics.drawString(font, description, x + bulletWidth + nameWidth, currentY, NlibTheme.TEXT_SECONDARY, false)
+                }
+
+                currentY += lineHeight
+                totalHeight += lineHeight
+            }
         }
 
         return totalHeight

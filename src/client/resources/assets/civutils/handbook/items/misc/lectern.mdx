@@ -1,0 +1,23 @@
+---
+id: lectern
+name: Lectern
+summary: Hold and display written books
+category: MISC
+tags: [librarian, decoration, book]
+order: 7051
+displayItem: "minecraft:lectern"
+requiredClass: "librarian:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    pattern: ["SSS", "_B_", "_S_"]
+    key:
+      S:
+        item: "minecraft:oak_slab"
+        alternatives: ["minecraft:spruce_slab", "minecraft:birch_slab", "minecraft:jungle_slab", "minecraft:acacia_slab", "minecraft:dark_oak_slab"]
+      B:
+        item: "minecraft:bookshelf"
+    outputs:
+      - item: "minecraft:lectern"
+---
+
+Displays written books for multiple players to read. Requires Librarian level 1 to craft.

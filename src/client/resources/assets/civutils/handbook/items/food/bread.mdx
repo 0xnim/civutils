@@ -1,0 +1,20 @@
+---
+id: bread
+name: Bread
+summary: Basic food crafted from wheat
+category: FOOD
+tags: [food, farmer, wheat]
+order: 1010
+displayItem: "minecraft:bread"
+requiredClass: "farmer:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    pattern: ["WWW"]
+    key:
+      W:
+        item: "minecraft:wheat"
+    outputs:
+      - item: "minecraft:bread"
+---
+
+Basic food item that restores 5 hunger and 6 saturation. Requires Farmer level 1 to craft.

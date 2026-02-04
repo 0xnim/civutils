@@ -1,0 +1,22 @@
+---
+id: suspicious_stew
+name: Suspicious Stew
+summary: Stew with random potion effects
+category: FOOD
+tags: [food, healer, soup, potion]
+order: 1021
+displayItem: "minecraft:suspicious_stew"
+requiredClass: "healer:2"
+recipes:
+  - type: CRAFTING_SHAPELESS
+    inputs:
+      - item: "minecraft:red_mushroom"
+      - item: "minecraft:brown_mushroom"
+      - item: "minecraft:bowl"
+      - item: "minecraft:red_tulip"
+        alternatives: ["minecraft:oxeye_daisy", "minecraft:cornflower", "minecraft:lily_of_the_valley", "minecraft:wither_rose", "minecraft:poppy", "minecraft:dandelion", "minecraft:blue_orchid", "minecraft:allium", "minecraft:azure_bluet"]
+    outputs:
+      - item: "minecraft:suspicious_stew"
+---
+
+Stew that grants potion effects based on the flower used. Requires Healer level 2 to craft.

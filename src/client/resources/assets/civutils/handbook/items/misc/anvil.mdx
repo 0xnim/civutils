@@ -1,0 +1,58 @@
+---
+id: anvil
+name: Anvil
+summary: Repair and enchant items, combine enchantments
+category: MISC
+tags: [blacksmith, station, repair, enchanting]
+order: 7032
+displayItem: "minecraft:anvil"
+requiredClass: "blacksmith:2"
+interactionRequirement: "blacksmith:3"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Anvil
+    pattern: ["BBB", "_I_", "III"]
+    key:
+      B:
+        item: "minecraft:iron_block"
+      I:
+        item: "minecraft:iron_ingot"
+    outputs:
+      - item: "minecraft:anvil"
+---
+
+The anvil is used to repair items, combine enchantments, and rename items. It's essential for maintaining high-level equipment.
+
+Requires Blacksmith level 2 to craft and level 3 to use.
+
+## Uses
+
+### Repairing Items
+- Combine a damaged item with materials to restore durability
+- Costs Minecraft XP levels
+- More efficient with higher Blacksmith level
+
+### Combining Enchantments
+- Combine two enchanted items to merge their enchantments
+- The target item keeps all compatible enchantments from both
+- Useful for creating powerful equipment
+
+### Renaming Items
+- Give items custom names
+- Named items are easier to identify in inventories
+
+## Damage
+
+Anvils take damage with use and progress through stages:
+1. Anvil (new)
+2. Chipped Anvil
+3. Damaged Anvil
+4. Destroyed (drops nothing)
+
+Each use has a 12% chance to damage the anvil.
+
+## Tips
+
+- Save anvil uses for important operations
+- Blacksmiths can also repair items by shift right-clicking the anvil with an item
+- Use a [Whetstone](item:whetstone) to restore stat decay on equipment

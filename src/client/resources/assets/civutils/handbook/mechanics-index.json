@@ -1,0 +1,123 @@
+{
+  "mechanics": [
+    {
+      "id": "force-feed",
+      "name": "Force Feed",
+      "summary": "Feed other players directly",
+      "pageId": "force-feed",
+      "classUnlocks": [
+        { "className": "guardsman", "level": 1, "description": "Full food value" },
+        { "className": "healer", "level": 3, "description": "Half food value" }
+      ]
+    },
+    {
+      "id": "awakened",
+      "name": "Awakened",
+      "summary": "Saving throw granting absorption",
+      "pageId": "awakened",
+      "classUnlocks": [
+        { "className": "guardsman", "level": 1, "description": "Absorption 2" }
+      ]
+    },
+    {
+      "id": "pat-down",
+      "name": "Pat Down",
+      "summary": "Inspect player inventories",
+      "pageId": "pat-down",
+      "classUnlocks": [
+        { "className": "guardsman", "level": 1 }
+      ]
+    },
+    {
+      "id": "player-leashing",
+      "name": "Player Leashing",
+      "summary": "Restrain downed players with leads",
+      "pageId": "player-leashing",
+      "classUnlocks": [
+        { "className": "guardsman", "level": 5 }
+      ]
+    },
+    {
+      "id": "bandages",
+      "name": "Bandages",
+      "summary": "Heal and revive players",
+      "pageId": "bandages",
+      "classUnlocks": [
+        { "className": "healer", "level": 1 }
+      ]
+    },
+    {
+      "id": "blessed-food",
+      "name": "Blessed Food",
+      "summary": "Enchant food with regeneration",
+      "pageId": "blessed-food",
+      "classUnlocks": [
+        { "className": "healer", "level": 2 }
+      ]
+    },
+    {
+      "id": "pick-up",
+      "name": "Pick-Up",
+      "summary": "Carry downed players",
+      "pageId": "pick-up",
+      "classUnlocks": [
+        { "className": "healer", "level": 3 }
+      ]
+    },
+    {
+      "id": "potion-brewing",
+      "name": "Potion Brewing",
+      "summary": "Craft brewing ingredients",
+      "pageId": "potion-brewing",
+      "classUnlocks": [
+        { "className": "healer", "level": 4, "description": "Blaze Rods" },
+        { "className": "healer", "level": 5, "description": "Nether Wart" }
+      ]
+    },
+    {
+      "id": "item-blessing",
+      "name": "Item Blessing",
+      "summary": "Enchant items with books",
+      "pageId": "item-blessing",
+      "classUnlocks": [
+        { "className": "librarian", "level": 2 }
+      ]
+    },
+    {
+      "id": "exp-transfer",
+      "name": "EXP Transfer",
+      "summary": "Create XP transfer books",
+      "pageId": "exp-transfer",
+      "classUnlocks": [
+        { "className": "librarian", "level": 3 }
+      ]
+    },
+    {
+      "id": "repairing",
+      "name": "Repairing",
+      "summary": "Repair items on anvils",
+      "pageId": "repairing",
+      "classUnlocks": [
+        { "className": "blacksmith", "level": 3 }
+      ]
+    },
+    {
+      "id": "signature-trims",
+      "name": "Signature Trims",
+      "summary": "Unique marks on crafted armor",
+      "pageId": "signature-trims",
+      "classUnlocks": [
+        { "className": "blacksmith", "level": 1 }
+      ]
+    },
+    {
+      "id": "item-modifiers",
+      "name": "Item Modifiers",
+      "summary": "Bonus stats on equipment",
+      "pageId": "item-modifiers",
+      "classUnlocks": [
+        { "className": "blacksmith", "level": 1 }
+      ]
+    }
+  ]
+}

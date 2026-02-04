@@ -1,0 +1,38 @@
+---
+id: smoker
+name: Smoker
+summary: Cooks food faster and creates smoked food that lasts longer
+category: MISC
+tags: [cooking, farmer, station, food]
+order: 7030
+displayItem: "minecraft:smoker"
+interactionRequirement: "farmer:1"
+recipes:
+  - type: CRAFTING_SHAPED
+    name: Smoker
+    pattern: ["_L_", "LFL", "_L_"]
+    key:
+      L:
+        item: "minecraft:oak_log"
+        alternatives: ["minecraft:spruce_log", "minecraft:birch_log", "minecraft:jungle_log", "minecraft:acacia_log", "minecraft:dark_oak_log", "minecraft:mangrove_log", "minecraft:cherry_log"]
+      F:
+        item: "minecraft:furnace"
+    outputs:
+      - item: "minecraft:smoker"
+---
+
+The smoker is a specialized furnace that cooks food twice as fast as a regular furnace. More importantly, food cooked in a smoker becomes **smoked food**, which lasts longer before [expiring](food-expiration).
+
+Requires Farmer level 1 to interact with.
+
+## Benefits of Smoked Food
+
+- Lasts significantly longer than regular cooked food
+- Same hunger and saturation values
+- Essential for long expeditions or storage
+
+## Tips
+
+- Always use smokers instead of furnaces for food
+- Pair with a [Farmer](farmer) to maximize food production
+- Smoked food stacks normally with regular cooked food

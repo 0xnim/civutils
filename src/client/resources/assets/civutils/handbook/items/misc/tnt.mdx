@@ -1,0 +1,23 @@
+---
+id: tnt
+name: TNT
+summary: Explosive block for mining and combat
+category: MISC
+tags: [miner, explosive, mining]
+order: 7060
+displayItem: "minecraft:tnt"
+requiredClass: "miner:3"
+recipes:
+  - type: CRAFTING_SHAPED
+    pattern: ["GSG", "SGS", "GSG"]
+    key:
+      G:
+        item: "minecraft:gunpowder"
+      S:
+        item: "minecraft:sand"
+        alternatives: ["minecraft:red_sand"]
+    outputs:
+      - item: "minecraft:tnt"
+---
+
+Explosive block. Requires Miner level 3 to craft.
